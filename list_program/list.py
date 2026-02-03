@@ -18,5 +18,5 @@ student = ["harshil","amit","mohit","om","krish"]
 student.sort()
 print("4.sort_student_list :",student)
 
-#5.so
+
 

@@ -1,9 +1,22 @@
-a = [1,2,3]
-b = ['a','b','c']
-c = [a,b]
 
-print(c)
-for i in c:
-    for j in i:
-        print(j)
-    print(i)
+x = int(input("enter the value of x: "))   
+y = int(input("enter the value of y: "))  
+z = int(input("enter the value of z: "))  
+
+
+a = []
+
+for i in range(x):
+    layer = []
+    print("Entering values for Layer {i + 1}:")
+    for j in range(y):
+        row = []
+        for k in range(z):
+            value = input(f"Enter value for position [{i}][{j}][{k}]: ")
+            row.append(value)
+        layer.append(row)
+    a.append(layer)
+
+
+print("The 3D list is:")
+print(a)
