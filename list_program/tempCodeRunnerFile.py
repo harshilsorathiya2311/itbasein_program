@@ -1,3 +1,1 @@
-a = []
-# b = []
-# c = []
+     # n = int(input(f"Enter element for row {i+1}, column {j+1}: "))
