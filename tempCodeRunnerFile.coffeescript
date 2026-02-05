@@ -1,0 +1,30 @@
+# Data
+mountains = ["mountianA", "mountianB", "mountianC"]
+widths = [10, 5, 7]
+heights = [5, 20, 30]
+locations = ["ahd", "surat", "mumbai"]
+
+# Output dictionary
+out_put = {}
+
+# Simple loop
+for i in range(3):
+    out_put[mountains[i]] = {
+        "weidth": widths[i],
+        "height": heights[i],
+        "location": locations[i]
+    }
+
+# Print result
+print(out_put)
+
+
+
+
+op
+{
+    'mountianA': {'weidth': 10, 'height': 5, 'location': 'ahd'},
+    'mountianB': {'weidth': 5, 'height': 20, 'location': 'surat'},
+    'mountianC': {'weidth': 7, 'height': 30, 'location': 'mumbai'}
+}
+
