@@ -1,1 +1,1 @@
-name, width, height, location =
+print(dic_text)
