@@ -1,1 +1,1 @@
-print(dic_text)
+    # dic_text.append((name, {'height': heights[i], 'width': width, 'location': location}))
