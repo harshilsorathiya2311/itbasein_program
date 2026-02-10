@@ -1,5 +1,7 @@
 data = [
-    ["mountainA", 10, 5, "ahd"],["mountainB", 5, 20, "surat"],["mountainC", 7, 30, "mumbai"]
+    ["mountainA", 10, 5, "ahd"],
+    ["mountainB", 5, 20, "surat"],
+    ["mountainC", 7, 30, "mumbai"]
 ]
 
 dic_text = {}

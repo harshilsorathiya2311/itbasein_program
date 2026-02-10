@@ -11,7 +11,7 @@ dic_text = []
 
 for i in range(len(heights)):
 #name
-    if i < len(names):
+    if i < len(names):                          
         name = names[i]
     else:
         name = "Not available"
@@ -32,5 +32,4 @@ for i in range(len(heights)):
     dic_text.append((name, {'height': heights[i], 'width': width, 'location': location}))
 
 
-for item in dic_text:
-    print(item)
+print(dic_text)
