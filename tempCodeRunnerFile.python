@@ -1,37 +1,59 @@
-data = [
-    ["MountainA", "MountainB", "MountainC", "MountainD", "MountainE"],
-    [10, 20, 30, 40, 50, 60, 70, 80, 90],  
-    [2, 4, 6, 8],       
-    ["ahd", "mumbai"]   
-]
+n = int(input("Enter total values: "))
 
-names, heights, widths, locations = data
+nums = []
+for i in range(n):
+    nums.append(int(input("Enter value: ")))
 
-dic_text = []
+odd = []
+even = []
 
-for i in range(len(heights)):
-    # name
-    if i < len(names):
-        name = names[i]
+# Separate odd and even
+for i in nums:
+    if i % 2 == 0:
+        even.append(i)
     else:
-        name = "Not available"
+        odd.append(i)
 
-    # width
-    if i < len(widths):
-        width = widths[i]
-    else:
-        width = 0
+# Find largest & smallest odd
+largest_odd = odd[0]
+smallest_odd = odd[0]
 
-    # location
-    if i < len(locations):
-        location = locations[i]
-    else:
-        location = "Not available"
+for i in odd:
+    if i > largest_odd:
+        largest_odd = i
+    if i < smallest_odd:
+        smallest_odd = i
 
-    dic_text.append((name, {'height': heights[i], 'width': width, 'location': location}))
+# Find largest & smallest even
+largest_even = even[0]
+smallest_even = even[0]
 
-# Sort by height descending
-dic_text.sort(key=lambda x: x[1]['height'], reverse=True)
+for i in even:
+    if i > largest_even:
+        largest_even = i
+    if i < smallest_even:
+        smallest_even = i
 
-for item in dic_text:
-    print(item)
+# Find most repeated number
+max_count = 0
+most_repeated = nums[0]
+
+for i in nums:
+    count = 0
+    for j in nums:
+        if i == j:
+            count += 1
+    if count > max_count:
+        max_count = count
+        most_repeated = i
+
+# Single print at the end
+print({
+    "odd": odd,
+    "even": even,
+    "largest_odd": largest_odd,
+    "largest_even": largest_even,
+    "smallest_odd": smallest_odd,
+    "smallest_even": smallest_even,
+    "most_repeated_num": most_repeated
+})

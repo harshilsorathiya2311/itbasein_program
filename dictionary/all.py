@@ -145,3 +145,141 @@ for i in range(len(heights)):
 
 for item in dic_text:
     print(item)
+    
+    
+    
+   
+#task 5 
+    
+n = int(input("Enter total values: "))
+
+nums = []
+for i in range(n):
+    nums.append(int(input("Enter value: ")))
+
+odd = []
+even = []
+
+# Separate odd and even
+for i in nums:
+    if i % 2 == 0:
+        even.append(i)
+    else:
+        odd.append(i)
+
+# Find largest & smallest odd
+largest_odd = odd[0]
+smallest_odd = odd[0]
+
+for i in odd:
+    if i > largest_odd:
+        largest_odd = i
+    if i < smallest_odd:
+        smallest_odd = i
+
+# Find largest & smallest even
+largest_even = even[0]
+smallest_even = even[0]
+
+for i in even:
+    if i > largest_even:
+        largest_even = i
+    if i < smallest_even:
+        smallest_even = i
+
+# Find most repeated number
+max_count = 0
+most_repeated = nums[0]
+
+for i in nums:
+    count = 0
+    for j in nums:
+        if i == j:
+            count += 1
+    if count > max_count:
+        max_count = count
+        most_repeated = i
+
+# Single print at the end
+print({
+    "odd": odd,
+    "even": even,
+    "largest_odd": largest_odd,
+    "largest_even": largest_even,
+    "smallest_odd": smallest_odd,
+    "smallest_even": smallest_even,
+    "most_repeated_num": most_repeated
+})
+
+
+# 6  
+
+n = int(input("Enter total values: "))
+
+nums = []
+for i in range(n):
+    nums.append(int(input("Enter value: ")))
+
+odd = []
+even = []
+
+# Separate odd & even
+for i in nums:
+    if i % 2 == 0:
+        even.append(i)
+    else:
+        odd.append(i)
+
+# -------- Odd calculations --------
+if len(odd) > 0:
+    largest_odd = odd[0]
+    smallest_odd = odd[0]
+
+    for i in odd:
+        if i > largest_odd:
+            largest_odd = i
+        if i < smallest_odd:
+            smallest_odd = i
+else:
+    largest_odd = None
+    smallest_odd = None
+
+# -------- Even calculations --------
+if len(even) > 0:
+    largest_even = even[0]
+    smallest_even = even[0]
+
+    for i in even:
+        if i > largest_even:
+            largest_even = i
+        if i < smallest_even:
+            smallest_even = i
+else:
+    largest_even = None
+    smallest_even = None
+
+# -------- Most repeated number --------
+max_count = 0
+most_repeated = None
+
+for i in nums:
+    count = 0
+    for j in nums:
+        if i == j:
+            count += 1
+
+    if count > max_count:
+        max_count = count
+        most_repeated = i
+
+# -------- Single Print --------
+print({
+    "odd": odd,
+    "even": even,
+    "largest_odd": largest_odd,
+    "largest_even": largest_even,
+    "smallest_odd": smallest_odd,
+    "smallest_even": smallest_even,
+    "most_repeated_num": most_repeated
+})
+
