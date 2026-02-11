@@ -1,5 +1,5 @@
 data = [
-    ["MountainA", "MountainB", "MountainC", "MountainD", "MountainE"],
+    ["mountainA", "mountainB", "mountainC", "mountainD", "mountainE"],
     [10, 20, 30, 40, 50, 60, 70, 80, 90],  
     [2, 4, 6, 8],       
     ["ahd", "mumbai"]   
@@ -10,6 +10,7 @@ names, heights, widths, locations = data
 dic_text = []
 
 for i in range(len(heights)):
+    
 #name
     if i < len(names):                          
         name = names[i]
@@ -32,4 +33,5 @@ for i in range(len(heights)):
     dic_text.append((name, {'height': heights[i], 'width': width, 'location': location}))
 
 
-print(dic_text)
+for item in dic_text:
+    print(item)
