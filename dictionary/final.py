@@ -7,10 +7,10 @@
         "even":
         "largest_odd":
         "largest even":
-        "most_repated_num": 5 / [5,6] / None
         "smallest_odd":
         "smallest_even":
         "avg.":
         "odd avg.":
         "even_avg.":
+        "most_repated_num": 5 / [5,6] / None
     }
