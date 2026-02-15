@@ -41,9 +41,6 @@ if len(odd) > 0:
         if i < small_odd:
             small_odd = i   
                 
-
-
-
 print({
     "odd": odd,
     "even": even,
