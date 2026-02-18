@@ -14,6 +14,11 @@ data = [
 ]
 
 
+for i in range(len(data)):
+    for j in range()
+    
 
+        
 print(len(data))
+print(data[0])
         
