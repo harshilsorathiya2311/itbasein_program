@@ -12,7 +12,7 @@ def register_view(request):
             return 'success'
     else:
         form = UserCreationForm()
-    return render(request, 'auth/register.html',{'form':fo rm})  
+    return render(request, 'auth/register.html',{'form':form})  
         
 def login_view(request):
     pass 
