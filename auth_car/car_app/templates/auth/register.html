@@ -1,0 +1,15 @@
+{% extends 'layouts/app.html' %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-sm-6">
+        <h2 class="text-muted">Register</h2>
+        <form method="POST" action="{% url 'register' %}">
+            {% csrf_token %}
+            {{ form.as_p}}
+
+        </form>
+</div>
+
+{% endblock %}
