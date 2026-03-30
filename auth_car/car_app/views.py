@@ -18,7 +18,8 @@ def register_view(request):
         initial_data = {'username':'', 'password1':'', 'password2':''}
         form = UserCreationForm(initial=initial_data)
     return render(request, 'auth/register.html',{'form':form})  
- 
+
+
 @guest       
 def login_view(request):
     if request.method == 'POST':
