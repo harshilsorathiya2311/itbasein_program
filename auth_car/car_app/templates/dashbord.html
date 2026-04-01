@@ -1,6 +1,17 @@
-{% extends 'layouts/app.html' %} {% block content %}
+{% extends 'layouts/app.html' %}
+{% load static %}
 
-<h1>Dashbord : {{ request.user.username }}</h1>
-<a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
+{% block content %}
 
-{% endblock %}
+<div class="text-center mt-4">
+
+    <img src="{% static 'images/default-user.png' %}" alt="car Image"
+        style="width:100px; height:100px; border-radius:50%; object-fit:cover; margin-bottom:10px;">
+
+    <h1>Dashboard : {{ request.user.username }}</h1>
+
+    <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
+
+</div>
+
+{% endblock %}  

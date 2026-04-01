@@ -1,37 +1,33 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'layouts/app.html' %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>login form</title>
-    <link rel="stylesheet" href="login.css">
-</head>
+{% block content %}
 
-<body>
-    <div class="box">
-        <span class="borderline">
+<div class="row justify-content-center">
+  <div class="col-sm-6">
+    <h2 class="text-muted">Login</h2>
+    {% if form.non_field_errors %}
+    <small class="text-danger"> {{ form.non_field_errors.as_ul }} </small>
+    {% endif %}
 
-        </span>
-        <form>
-            <h2>Login</h2>
-            <div class="inputbox">
-                <input type="text" required="required">
-                <span>username</span>
-                <i></i>
-            </div>
-            <div class="inputbox">
-                <input type="password" required="required">
-                <span>password</span>
-                <i></i>
-            </div>
-            <div class="links">
-                <a href="register.html">Register</a>
-            </div>
-            <input type="submit" value="login">
-        </form>
-    </div>
+    <form method="POST" action="{% url 'login' %}">
+      {% csrf_token %}
 
-</body>
+      <div class="form-group">
+        <label for="{{ form.username.id_for_label}}">Username:</label>
+        <input type="text" name="{{ form.username.name }}" class="form-control" value="{{ form.username.value }}" />
+        <span class="text-danger">{{ form.username.errors }}</span>
+      </div>
 
-</html>
+      <div class="form-group">
+        <label for="{{ form.password.id_for_label}}">Password:</label>
+        <input type="password" name="{{ form.password.name }}" class="form-control" value="{{ form.username.value }}" />
+        <span class="text-danger">{{ form.password.errors }}</span>
+      </div>
+
+      <button type="submit" class="btn btn-dark">Login</button>
+
+      <a href="{% url 'register' %}" class="btn btn-default">create a new account</a>
+    </form>
+  </div>
+</div>
+{% endblock %}

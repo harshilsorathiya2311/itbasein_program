@@ -2,36 +2,77 @@
 
 {% block content %}
 
-<div class="row justify-content-center">
-  <div class="col-sm-6">
-    <h2 class="text-muted">Register</h2>
-    <form method="POST" action="{% url 'register' %}">
-      {% csrf_token %}
+<style>
+  .register-card {
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    background: #ffffff;
+  }
 
-      <div class="form-group">
-        <label for="{{ form.username.id_for_label}}">Username:</label>
-        <input type="text" name="{{ form.username.name }}" class="form-control" value="{{ form.username.value }}" />
-        <span class="text-danger">{{ form.username.errors }}</span>
-      </div>
+  .register-title {
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 20px;
+  }
 
-      <div class="form-group">
-        <label for="{{ form.password1.id_for_label}}">Password:</label>
-        <input type="password" name="{{ form.password1.name }}" class="form-control"
-          value="{{ form.username.value }}" />
-        <span class="text-danger">{{ form.password1.errors }}</span>
-      </div>
+  .form-control {
+    border-radius: 8px;
+    padding: 10px;
+  }
 
-      <div class="form-group">
-        <label for="{{ form.password2.id_for_label}}"> Re-Type Password:</label>
-        <input type="password" name="{{ form.password2.name }}" class="form-control"
-          value="{{ form.username.value }}" />
-        <span class="text-danger">{{ form.password2.errors }}</span>
-      </div>
+  .btn-warning {
+    width: 100%;
+    border-radius: 8px;
+    padding: 10px;
+    font-weight: 500;
+  }
 
-      <button type="submit" class="btn btn-warning">Submit</button>
+  .login-link {
+    display: block;
+    text-align: center;
+    margin-top: 10px;
+  }
+</style>
 
-      <a href="{% url 'login' %}" class="btn btn-default">Login</a>
-    </form>
+<div class="row justify-content-center mt-5">
+  <div class="col-sm-5">
+    <div class="register-card">
+
+      <h2 class="register-title text-muted">Create Account</h2>
+
+      <form method="POST" action="{% url 'register' %}">
+        {% csrf_token %}
+
+        <div class="form-group mb-3">
+          <label for="{{ form.username.id_for_label }}">Username</label>
+          <input type="text" name="{{ form.username.name }}" class="form-control" placeholder="Enter username"
+            value="{{ form.username.value }}" />
+          <small class="text-danger">{{ form.username.errors }}</small>
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="{{ form.password1.id_for_label }}">Password</label>
+          <input type="password" name="{{ form.password1.name }}" class="form-control" placeholder="Enter password" />
+          <small class="text-danger">{{ form.password1.errors }}</small>
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="{{ form.password2.id_for_label }}">Confirm Password</label>
+          <input type="password" name="{{ form.password2.name }}" class="form-control"
+            placeholder="Re-enter password" />
+          <small class="text-danger">{{ form.password2.errors }}</small>
+        </div>
+
+        <button type="submit" class="btn btn-warning">Register</button>
+
+        <div class="login-link">
+          <a href="{% url 'login' %}">Already have an account? Login</a>
+        </div>
+
+      </form>
+
+    </div>
   </div>
 </div>
 

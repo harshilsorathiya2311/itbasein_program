@@ -40,7 +40,7 @@ INSTALLED_APPS = [
 ]
 
 AUTHENTICATION_BACKENDS = [
-    'django_contrib.auth.backend.modelbackend'
+    'django.contrib.drive.backends.ModelBackend'
 ]
 
 MIDDLEWARE = [

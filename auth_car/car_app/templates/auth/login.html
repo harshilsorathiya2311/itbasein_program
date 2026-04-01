@@ -2,32 +2,77 @@
 
 {% block content %}
 
-<div class="row justify-content-center">
-  <div class="col-sm-6">
-    <h2 class="text-muted">Login</h2>
-    {% if form.non_field_errors %}
-    <small class="text-danger"> {{ form.non_field_errors.as_ul }} </small>
-    {% endif %}
+<style>
+  .login-card {
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    background: #ffffff;
+  }
 
-    <form method="POST" action="{% url 'login' %}">
-      {% csrf_token %}
+  .login-title {
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 20px;
+  }
 
-      <div class="form-group">
-        <label for="{{ form.username.id_for_label}}">Username:</label>
-        <input type="text" name="{{ form.username.name }}" class="form-control" value="{{ form.username.value }}" />
-        <span class="text-danger">{{ form.username.errors }}</span>
+  .form-control {
+    border-radius: 8px;
+    padding: 10px;
+  }
+
+  .btn-dark {
+    width: 100%;
+    border-radius: 8px;
+    padding: 10px;
+    font-weight: 500;
+  }
+
+  .register-link {
+    display: block;
+    text-align: center;
+    margin-top: 10px;
+  }
+</style>
+
+<div class="row justify-content-center mt-5">
+  <div class="col-sm-5">
+    <div class="login-card">
+
+      <h2 class="login-title text-muted">Login</h2>
+
+      {% if form.non_field_errors %}
+      <div class="alert alert-danger p-2">
+        {{ form.non_field_errors }}
       </div>
+      {% endif %}
 
-      <div class="form-group">
-        <label for="{{ form.password.id_for_label}}">Password:</label>
-        <input type="password" name="{{ form.password.name }}" class="form-control" value="{{ form.username.value }}" />
-        <span class="text-danger">{{ form.password.errors }}</span>
-      </div>
+      <form method="POST" action="{% url 'login' %}">
+        {% csrf_token %}
 
-      <button type="submit" class="btn btn-dark">Login</button>
+        <div class="form-group mb-3">
+          <label for="{{ form.username.id_for_label }}">Username</label>
+          <input type="text" name="{{ form.username.name }}" class="form-control" placeholder="Enter username"
+            value="{{ form.username.value }}" />
+          <small class="text-danger">{{ form.username.errors }}</small>
+        </div>
 
-      <a href="{% url 'register' %}" class="btn btn-default">create a new account</a>
-    </form>
+        <div class="form-group mb-3">
+          <label for="{{ form.password.id_for_label }}">Password</label>
+          <input type="password" name="{{ form.password.name }}" class="form-control" placeholder="Enter password" />
+          <small class="text-danger">{{ form.password.errors }}</small>
+        </div>
+
+        <button type="submit" class="btn btn-dark">Login</button>
+
+        <div class="register-link">
+          <a href="{% url 'register' %}">Don't have an account? Register</a>
+        </div>
+
+      </form>
+
+    </div>
   </div>
 </div>
+
 {% endblock %}
