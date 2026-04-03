@@ -37,7 +37,7 @@ def update_employee(request, pk):
         
     return render(request, 'update.html', {'form':form})
 
-#update view
+#delete view
 
 def delete_employee(request, pk):
     employee = Employee.objects.get(id= pk)
