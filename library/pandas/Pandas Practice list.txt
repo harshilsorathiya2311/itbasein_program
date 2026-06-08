@@ -1,0 +1,79 @@
+1. Pandas Practice Questions (Without Answers)
+
+Beginner
+
+🟢 Beginner Level
+1.Create a Pandas Series from a list.
+2.Create a DataFrame from a dictionary.
+3.Display the first 5 rows of a DataFrame.
+4.Display the last 5 rows of a DataFrame.
+5.Check the shape of a DataFrame.
+6.Display column names.
+7.Display DataFrame information using info().
+8.Generate summary statistics using describe().
+9.Select a single column.
+10.Select multiple columns.
+11.Access a row using loc[].
+12.Access a row using iloc[].
+13.Create a new column.
+14.Delete a column.
+15.Rename a column.
+16.Change the data type of a column.
+17.Check the data types of all columns.
+18.Count the number of rows and columns.
+19.Find unique values in a column.
+20.Count unique values in a column.
+21.Find the number of null values in each column.
+22.Fill missing values with a constant.
+23.Fill missing values with the mean.
+24.Drop rows containing null values.
+25.Drop columns containing null values.
+
+
+# Pandas Mini Projects
+
+Project 1: Student Management System
+Tasks
+Create student DataFrame.
+Add marks.
+Calculate average marks.
+Find topper.
+Filter failed students.
+Export report to CSV.
+
+Project 2: Employee Management System
+Tasks
+Store employee details.
+Calculate average salary.
+Department-wise salary analysis.
+Find highest-paid employee.
+Generate employee report.
+
+Project 3: Sales Analysis Dashboard
+Tasks
+Load sales CSV.
+Calculate total sales.
+Calculate monthly sales.
+Find best-selling product.
+Create pivot table.
+Generate charts.
+
+Project 4: COVID-19 Data Analysis
+Tasks
+Load dataset.
+Clean missing values.
+Calculate total cases.
+Find highest affected region.
+Create trend charts.
+Generate summary report.
+
+Project 5: E-Commerce Analysis
+Tasks
+Analyze orders.
+Calculate revenue.
+Find top customers.
+Find top-selling products.
+Monthly sales trends.
+Customer segmentation.
+
+

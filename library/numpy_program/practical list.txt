@@ -6,7 +6,7 @@
 3. Create a 2D array (3×3) with all zeros.
 4. Create a 2D array (4×4) with all ones.
 5. Create an identity matrix of size 5×5.
-6. Create an array using `arange()` from 1 to 20.
+6. Create an array using `arange()` from 1 to 10.
 7. Create an array using `linspace()` between 1 and 50 (10 values).
 8. Find the shape of a given array.
 9. Find the number of elements in an array.

@@ -22,16 +22,20 @@ arr3 =np.array([[1,2,3],
 print("3.three dimensional array:",arr3)
 print(arr3.ndim)
 
-#4. check shape
-arr4 = np.array([[1,2,3],
+#4.Create an array using `arange()` from 1 to 10.
+arr4 = np.arange(1,11)
+print("4.array from 1 to 10:",arr4)
+
+#5. check shape
+arr5 = np.array([[1,2,3],
                 [4,5,6]])
-print("4.shape of array:",arr4.shape)
+print("5.shape of array:",arr5.shape)
 
-#5. slicing
+#6. slicing
 
-arr5 = np.array([10,25,45,85,46,96,12])
-print("5.slice array:",arr5[3:6])
+arr6 = np.array([10,25,45,85,46,96,12])
+print("6.slice array:",arr6[3:6])
 
-#6. datatype
-arr6 = np.array([1,2,3,4,5])
-print("6.data type of array:",arr6.dtype)
+#7. datatype
+arr7 = np.array([1,2,3,4,5])
+print("7.data type of array:",arr7.dtype)
