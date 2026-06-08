@@ -24,10 +24,14 @@ print(arr3.ndim)
 
 #4. check shape
 arr4 = np.array([[1,2,3],
-                 [4,5,6]])
+                [4,5,6]])
 print("4.shape of array:",arr4.shape)
 
 #5. slicing
 
 arr5 = np.array([10,25,45,85,46,96,12])
 print("5.slice array:",arr5[3:6])
+
+#6. datatype
+arr6 = np.array([1,2,3,4,5])
+print("6.data type of array:",arr6.dtype)
