@@ -1,6 +1,7 @@
+#2.Create a DataFrame from a dictionary.
+
 import pandas as pd
 
-#2.Create a DataFrame from a dictionary.
 
 a = {
     'car': ['BMW', 'Audi', 'Mercedes'],
