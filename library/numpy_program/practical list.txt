@@ -1,0 +1,104 @@
+
+# 🟢 BASIC LEVEL PRACTICAL QUESTIONS
+
+1. Create a NumPy array from a Python list.
+2. Create a 1D array with values from 1 to 10.
+3. Create a 2D array (3×3) with all zeros.
+4. Create a 2D array (4×4) with all ones.
+5. Create an identity matrix of size 5×5.
+6. Create an array using `arange()` from 1 to 20.
+7. Create an array using `linspace()` between 1 and 50 (10 values).
+8. Find the shape of a given array.
+9. Find the number of elements in an array.
+10. Find the data type of array elements.
+
+---
+
+# 🟡 INDEXING & SLICING PRACTICAL QUESTIONS
+
+11. Print the first element of an array.
+12. Print the last element of an array.
+13. Extract elements from index 2 to 6.
+14. Reverse a NumPy array.
+15. Extract even-indexed elements.
+16. Print a specific element from a 2D array.
+17. Extract a row from a 2D array.
+18. Extract a column from a 2D array.
+19. Slice a sub-matrix from a 3×3 matrix.
+20. Replace a specific element in an array.
+
+---
+
+# 🟡 MATHEMATICAL OPERATIONS PRACTICAL QUESTIONS
+
+21. Add two NumPy arrays.
+22. Subtract two arrays.
+
+
+---
+
+# 🟡 STATISTICS PRACTICAL QUESTIONS
+
+31. Find sum of all elements in array.
+32. Find mean of array.
+33. Find median of array.
+34. Find standard deviation.
+35. Find variance.
+36. Find minimum value.
+37. Find maximum value.
+38. Find index of min value.
+39. Find index of max value.
+40. Sort an array in ascending order.
+
+
+
+# 🔵 ADVANCED PRACTICAL QUESTIONS
+
+51. Perform matrix multiplication.
+52. Find determinant of a matrix.
+53. Find inverse of a matrix.
+54. Solve a system of linear equations.
+55. Find dot product of two vectors.
+56. Generate random numbers between 1 and 100.
+57. Generate a 5×5 random matrix.
+58. Normalize an array (0 to 1 scaling).
+59. Filter elements greater than 50.
+60. Replace all values > 30 with 0.
+
+
+Project 1: Student Marks Analysis
+Tasks:
+Store marks in array
+Calculate average
+Find highest score
+Find lowest score
+Rank students
+
+Project 2: Sales Analysis
+Tasks:
+Monthly sales array
+Total sales
+Average sales
+Best month
+Worst month
+
+Project 3: Weather Analysis
+Tasks:
+Daily temperature array
+Average temperature
+Maximum temperature
+Minimum temperature
+
+
+Project 4: Matrix Calculator
+Tasks:
+Matrix addition
+Subtraction
+Multiplication
+Determinant
+
+
+
+
+
+
