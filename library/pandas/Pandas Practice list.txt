@@ -34,6 +34,7 @@ Beginner
 
 Project 1: Student Management System
 Tasks
+
 Create student DataFrame.
 Add marks.
 Calculate average marks.

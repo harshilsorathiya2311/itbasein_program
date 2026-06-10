@@ -1,10 +1,8 @@
-#2.Create a DataFrame from a dictionary.
-
+#Access a row using iloc[].
 import pandas as pd
 a = {
     'car': ['BMW', 'Audi', 'Mercedes'],
     'model': [2009, 2010, 2011]
 }
-
 df = pd.DataFrame(a)
-print(df)
+print(df.iloc[1])
