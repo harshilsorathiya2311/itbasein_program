@@ -39,3 +39,7 @@ print("6.slice array:",arr6[3:6])
 #7. datatype
 arr7 = np.array([1,2,3,4,5])
 print("7.data type of array:",arr7.dtype)
+
+#8.Create an array using `linspace()` between 1 and 50 (10 values).
+arr8 = np.linspace(1,50)
+print("8.array using linspace:",arr8)
