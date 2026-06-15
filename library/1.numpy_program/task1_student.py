@@ -9,10 +9,11 @@ print("marks",marks)
 average = np.mean(marks)
 print("average marks:", average)
 
-# Calculate highest and lowest marks
+# Calculate highest marks
 highest =np.max(marks)
 print("highest marks:",highest)
 
+# Calculate lowest marks
 lowest = np.min(marks)
 print("lowest marks:", lowest)
 

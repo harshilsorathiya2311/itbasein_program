@@ -3,7 +3,6 @@
 2. Create a 1D array with values from 1 to 10.
 3. Create a 2D array (3×3) with all zeros.
 4. Create a 2D array (4×4) with all ones.
-5. Create an identity matrix of size 5×5.
 6. Create an array using `arange()` from 1 to 10.
 7. Find the shape of a given array.
 8.. Find the number of elements in an array.
@@ -16,7 +15,7 @@ Store marks in array
 Calculate average
 Find highest score
 Find lowest score
-Rank students
+
 
 Project 2: Sales Analysis
 Tasks:
@@ -79,19 +78,6 @@ Determinant
 40. Sort an array in ascending order.
 
 
-
-# 🔵 ADVANCED PRACTICAL QUESTIONS
-
-51. Perform matrix multiplication.
-52. Find determinant of a matrix.
-53. Find inverse of a matrix.
-54. Solve a system of linear equations.
-55. Find dot product of two vectors.
-56. Generate random numbers between 1 and 100.
-57. Generate a 5×5 random matrix.
-58. Normalize an array (0 to 1 scaling).
-59. Filter elements greater than 50.
-60. Replace all values > 30 with 0.
 
 
 
