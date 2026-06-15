@@ -33,7 +33,6 @@ Beginner
 # Pandas Mini Projects
 
 Project 1: Student Management System
-Tasks
 
 Create student DataFrame.
 Add marks.
@@ -43,7 +42,6 @@ Filter failed students.
 Export report to CSV.
 
 Project 2: Employee Management System
-Tasks
 Store employee details.
 Calculate average salary.
 Department-wise salary analysis.
@@ -59,22 +57,7 @@ Find best-selling product.
 Create pivot table.
 Generate charts.
 
-Project 4: COVID-19 Data Analysis
-Tasks
-Load dataset.
-Clean missing values.
-Calculate total cases.
-Find highest affected region.
-Create trend charts.
-Generate summary report.
 
-Project 5: E-Commerce Analysis
-Tasks
-Analyze orders.
-Calculate revenue.
-Find top customers.
-Find top-selling products.
-Monthly sales trends.
-Customer segmentation.
+
 
 
