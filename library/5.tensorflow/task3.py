@@ -1,4 +1,3 @@
-
 import tensorflow as tf
 #Task 3: Create a Tensor from a List
 
