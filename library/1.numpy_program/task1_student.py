@@ -2,7 +2,7 @@
 import numpy as np
 
 #store marks in array
-marks = np.array([50, 75, 85, 90, 60])
+marks = np.array([50, 75, 31, 90, 60])
 print("marks",marks)
 
 # Calculate average marks
@@ -16,4 +16,8 @@ print("highest marks:",highest)
 # Calculate lowest marks
 lowest = np.min(marks)
 print("lowest marks:", lowest)
+
+#pass or fail
+pass_fail = np.where(marks >= 33, "pass", "fail")
+print("pass or fail:", pass_fail)
 
