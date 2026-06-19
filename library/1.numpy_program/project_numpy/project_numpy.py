@@ -2,7 +2,7 @@ import numpy as np
 
 #1. Store student names and marks.
 names = np.array(['fenil','harshil','bhavy','viral','meet'])
-marks = np.array([95,40,90,70,30])
+marks = np.array([95,70,90,70,30])
 
 print("student names:", names)
 print("student marks:", marks)
@@ -11,6 +11,7 @@ print("student marks:", marks)
 
 average = np.mean(marks)
 print("average marks:", average)
+
 
 #3. Calculate highest marks.
 highestmarks = np.max(marks)
@@ -35,7 +36,7 @@ print(pass_student)
 #grade
 def calculate_grade(mark):
     if mark >= 90:
-        return "A"
+        return "a"
     elif mark >= 80:
         return "b"
     elif mark >= 70:
@@ -47,6 +48,8 @@ def calculate_grade(mark):
     else:
         return "f"
     
+
+# print(calculate_grade(90))
 
 # Calculate grades for all students
 grades = [calculate_grade(mark) for mark in marks]

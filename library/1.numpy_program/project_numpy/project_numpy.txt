@@ -40,13 +40,9 @@
 25. Histogram of mark distribution.
 26. Line graph of marks.
 
----
 
 ### 💾 File Handling
 
 27. Read student data from a CSV file.
 28. Save results to a CSV file.
 29. Generate a report card file.
-
-
-

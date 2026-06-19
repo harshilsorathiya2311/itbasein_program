@@ -1,4 +1,4 @@
-#3.Display the first 5 rows of a DataFrame
+#3.Display the first 3 rows of a DataFrame
 
 import pandas as pd
 
