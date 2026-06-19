@@ -1,0 +1,52 @@
+
+### 📊 Basic Features
+
+1. Store student names and marks.
+2. Calculate:
+
+   * Average marks
+   * Highest marks
+   * Lowest marks
+   * Total marks
+3. Count:
+
+   * Passed students
+   * Failed students
+
+---
+
+### 📈 Statistical Analysis
+
+4. Find Median marks.
+8. Find Range (Max - Min).
+
+--
+
+### 🎯 Grade Calculator
+
+13. Assign grades automatically:
+
+* A: 90+
+* B: 80–89
+* C: 70–79
+* D: 60–69
+* F: Below 60
+
+
+### 📊 Data Visualization (Matplotlib)
+
+23. Bar chart of student marks.
+24. Pie chart of grades.
+25. Histogram of mark distribution.
+26. Line graph of marks.
+
+---
+
+### 💾 File Handling
+
+27. Read student data from a CSV file.
+28. Save results to a CSV file.
+29. Generate a report card file.
+
+
+

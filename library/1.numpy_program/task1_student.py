@@ -14,7 +14,7 @@ highest =np.max(marks)
 print("highest marks:",highest)
 
 # Calculate lowest marks
-lowest = np.min(marks)
+lowest = np.min(marks)  
 print("lowest marks:", lowest)
 
 #pass or fail

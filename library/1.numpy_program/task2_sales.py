@@ -11,7 +11,6 @@ print("total sales:", total_sales)
 average_sales = np.mean(sales)
 print("average sales:",average_sales)
 
-
 # Calculate highest 
 highest_sales =np.max(sales)
 print("highest sales:", highest_sales)
