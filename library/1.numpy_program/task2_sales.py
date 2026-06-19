@@ -1,4 +1,4 @@
-# Project 2: Sales Analysis
+#roject 2: Sales Analysis
 import numpy as np
 sales = np.array([2500, 3000, 1500, 4000, 3500])
 print("sales", sales)
