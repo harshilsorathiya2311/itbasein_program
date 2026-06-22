@@ -8,7 +8,8 @@
    * Highest marks
    * Lowest marks
    * Total marks
-3. Count:
+
+3.pass or Failed
 
    * Passed students
    * Failed students
@@ -18,7 +19,7 @@
 ### 📈 Statistical Analysis
 
 4. Find Median marks.
-8. Find Range (Max - Min).
+8. Find  (Max - Min).
 
 --
 

@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 #1. Store student names and marks.
 names = np.array(['fenil','harshil','bhavy','viral','meet'])
@@ -55,3 +56,11 @@ def calculate_grade(mark):
 grades = [calculate_grade(mark) for mark in marks]
 
 print(grades)
+
+
+# #show student marks in graph
+
+# plt.bar(names, marks)
+# plt.xlabel("students")
+# plt.ylabel("Total Marks")
+# plt.show()
