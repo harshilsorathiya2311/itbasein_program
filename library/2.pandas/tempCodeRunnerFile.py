@@ -1,7 +1,27 @@
-#Select a single column.
 import pandas as pd
-data = {'Name': ['harshil', 'meet', 'fenil', 'viral', 'bhavy'],
-        'Age': [25, 30, 35, 40, 45],    
-        'City': ['Nikol', 'hirawadi', 'india colony', 'naroda', 'sbr']}
-df = pd.DataFrame(data)
-print(df['Name'])
+
+# create student dataframe
+students = pd.DataFrame({
+    "student_id": [101, 102, 103, 104, 105],
+    "name": ["amit", "riya", "karan", "priya", "rahul"],
+    "marks": [85, 92, 45, 78, 35]
+})
+
+# display student data
+print("student data:")
+print(students)
+
+#avrage
+avrage = students['marks'].mean()
+print("student avrage:")
+print(avrage)
+
+#min marks
+min = students['marks'].min()
+print("student min:")
+print(min)
+
+#max marks
+max = students['marks'].max()
+print("student max:")
+print(max)
