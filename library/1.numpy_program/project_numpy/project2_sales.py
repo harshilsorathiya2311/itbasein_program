@@ -31,5 +31,9 @@ print("lowest sales:", lowest_sales)
 best_product = products[np.argmax(sales)]
 print("besst_selling_product:", best_product)
 
+#lowest selling product
+lowest_product = products[np.argmin(sales)]
+print("lowest_selling:", lowest_product)
+
 # plt.plot(products,sales)
 # plt.show()
