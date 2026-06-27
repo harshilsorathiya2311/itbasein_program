@@ -1,28 +1,28 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-#1. Store student names and marks.
+#1. store student names and marks.
 names = np.array(['fenil','harshil','bhavy','viral','meet'])
 marks = np.array([95,70,90,70,30])
 
 print("student names:", names)
 print("student marks:", marks)
 
-#2. Calculate average marks.
+#2. calculate average marks.
 
 average = np.mean(marks)
 print("average marks:", average)
 
 
-#3. Calculate highest marks.
+#3. calculate highest marks.
 highestmarks = np.max(marks)
 print("highest marks:", highestmarks)
 
-#4. Calculate lowest marks.
+#4. calculate lowest marks.
 lowestmarks = np.min(marks)
 print("lowest marks:", lowestmarks)
 
-#5. Calculate total marks.
+#5. calculate total marks.
 totalmarks = np.sum(marks)
 print("total marks:", totalmarks)
 
@@ -30,9 +30,6 @@ print("total marks:", totalmarks)
 median_student = np.median(marks)
 print("median:", median_student)
 
-#6. pass student
-pass_student = np.where(marks >= 33, "pass", "fail")
-print(pass_student)
 
 #grade
 def calculate_grade(mark):
