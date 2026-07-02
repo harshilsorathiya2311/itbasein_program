@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% block title %}Browse Cars - YourDrive{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <h2 class="mb-4"><i class="bi bi-grid"></i> Browse Cars</h2>
+
+    <!-- Search & Filter -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    {{ form.query }}
+                </div>
+                <div class="col-md-2">
+                    {{ form.brand }}
+                </div>
+                <div class="col-md-2">
+                    {{ form.fuel_type }}
+                </div>
+                <div class="col-md-2">
+                    {{ form.transmission }}
+                </div>
+                <div class="col-md-1">
+                    {{ form.seats }}
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100"><i class="bi bi-search"></i> Search</button>
+                </div>
+            </form>
+            <div class="row mt-2">
+                <div class="col-md-3">
+                    {{ form.min_price }}
+                </div>
+                <div class="col-md-3">
+                    {{ form.max_price }}
+                </div>
+                <div class="col-md-6">
+                    <a href="{% url 'car_list' %}" class="btn btn-outline-secondary btn-sm">Clear Filters</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        {% for car in cars %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm border-0">
+                {% if car.image %}
+                <img src="{{ car.image.url }}" class="card-img-top" alt="{{ car }}" style="height: 200px; object-fit: cover;">
+                {% else %}
+                <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                    <i class="bi bi-car-front text-muted" style="font-size: 4rem;"></i>
+                </div>
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ car.brand.name }} {{ car.name }}</h5>
+                    <div class="mb-2">
+                        <span class="badge bg-primary">{{ car.fuel_type }}</span>
+                        <span class="badge bg-secondary">{{ car.transmission }}</span>
+                        <span class="badge bg-info">{{ car.seats }} seats</span>
+                    </div>
+                    <p class="h5 text-primary">₹ {{ car.price|floatformat:2 }}</p>
+                    <p class="text-muted small mb-1">{{ car.model_year }} &bull; {{ car.mileage }} kmpl</p>
+                    {% if car.engine_cc %}<p class="text-muted small mb-1">{{ car.engine_cc }} cc</p>{% endif %}
+                    <p class="text-truncate small">{{ car.description|default:"No description" }}</p>
+                </div>
+                <div class="card-footer bg-white border-0">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'car_detail' car.pk %}" class="btn btn-outline-primary btn-sm">View Details</a>
+                        <a href="{% url 'book_test_drive' car.pk %}" class="btn btn-primary btn-sm">Book Test Drive</a>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input compare-check" value="{{ car.pk }}"
+                                   onchange="updateCompare()">
+                            <label class="form-check-label small">Compare</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <i class="bi bi-car-front text-muted" style="font-size: 4rem;"></i>
+            <h4 class="text-muted mt-3">No cars found</h4>
+            <p>Try adjusting your search filters.</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Compare Button -->
+    <div id="compareBar" class="fixed-bottom bg-dark text-white p-3 text-center d-none">
+        <span id="compareCount">0</span> car(s) selected
+        <button class="btn btn-warning ms-3" onclick="compareSelected()">Compare Now</button>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function updateCompare() {
+    const checks = document.querySelectorAll('.compare-check:checked');
+    const bar = document.getElementById('compareBar');
+    const count = document.getElementById('compareCount');
+    count.textContent = checks.length;
+    bar.classList.toggle('d-none', checks.length < 2);
+}
+
+function compareSelected() {
+    const checks = document.querySelectorAll('.compare-check:checked');
+    const ids = Array.from(checks).map(c => c.value);
+    if (ids.length >= 2) {
+        window.location.href = "{% url 'compare_cars' %}?ids=" + ids.join('&ids=');
+    }
+}
+</script>
+{% endblock %}

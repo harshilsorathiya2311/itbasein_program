@@ -1,0 +1,10 @@
+Django>=6.0
+psycopg2-binary
+numpy
+pandas
+matplotlib
+scikit-learn
+python-dotenv
+openai
+djangorestframework
+pillow

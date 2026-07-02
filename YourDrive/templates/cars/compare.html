@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}Compare Cars - YourDrive{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <h2 class="mb-4"><i class="bi bi-arrow-left-right"></i> Compare Cars</h2>
+
+    {% if cars %}
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th style="width: 150px;">Feature</th>
+                    {% for car in cars %}
+                    <th class="text-center">{{ car.brand.name }} {{ car.name }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Image</strong></td>
+                    {% for car in cars %}
+                    <td class="text-center">
+                        {% if car.image %}
+                        <img src="{{ car.image.url }}" style="height: 120px; object-fit: cover;" class="img-thumbnail">
+                        {% else %}
+                        <i class="bi bi-car-front" style="font-size: 3rem;"></i>
+                        {% endif %}
+                    </td>
+                    {% endfor %}
+                </tr>
+                <tr><td><strong>Price</strong></td>{% for car in cars %}<td class="text-center text-primary fw-bold">₹ {{ car.price|floatformat:2 }}</td>{% endfor %}</tr>
+                <tr><td><strong>Fuel Type</strong></td>{% for car in cars %}<td class="text-center">{{ car.fuel_type }}</td>{% endfor %}</tr>
+                <tr><td><strong>Transmission</strong></td>{% for car in cars %}<td class="text-center">{{ car.transmission }}</td>{% endfor %}</tr>
+                <tr><td><strong>Seats</strong></td>{% for car in cars %}<td class="text-center">{{ car.seats }}</td>{% endfor %}</tr>
+                <tr><td><strong>Mileage</strong></td>{% for car in cars %}<td class="text-center">{{ car.mileage }} kmpl</td>{% endfor %}</tr>
+                <tr><td><strong>Engine</strong></td>{% for car in cars %}<td class="text-center">{{ car.engine_cc|default:"N/A" }} cc</td>{% endfor %}</tr>
+                <tr><td><strong>Horsepower</strong></td>{% for car in cars %}<td class="text-center">{{ car.horsepower|default:"N/A" }} bhp</td>{% endfor %}</tr>
+                <tr><td><strong>Year</strong></td>{% for car in cars %}<td class="text-center">{{ car.model_year }}</td>{% endfor %}</tr>
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <i class="bi bi-arrow-left-right text-muted" style="font-size: 4rem;"></i>
+        <h4 class="text-muted mt-3">Select at least 2 cars to compare</h4>
+        <a href="{% url 'car_list' %}" class="btn btn-primary mt-3">Browse Cars</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Home - YourDrive{% endblock %}
+
+{% block content %}
+<div class="hero-section bg-primary text-white py-5">
+    <div class="container text-center">
+        <h1 class="display-4 fw-bold">Find Your Perfect Drive</h1>
+        <p class="lead">Browse, compare, and book test drives for the best cars from top brands.</p>
+        <div class="mt-4">
+            <a href="{% url 'car_list' %}" class="btn btn-light btn-lg me-2">Browse Cars</a>
+            <a href="{% url 'recommendations' %}" class="btn btn-outline-light btn-lg">Get Recommendations</a>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Section -->
+<div class="container mt-4">
+    <div class="row text-center">
+        <div class="col-md-4 mb-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h3 class="text-primary">{{ total_cars }}+</h3>
+                    <p class="text-muted mb-0">Cars Available</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h3 class="text-success">{{ brands.count }}+</h3>
+                    <p class="text-muted mb-0">Car Brands</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h3 class="text-info">{{ total_bookings }}+</h3>
+                    <p class="text-muted mb-0">Test Drives Booked</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Brands -->
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Browse by Brand</h2>
+    <div class="row justify-content-center">
+        {% for brand in brands %}
+        <div class="col-md-3 col-6 mb-3">
+            <div class="card border-0 shadow-sm text-center h-100">
+                <div class="card-body d-flex align-items-center justify-content-center">
+                    <div>
+                        {% if brand.logo %}
+                        <img src="{{ brand.logo.url }}" alt="{{ brand.name }}" class="mb-2" style="max-height: 60px;">
+                        {% endif %}
+                        <h5 class="mb-0">{{ brand.name }}</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-center text-muted">No brands added yet.</p>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Featured Cars -->
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Featured Cars</h2>
+    <div class="row">
+        {% for car in featured_cars %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm border-0">
+                {% if car.image %}
+                <img src="{{ car.image.url }}" class="card-img-top" alt="{{ car }}" style="height: 200px; object-fit: cover;">
+                {% else %}
+                <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                    <i class="bi bi-car-front text-muted" style="font-size: 4rem;"></i>
+                </div>
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ car.brand.name }} {{ car.name }}</h5>
+                    <p class="card-text">
+                        <span class="badge bg-primary">{{ car.fuel_type }}</span>
+                        <span class="badge bg-secondary">{{ car.transmission }}</span>
+                    </p>
+                    <p class="h5 text-primary">₹ {{ car.price|floatformat:2 }}</p>
+                    <p class="text-muted small">{{ car.mileage }} kmpl &bull; {{ car.seats }} seats</p>
+                </div>
+                <div class="card-footer bg-white border-0">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'car_detail' car.pk %}" class="btn btn-outline-primary btn-sm">View Details</a>
+                        <a href="{% url 'book_test_drive' car.pk %}" class="btn btn-primary btn-sm">Book Test Drive</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center">
+            <p class="text-muted">No cars available yet.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- AI Chat Assistant -->
+<div class="container mt-5 mb-5">
+    <div class="card border-primary shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-robot"></i> AI Car Assistant</h5>
+        </div>
+        <div class="card-body">
+            <p class="text-muted">Ask me about car recommendations! (e.g., "Suggest a car under 15 lakh with good mileage")</p>
+            <div class="mb-3" id="chatMessages" style="max-height: 200px; overflow-y: auto; background: #f8f9fa; padding: 10px; border-radius: 5px;">
+                <div class="text-muted text-center">Start a conversation below...</div>
+            </div>
+            <div class="input-group">
+                <input type="text" id="chatInput" class="form-control" placeholder="Ask about cars...">
+                <button class="btn btn-primary" onclick="sendChatMessage()">Send</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function sendChatMessage() {
+    const input = document.getElementById('chatInput');
+    const message = input.value.trim();
+    if (!message) return;
+
+    const messagesDiv = document.getElementById('chatMessages');
+    messagesDiv.innerHTML += `<div class="text-end mb-2"><span class="badge bg-primary">You: ${message}</span></div>`;
+    messagesDiv.innerHTML += `<div class="text-start mb-2"><em class="text-muted">Thinking...</em></div>`;
+    input.value = '';
+
+    fetch('{% url "openai_chat" %}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({ message: message })
+    })
+    .then(res => res.json())
+    .then(data => {
+        messagesDiv.innerHTML = messagesDiv.innerHTML.replace(
+            '<div class="text-start mb-2"><em class="text-muted">Thinking...</em></div>',
+            `<div class="text-start mb-2"><span class="badge bg-success">Assistant: ${data.reply}</span></div>`
+        );
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    })
+    .catch(err => {
+        messagesDiv.innerHTML = messagesDiv.innerHTML.replace(
+            '<div class="text-start mb-2"><em class="text-muted">Thinking...</em></div>',
+            '<div class="text-start mb-2"><span class="badge bg-danger">Error: Could not get response</span></div>'
+        );
+    });
+}
+</script>
+{% endblock %}
