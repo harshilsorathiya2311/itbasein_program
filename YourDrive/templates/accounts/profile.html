@@ -2,39 +2,45 @@
 {% block title %}Profile - YourDrive{% endblock %}
 {% block content %}
 <div class="container py-4">
-    <h2 class="mb-4"><i class="bi bi-person-gear"></i> My Profile</h2>
-    <div class="row">
-        <div class="col-md-6 mb-4">
-            <div class="card shadow-sm">
-                <div class="card-header"><h5 class="mb-0">Personal Information</h5></div>
-                <div class="card-body">
+    <h2 class="fw-bold mb-1"><i class="bi bi-person-gear me-2"></i>My Profile</h2>
+    <p class="text-muted mb-4">Manage your account and preferences</p>
+
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-header py-3">
+                    <h5 class="mb-0"><i class="bi bi-person me-2"></i>Personal Information</h5>
+                </div>
+                <div class="card-body p-4">
                     <form method="post">
                         {% csrf_token %}
                         {% for field in user_form %}
                         <div class="mb-3">
-                            <label class="form-label">{{ field.label }}</label>
+                            <label class="form-label fw-semibold">{{ field.label }}</label>
                             {{ field }}
-                            {% if field.errors %}<div class="text-danger small">{{ field.errors|striptags }}</div>{% endif %}
+                            {% if field.errors %}<div class="text-danger small mt-1">{{ field.errors|striptags }}</div>{% endif %}
                         </div>
                         {% endfor %}
-                        <button type="submit" class="btn btn-primary w-100">Update Profile</button>
+                        <button type="submit" class="btn btn-primary w-100 py-2"><i class="bi bi-check-lg me-2"></i>Update Profile</button>
                     </form>
                 </div>
             </div>
         </div>
-        <div class="col-md-6 mb-4">
-            <div class="card shadow-sm">
-                <div class="card-header"><h5 class="mb-0">Car Preferences</h5></div>
-                <div class="card-body">
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-header py-3">
+                    <h5 class="mb-0"><i class="bi bi-sliders me-2"></i>Car Preferences</h5>
+                </div>
+                <div class="card-body p-4">
                     <form method="post">
                         {% csrf_token %}
                         {% for field in pref_form %}
                         <div class="mb-3">
-                            <label class="form-label">{{ field.label }}</label>
+                            <label class="form-label fw-semibold">{{ field.label }}</label>
                             {{ field }}
                         </div>
                         {% endfor %}
-                        <button type="submit" class="btn btn-success w-100">Save Preferences</button>
+                        <button type="submit" class="btn btn-accent w-100 py-2"><i class="bi bi-save me-2"></i>Save Preferences</button>
                     </form>
                 </div>
             </div>

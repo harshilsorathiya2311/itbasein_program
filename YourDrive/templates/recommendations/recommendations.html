@@ -59,6 +59,9 @@
                     <span class="badge bg-light text-dark">{{ item.confidence }}% confidence</span>
                 </div>
                 <div class="card-body">
+                    {% if item.car.image %}
+                    <img src="{{ item.car.image.url }}" class="card-img-top mb-3" alt="{{ item.car }}" style="height: 160px; object-fit: cover; border-radius: 8px;">
+                    {% endif %}
                     <h5 class="card-title">{{ item.car.brand.name }} {{ item.car.name }}</h5>
                     <p class="h4 text-primary">₹ {{ item.price|floatformat:2 }}</p>
                     <p>

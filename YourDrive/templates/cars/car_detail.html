@@ -4,76 +4,114 @@
 <div class="container py-4">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{% url 'car_list' %}">Cars</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'car_list' %}"><i class="bi bi-grid me-1"></i>Cars</a></li>
             <li class="breadcrumb-item active">{{ car.brand.name }} {{ car.name }}</li>
         </ol>
     </nav>
 
-    <div class="row">
-        <div class="col-md-6 mb-4">
-            {% if car.image %}
-            <img src="{{ car.image.url }}" class="img-fluid rounded shadow" alt="{{ car }}" style="width: 100%; max-height: 400px; object-fit: cover;">
-            {% else %}
-            <div class="bg-light rounded d-flex align-items-center justify-content-center" style="height: 400px;">
-                <i class="bi bi-car-front text-muted" style="font-size: 6rem;"></i>
-            </div>
-            {% endif %}
-        </div>
-        <div class="col-md-6">
-            <h2>{{ car.brand.name }} {{ car.name }} <span class="badge bg-secondary">{{ car.model_year }}</span></h2>
-            <p class="h3 text-primary mb-3">₹ {{ car.price|floatformat:2 }}</p>
-
-            <div class="mb-3">
-                <span class="badge bg-primary fs-6">{{ car.fuel_type }}</span>
-                <span class="badge bg-secondary fs-6">{{ car.transmission }}</span>
-                <span class="badge bg-info fs-6">{{ car.seats }} Seats</span>
-                {% if car.is_available %}
-                <span class="badge bg-success fs-6">Available</span>
+    <div class="row g-4">
+        <!-- Image -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                {% if car.image %}
+                <img src="{{ car.image.url }}" class="w-100" alt="{{ car }}" style="height:420px;object-fit:cover;">
                 {% else %}
-                <span class="badge bg-danger fs-6">Unavailable</span>
+                <div class="bg-light d-flex align-items-center justify-content-center" style="height:420px;">
+                    <i class="bi bi-car-front text-muted" style="font-size:6rem;"></i>
+                </div>
                 {% endif %}
             </div>
+        </div>
 
-            <table class="table table-bordered">
-                <tr><th>Mileage</th><td>{{ car.mileage }} kmpl</td></tr>
-                {% if car.engine_cc %}<tr><th>Engine</th><td>{{ car.engine_cc }} cc</td></tr>{% endif %}
-                {% if car.horsepower %}<tr><th>Horsepower</th><td>{{ car.horsepower }} bhp</td></tr>{% endif %}
-                <tr><th>Color</th><td>{{ car.color|default:"N/A" }}</td></tr>
-            </table>
+        <!-- Info -->
+        <div class="col-lg-6">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <div>
+                    <h2 class="fw-bold mb-1">{{ car.brand.name }} {{ car.name }}</h2>
+                    <span class="badge bg-secondary fs-6">{{ car.model_year }}</span>
+                </div>
+                {% if car.is_available %}
+                <span class="badge bg-success fs-6 px-3 py-2">Available</span>
+                {% else %}
+                <span class="badge bg-danger fs-6 px-3 py-2">Unavailable</span>
+                {% endif %}
+            </div>
+            <p class="h2 fw-bold mb-4" style="color:var(--accent);">₹ {{ car.price|floatformat:2 }}</p>
+
+            <div class="d-flex flex-wrap gap-2 mb-4">
+                <span class="badge bg-primary fs-6 px-3 py-2">{{ car.fuel_type }}</span>
+                <span class="badge bg-secondary fs-6 px-3 py-2">{{ car.transmission }}</span>
+                <span class="badge bg-info fs-6 px-3 py-2">{{ car.seats }} Seats</span>
+            </div>
+
+            <div class="card border-0 bg-light rounded-4 p-4 mb-4">
+                <div class="row g-3">
+                    <div class="col-6">
+                        <small class="text-muted d-block">Mileage</small>
+                        <strong>{{ car.mileage }} kmpl</strong>
+                    </div>
+                    {% if car.engine_cc %}
+                    <div class="col-6">
+                        <small class="text-muted d-block">Engine</small>
+                        <strong>{{ car.engine_cc }} cc</strong>
+                    </div>
+                    {% endif %}
+                    {% if car.horsepower %}
+                    <div class="col-6">
+                        <small class="text-muted d-block">Horsepower</small>
+                        <strong>{{ car.horsepower }} bhp</strong>
+                    </div>
+                    {% endif %}
+                    <div class="col-6">
+                        <small class="text-muted d-block">Color</small>
+                        <strong>{{ car.color|default:"N/A" }}</strong>
+                    </div>
+                </div>
+            </div>
 
             {% if car.description %}
-            <h5>Description</h5>
-            <p>{{ car.description }}</p>
+            <h5 class="fw-bold mb-2">Description</h5>
+            <p class="text-muted">{{ car.description }}</p>
             {% endif %}
 
             {% if car.features %}
-            <h5>Features</h5>
-            <ul>
+            <h5 class="fw-bold mb-2 mt-3">Features</h5>
+            <div class="row">
                 {% for feature in car.feature_list %}
-                <li>{{ feature }}</li>
+                <div class="col-6 mb-1">
+                    <i class="bi bi-check-circle-fill text-success me-1 small"></i>{{ feature }}
+                </div>
                 {% endfor %}
-            </ul>
+            </div>
             {% endif %}
 
-            <div class="d-grid gap-2 mt-4">
-                <a href="{% url 'book_test_drive' car.pk %}" class="btn btn-primary btn-lg">Book Test Drive</a>
-                <a href="{% url 'car_list' %}" class="btn btn-outline-secondary">Back to List</a>
+            <div class="d-grid gap-3 mt-4">
+                <a href="{% url 'book_test_drive' car.pk %}" class="btn btn-primary btn-lg py-3"><i class="bi bi-calendar-check me-2"></i>Book a Test Drive</a>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'car_list' %}" class="btn btn-outline-secondary flex-grow-1"><i class="bi bi-arrow-left me-2"></i>Back to List</a>
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- Similar Cars -->
     {% if similar_cars %}
-    <h3 class="mt-5 mb-3">Similar Cars</h3>
-    <div class="row">
+    <h3 class="fw-bold mt-5 mb-4">Similar Cars</h3>
+    <div class="row g-3">
         {% for sc in similar_cars %}
-        <div class="col-md-3 mb-3">
-            <div class="card h-100 shadow-sm">
-                <div class="card-body">
-                    <h6>{{ sc.brand.name }} {{ sc.name }}</h6>
-                    <p class="text-primary mb-0">₹ {{ sc.price|floatformat:2 }}</p>
-                    <a href="{% url 'car_detail' sc.pk %}" class="stretched-link"></a>
+        <div class="col-lg-3 col-md-6">
+            <a href="{% url 'car_detail' sc.pk %}" class="text-decoration-none">
+                <div class="similar-car-card card h-100">
+                    {% if sc.image %}
+                    <img src="{{ sc.image.url }}" class="card-img-top" alt="{{ sc }}" style="height:140px;object-fit:cover;">
+                    {% endif %}
+                    <div class="card-body">
+                        <h6 class="fw-bold text-dark mb-1">{{ sc.brand.name }} {{ sc.name }}</h6>
+                        <p class="text-primary fw-bold mb-0">₹ {{ sc.price|floatformat:2 }}</p>
+                        <small class="text-muted">{{ sc.fuel_type }} &bull; {{ sc.transmission }}</small>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
         {% endfor %}
     </div>
