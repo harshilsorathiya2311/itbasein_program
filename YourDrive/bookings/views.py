@@ -13,22 +13,21 @@ def book_test_drive(request, car_id=None):
     if car_id:
         car = get_object_or_404(Car, pk=car_id)
 
-    if request.method == 'POST':
-        form = BookingForm(request.POST)
-        if form.is_valid():
-            booking = form.save(commit=False)
-            booking.user = request.user
-            booking.save()
-            UserBehavior.objects.create(
-                user=request.user, car=booking.car, action='book'
-            )
-            messages.success(request, f'Test drive booked for {booking.car}! Awaiting approval.')
-            return redirect('my_bookings')
-    else:
-        initial = {'car': car.pk if car else None}
-        form = BookingForm(initial=initial)
-        if car:
-            form.fields['car'].queryset = Car.objects.filter(pk=car.pk)
+    initial = {'car': car.pk if car else None}
+    form = BookingForm(request.POST or None, initial=initial)
+
+    if request.method == 'POST' and form.is_valid():
+        booking = form.save(commit=False)
+        booking.user = request.user
+        booking.save()
+        UserBehavior.objects.create(
+            user=request.user, car=booking.car, action='book'
+        )
+        messages.success(request, f'Test drive booked for {booking.car}! Awaiting approval.')
+        return redirect('my_bookings')
+
+    if car:
+        form.fields['car'].queryset = Car.objects.filter(pk=car.pk)
 
     return render(request, 'bookings/booking_form.html', {
         'form': form,
