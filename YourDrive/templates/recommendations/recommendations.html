@@ -2,22 +2,24 @@
 {% block title %}Car Recommendations - YourDrive{% endblock %}
 {% block content %}
 <div class="container py-4">
-    <h2 class="mb-4"><i class="bi bi-star"></i> AI-Powered Car Recommendations</h2>
+    <h2 class="fw-bold mb-1"><i class="bi bi-magic me-2"></i>AI-Powered Recommendations</h2>
+    <p class="text-muted mb-4">Get personalized car suggestions based on your preferences</p>
 
-    <div class="card shadow-sm mb-4">
+    <!-- Filters -->
+    <div class="filter-card card mb-4">
         <div class="card-body">
             <form method="get" class="row g-3">
-                <div class="col-md-3">
+                <div class="col-lg-3 col-md-6">
                     <label class="form-label">Budget (max ₹)</label>
                     <input type="number" name="budget" class="form-control" value="{{ budget|default:'' }}" placeholder="e.g. 1500000">
                 </div>
-                <div class="col-md-3">
+                <div class="col-lg-3 col-md-6">
                     <label class="form-label">Preferred Brand</label>
                     <input type="text" name="brand" class="form-control" placeholder="e.g. Toyota" value="{{ request.GET.brand }}">
                 </div>
-                <div class="col-md-2">
+                <div class="col-lg-2 col-md-6">
                     <label class="form-label">Fuel Type</label>
-                    <select name="fuel" class="form-control">
+                    <select name="fuel" class="form-select">
                         <option value="">Any</option>
                         <option value="Petrol" {% if request.GET.fuel == 'Petrol' %}selected{% endif %}>Petrol</option>
                         <option value="Diesel" {% if request.GET.fuel == 'Diesel' %}selected{% endif %}>Diesel</option>
@@ -25,53 +27,46 @@
                         <option value="Hybrid" {% if request.GET.fuel == 'Hybrid' %}selected{% endif %}>Hybrid</option>
                     </select>
                 </div>
-                <div class="col-md-2">
+                <div class="col-lg-2 col-md-6">
                     <label class="form-label">Transmission</label>
-                    <select name="transmission" class="form-control">
+                    <select name="transmission" class="form-select">
                         <option value="">Any</option>
                         <option value="Manual" {% if request.GET.transmission == 'Manual' %}selected{% endif %}>Manual</option>
                         <option value="Automatic" {% if request.GET.transmission == 'Automatic' %}selected{% endif %}>Automatic</option>
                     </select>
                 </div>
-                <div class="col-md-2">
-                    <label class="form-label">Algorithm</label>
-                    <select name="algorithm" class="form-control">
-                        <option value="decision_tree" {% if algorithm == 'decision_tree' %}selected{% endif %}>Decision Tree</option>
-                        <option value="logistic_regression" {% if algorithm == 'logistic_regression' %}selected{% endif %}>Logistic Regression</option>
-                        <option value="knn" {% if algorithm == 'knn' %}selected{% endif %}>KNN</option>
-                    </select>
-                </div>
-                <div class="col-12">
-                    <button type="submit" class="btn btn-primary"><i class="bi bi-magic"></i> Get Recommendations</button>
-                    <a href="{% url 'recommendations' %}" class="btn btn-outline-secondary">Clear</a>
+                <div class="col-lg-2 col-md-12 d-flex align-items-end gap-2">
+                    <button type="submit" class="btn btn-primary flex-grow-1"><i class="bi bi-magic me-1"></i>Recommend</button>
+                    <a href="{% url 'recommendations' %}" class="btn btn-outline-secondary"><i class="bi bi-x-lg"></i></a>
                 </div>
             </form>
         </div>
     </div>
 
+    <!-- Results -->
     {% if car_list %}
-    <div class="row">
+    <div class="row g-4">
         {% for item in car_list %}
-        <div class="col-md-4 mb-4">
-            <div class="card h-100 shadow-sm border-primary">
-                <div class="card-header bg-primary text-white d-flex justify-content-between">
-                    <span>#{{ forloop.counter }} Recommended</span>
-                    <span class="badge bg-light text-dark">{{ item.confidence }}% confidence</span>
+        <div class="col-lg-4 col-md-6 animate-on-scroll">
+            <div class="recommend-card card h-100 shadow-sm border-0 rounded-4 overflow-hidden">
+                <div class="card-header d-flex justify-content-between align-items-center py-3">
+                    <span class="fw-semibold"><i class="bi bi-trophy me-1"></i>#{{ forloop.counter }} Pick</span>
+                    <span class="confidence-badge">{{ item.confidence }}% match</span>
                 </div>
                 <div class="card-body">
                     {% if item.car.image %}
-                    <img src="{{ item.car.image.url }}" class="card-img-top mb-3" alt="{{ item.car }}" style="height: 160px; object-fit: cover; border-radius: 8px;">
+                    <img src="{{ item.car.image.url }}" class="w-100 mb-3" alt="{{ item.car }}" style="height:160px;object-fit:cover;border-radius:8px;">
                     {% endif %}
-                    <h5 class="card-title">{{ item.car.brand.name }} {{ item.car.name }}</h5>
-                    <p class="h4 text-primary">₹ {{ item.price|floatformat:2 }}</p>
-                    <p>
-                        <span class="badge bg-primary">{{ item.car.fuel_type }}</span>
-                        <span class="badge bg-secondary">{{ item.car.transmission }}</span>
-                        <span class="badge bg-info">{{ item.car.seats }} seats</span>
-                    </p>
-                    <p class="text-muted small">{{ item.car.mileage }} kmpl</p>
+                    <h5 class="fw-bold mb-2">{{ item.car.brand.name }} {{ item.car.name }}</h5>
+                    <p class="h4 fw-bold mb-2" style="color:var(--accent);">₹ {{ item.price|floatformat:2 }}</p>
+                    <div class="mb-3">
+                        <span class="badge bg-primary me-1">{{ item.car.fuel_type }}</span>
+                        <span class="badge bg-secondary me-1">{{ item.car.transmission }}</span>
+                        <span class="badge bg-info me-1">{{ item.car.seats }} seats</span>
+                    </div>
+                    <p class="text-muted small mb-0">{{ item.car.mileage }} kmpl{% if item.car.engine_cc %} &bull; {{ item.car.engine_cc }} cc{% endif %}</p>
                 </div>
-                <div class="card-footer bg-white">
+                <div class="card-footer bg-transparent border-top-0 pt-0 px-3 pb-3">
                     <div class="d-grid gap-2">
                         <a href="{% url 'car_detail' item.car.pk %}" class="btn btn-outline-primary btn-sm">View Details</a>
                         <a href="{% url 'book_test_drive' item.car.pk %}" class="btn btn-primary btn-sm">Book Test Drive</a>
@@ -82,25 +77,29 @@
         {% endfor %}
     </div>
     {% else %}
-    <div class="text-center py-5">
-        <i class="bi bi-star text-muted" style="font-size: 4rem;"></i>
-        <h4 class="text-muted mt-3">No recommendations yet</h4>
-        <p>Set your preferences above to get AI-powered car recommendations.</p>
+    <div class="empty-state">
+        <i class="bi bi-star"></i>
+        <h4 class="mt-3">No recommendations yet</h4>
+        <p class="text-muted">Set your preferences above to get AI-powered car recommendations.</p>
     </div>
     {% endif %}
 
+    <!-- Model Accuracies -->
     {% if accuracies %}
-    <div class="card shadow-sm mt-4">
-        <div class="card-header">
-            <h5 class="mb-0"><i class="bi bi-graph-up"></i> ML Model Accuracies</h5>
+    <div class="card shadow-sm border-0 rounded-4 mt-5">
+        <div class="card-header py-3">
+            <h5 class="mb-0"><i class="bi bi-cpu me-2"></i>ML Model Performance</h5>
         </div>
-        <div class="card-body">
-            <div class="row">
+        <div class="card-body p-4">
+            <div class="row g-3">
                 {% for name, acc in accuracies.items %}
-                <div class="col-md-4 text-center mb-3">
-                    <div class="border rounded p-3">
-                        <h6>{{ name|title }}</h6>
-                        <h3 class="text-primary">{{ acc|floatformat:2 }}%</h3>
+                <div class="col-md-4 text-center">
+                    <div class="bg-light rounded-4 p-4">
+                        <h6 class="fw-bold text-muted text-uppercase small">{{ name|title }}</h6>
+                        <h3 class="fw-bold mb-0" style="color:var(--primary);">{{ acc|floatformat:2 }}%</h3>
+                        <div class="progress mt-3" style="height:6px;">
+                            <div class="progress-bar bg-primary" style="width:{{ acc }}%;" role="progressbar"></div>
+                        </div>
                     </div>
                 </div>
                 {% endfor %}
