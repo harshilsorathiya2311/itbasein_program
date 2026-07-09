@@ -1,10 +1,10 @@
+import logging
 from django.db import models
 from django.contrib.auth.models import User
-from django.core.mail import send_mail
-from django.conf import settings
-from django.template.loader import render_to_string
 from django.utils import timezone
 from cars.models import Car
+
+logger = logging.getLogger(__name__)
 
 
 class Booking(models.Model):
@@ -20,6 +20,8 @@ class Booking(models.Model):
     booking_date = models.DateField()
     booking_time = models.TimeField()
     dealership = models.CharField(max_length=200, blank=True)
+    phone_number = models.CharField(max_length=20, blank=True, help_text='Contact phone number')
+    address = models.TextField(blank=True, help_text='Your address')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
     admin_notes = models.TextField(blank=True, help_text='Internal notes from admin')
     notes = models.TextField(blank=True, help_text='User notes')
@@ -46,41 +48,12 @@ class Booking(models.Model):
                 self.status_changed_at = timezone.now()
         super().save(*args, **kwargs)
         if old_status:
-            self._send_status_email(old_status, self.status)
-
-    def _send_status_email(self, old_status, new_status):
-        if not self.user.email:
-            return
-        subject = f"YourDriveAi - Booking {new_status.lower()}"
-        context = {
-            'user': self.user,
-            'car': self.car,
-            'booking': self,
-            'old_status': old_status,
-            'new_status': new_status,
-        }
-        html_message = render_to_string('emails/booking_status.html', context)
-        plain_message = f"""
-Your test drive booking for {self.car.brand.name} {self.car.name}
-on {self.booking_date} at {self.booking_time} has been {new_status.lower()}.
-
-Status: {new_status}
-Dealership: {self.dealership or 'TBD'}
-
-Thank you,
-YourDriveAi Team
-"""
-        try:
-            send_mail(
-                subject=subject,
-                message=plain_message,
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[self.user.email],
-                html_message=html_message,
-                fail_silently=True,
-            )
-        except Exception:
-            pass
+            from .utils import send_status_update_email
+            sent = send_status_update_email(self, old_status, self.status)
+            if sent:
+                logger.info('Status change email sent for booking %s: %s -> %s', self.id, old_status, self.status)
+            else:
+                logger.warning('Status change email not sent for booking %s', self.id)
 
 
 class Review(models.Model):

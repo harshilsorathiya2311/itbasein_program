@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block title %}Analytics Dashboard{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <h2>Analytics Dashboard</h2>
+    <div class="row g-3 mt-3">
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <h3>{{ total_bookings }}</h3>
+                    <p class="text-muted mb-0">Total Bookings</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <h3>{{ total_cars }}</h3>
+                    <p class="text-muted mb-0">Total Cars</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <h3>{{ total_brands }}</h3>
+                    <p class="text-muted mb-0">Total Brands</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <h4>Bookings by Status</h4>
+        <table class="table">
+            <thead>
+                <tr><th>Status</th><th>Count</th></tr>
+            </thead>
+            <tbody>
+                {% for item in bookings_by_status %}
+                <tr><td>{{ item.status }}</td><td>{{ item.count }}</td></tr>
+                {% empty %}
+                <tr><td colspan="2" class="text-muted">No data</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

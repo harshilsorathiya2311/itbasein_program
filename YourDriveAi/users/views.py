@@ -1,13 +1,16 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db.models import Count, Q
 from .forms import UserRegisterForm, UserProfileForm
 from cars.models import Car, Brand
 from bookings.models import Booking
 
 def home(request):
     featured_cars = Car.objects.filter(is_available=True).select_related('brand')[:6]
-    brands = Brand.objects.all()
+    brands = Brand.objects.annotate(
+        available_cars=Count('cars', filter=Q(cars__is_available=True))
+    )
     context = {
         'featured_cars': featured_cars,
         'brands': brands,

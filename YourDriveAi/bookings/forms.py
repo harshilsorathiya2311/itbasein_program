@@ -4,12 +4,13 @@ from .models import Booking, Review
 class BookingForm(forms.ModelForm):
     class Meta:
         model = Booking
-        fields = ['booking_date', 'booking_time', 'dealership', 'notes']
+        fields = ['booking_date', 'booking_time', 'dealership', 'phone_number', 'notes']
         widgets = {
             'booking_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
             'booking_time': forms.TimeInput(attrs={'type': 'time', 'class': 'form-control'}),
-            'dealership': forms.TextInput(attrs={'class': 'form-control'}),
-            'notes': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'dealership': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Preferred dealership'}),
+            'phone_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. +1 234 567 890'}),
+            'notes': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Any special requests?'}),
         }
 
 class ReviewForm(forms.ModelForm):

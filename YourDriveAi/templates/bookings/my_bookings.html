@@ -106,18 +106,18 @@
                         <small class="text-muted">Booking Success Probability</small>
                         <div class="progress" style="height: 8px;">
                             <div class="progress-bar {% if booking.predicted_probability >= 0.7 %}bg-success{% elif booking.predicted_probability >= 0.4 %}bg-warning{% else %}bg-danger{% endif %}"
-                                 style="width: {% widthratio booking.predicted_probability 1 100 %}%">
+                                style="width: {% widthratio booking.predicted_probability 1 100 %}%">
                             </div>
                         </div>
-                        <small class="{% if booking.predicted_probability >= 0.7 %}text-success{% elif booking.predicted_probability >= 0.4 %}text-warning{% else %}text-danger{% endif %}">
+                        <small
+                            class="{% if booking.predicted_probability >= 0.7 %}text-success{% elif booking.predicted_probability >= 0.4 %}text-warning{% else %}text-danger{% endif %}">
                             {{ booking.customer_category }} ({% widthratio booking.predicted_probability 1 100 %}%)
                         </small>
                     </div>
                     {% endif %}
 
                     <div class="mt-auto">
-                        <a href="{% url 'car_detail' booking.car.id %}"
-                           class="btn btn-outline-primary btn-sm w-100">
+                        <a href="{% url 'car_detail' booking.car.id %}" class="btn btn-outline-primary btn-sm w-100">
                             <i class="bi bi-eye me-1"></i> View Car Details
                         </a>
                     </div>

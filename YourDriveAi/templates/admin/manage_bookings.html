@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% block title %}Manage Bookings - Admin{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0"><i class="bi bi-clipboard-data me-2"></i>Admin — Booking Requests</h2>
+        <a href="{% url 'admin:index' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-gear me-1"></i> Django Admin
+        </a>
+    </div>
+
+    <div class="row g-2 mb-4">
+        <div class="col">
+            <div class="card border-0 shadow-sm text-center py-2 bg-dark text-white">
+                <h5 class="mb-0">{{ counts.total }}</h5>
+                <small class="text-secondary">Total</small>
+            </div>
+        </div>
+        <div class="col">
+            <a href="{% url 'admin_manage_bookings' %}?status=Pending" class="text-decoration-none">
+                <div class="card border-0 shadow-sm text-center py-2 {% if current_status == 'Pending' %}border border-warning{% endif %}" style="background: #fef3c7;">
+                    <h5 class="mb-0 text-warning-emphasis">{{ counts.pending }}</h5>
+                    <small class="text-warning-emphasis">Pending</small>
+                </div>
+            </a>
+        </div>
+        <div class="col">
+            <a href="{% url 'admin_manage_bookings' %}?status=Approved" class="text-decoration-none">
+                <div class="card border-0 shadow-sm text-center py-2 {% if current_status == 'Approved' %}border border-success{% endif %}" style="background: #dcfce7;">
+                    <h5 class="mb-0 text-success-emphasis">{{ counts.approved }}</h5>
+                    <small class="text-success-emphasis">Approved</small>
+                </div>
+            </a>
+        </div>
+        <div class="col">
+            <a href="{% url 'admin_manage_bookings' %}?status=Completed" class="text-decoration-none">
+                <div class="card border-0 shadow-sm text-center py-2 {% if current_status == 'Completed' %}border border-primary{% endif %}" style="background: #dbeafe;">
+                    <h5 class="mb-0 text-primary-emphasis">{{ counts.completed }}</h5>
+                    <small class="text-primary-emphasis">Done</small>
+                </div>
+            </a>
+        </div>
+        <div class="col">
+            <a href="{% url 'admin_manage_bookings' %}?status=Rejected" class="text-decoration-none">
+                <div class="card border-0 shadow-sm text-center py-2 {% if current_status == 'Rejected' %}border border-danger{% endif %}" style="background: #fee2e2;">
+                    <h5 class="mb-0 text-danger-emphasis">{{ counts.rejected }}</h5>
+                    <small class="text-danger-emphasis">Rejected</small>
+                </div>
+            </a>
+        </div>
+        {% if current_status %}
+        <div class="col-auto d-flex align-items-center">
+            <a href="{% url 'admin_manage_bookings' %}" class="btn btn-sm btn-outline-secondary">Clear filter</a>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if bookings %}
+    <div class="table-responsive">
+        <table class="table table-hover align-middle shadow-sm bg-white rounded">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>User</th>
+                    <th>Email</th>
+                    <th>Car</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Phone</th>
+                    <th>Status</th>
+                    <th class="text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in bookings %}
+                <tr>
+                    <td>{{ booking.id }}</td>
+                    <td>{{ booking.user.get_full_name|default:booking.user.username }}</td>
+                    <td>{{ booking.user.email }}</td>
+                    <td>{{ booking.car.brand.name }} {{ booking.car.name }}</td>
+                    <td>{{ booking.booking_date|date:"M d, Y" }}</td>
+                    <td>{{ booking.booking_time|time:"g:i A" }}</td>
+                    <td>{{ booking.phone_number|default:"—" }}</td>
+                    <td>
+                        {% if booking.status == 'Pending' %}
+                        <span class="badge bg-warning text-dark">Pending</span>
+                        {% elif booking.status == 'Approved' %}
+                        <span class="badge bg-success">Approved</span>
+                        {% elif booking.status == 'Rejected' %}
+                        <span class="badge bg-danger">Rejected</span>
+                        {% elif booking.status == 'Completed' %}
+                        <span class="badge bg-info">Completed</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        {% if booking.status == 'Pending' %}
+                        <a href="{% url 'approve_booking' booking.id %}"
+                           class="btn btn-success btn-sm me-1"
+                           onclick="return confirm('Approve booking #{{ booking.id }}?')">
+                            <i class="bi bi-check-lg"></i> Approve
+                        </a>
+                        <a href="{% url 'reject_booking' booking.id %}"
+                           class="btn btn-danger btn-sm"
+                           onclick="return confirm('Reject booking #{{ booking.id }}?')">
+                            <i class="bi bi-x-lg"></i> Reject
+                        </a>
+                        {% else %}
+                        <span class="text-muted small">No actions</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <div class="mb-3"><i class="bi bi-inbox display-1 text-muted"></i></div>
+        <h5 class="text-muted">No booking requests found</h5>
+        {% if current_status %}
+        <p class="text-muted">No bookings with status "{{ current_status }}".</p>
+        <a href="{% url 'admin_manage_bookings' %}" class="btn btn-primary">View all</a>
+        {% else %}
+        <p class="text-muted">There are no test drive bookings yet.</p>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

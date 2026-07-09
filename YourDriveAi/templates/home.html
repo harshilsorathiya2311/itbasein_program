@@ -82,17 +82,35 @@
 {% endif %}
 
 {% if brands %}
-<section class="brands py-5 bg-light">
+{% load static %}
+<section class="brands-section py-5 bg-light">
     <div class="container">
-        <h2 class="text-center mb-4">Explore Brands</h2>
-        <div class="row g-3 justify-content-center">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Explore Brands</h2>
+            <p class="text-muted">Choose your preferred brand and find the perfect car</p>
+        </div>
+        <div class="row g-4">
             {% for brand in brands %}
-            <div class="col-4 col-md-2">
+            <div class="col-6 col-md-4 col-lg-3">
                 <a href="{% url 'brand_cars' brand.id %}" class="text-decoration-none">
-                    <div class="card border-0 shadow-sm text-center p-3 brand-card">
-                        <div class="card-body">
-                            <i class="bi bi-trophy display-6 text-primary mb-2"></i>
-                            <h6 class="mb-0">{{ brand.name }}</h6>
+                    <div class="card brand-card border-0 h-100">
+                        <div class="card-body text-center d-flex flex-column align-items-center justify-content-center py-4">
+                            <div class="brand-logo-wrapper mb-3">
+                                <img src="{% get_static_prefix %}images/brands/{{ brand.name|slugify }}.svg"
+                                     alt="{{ brand.name }}"
+                                     class="brand-logo img-fluid"
+                                     loading="lazy"
+                                     onerror="this.onerror=null;this.parentElement.classList.add('logo-fallback')">
+                            </div>
+                            <h6 class="brand-name fw-semibold mb-1">{{ brand.name }}</h6>
+                            {% if brand.available_cars %}
+                            <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-1 rounded-pill small">
+                                {{ brand.available_cars }} car{{ brand.available_cars|pluralize }}
+                            </span>
+                            {% endif %}
+                            <span class="btn btn-outline-primary btn-sm mt-3 view-cars-btn">
+                                View Cars <i class="bi bi-arrow-right ms-1"></i>
+                            </span>
                         </div>
                     </div>
                 </a>

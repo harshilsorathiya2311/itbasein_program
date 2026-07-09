@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="font-family: 'Segoe UI', Arial, sans-serif; background: #f4f4f4; margin: 0; padding: 0;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background: #f4f4f4; padding: 30px 0;">
+        <tr>
+            <td align="center">
+                <table width="600" cellpadding="0" cellspacing="0" style="background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.1);">
+                    <tr>
+                        <td style="background: linear-gradient(135deg, #16a34a, #15803d); padding: 30px; text-align: center;">
+                            <h1 style="color: #fff; margin: 0; font-size: 28px; letter-spacing: -0.5px;">YourDriveAi</h1>
+                            <p style="color: rgba(255,255,255,0.9); margin: 8px 0 0; font-size: 15px;">Test Drive Approved</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 35px 30px;">
+                            <p style="font-size: 16px; color: #333; margin: 0 0 6px;">Hello <strong>{{ user.first_name|default:user.username }}</strong>,</p>
+                            <p style="font-size: 15px; color: #555; line-height: 1.7; margin: 0 0 20px;">
+                                Great news! Your test drive request for the
+                                <strong>{{ car.brand.name }} {{ car.name }}</strong>
+                                has been <strong style="color: #16a34a;">Approved</strong>.
+                            </p>
+
+                            <table width="100%" cellpadding="12" cellspacing="0" style="background: #f0fdf4; border-radius: 10px; margin: 0 0 25px; border: 1px solid #bbf7d0;">
+                                <tr>
+                                    <td style="font-weight: 600; color: #475569; width: 110px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Car</td>
+                                    <td style="color: #1e293b; font-weight: 600;">{{ car.brand.name }} {{ car.name }}</td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight: 600; color: #475569; width: 110px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Date</td>
+                                    <td style="color: #1e293b;">{{ booking.booking_date|date:"l, F d, Y" }}</td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight: 600; color: #475569; width: 110px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Time</td>
+                                    <td style="color: #1e293b;">{{ booking.booking_time|time:"g:i A" }}</td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight: 600; color: #475569; width: 110px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Dealership</td>
+                                    <td style="color: #1e293b;">{{ booking.dealership|default:"TBD" }}</td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight: 600; color: #475569; width: 110px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Status</td>
+                                    <td><span style="display: inline-block; background: #dcfce7; color: #166534; padding: 3px 14px; border-radius: 20px; font-size: 13px; font-weight: 600;">Approved</span></td>
+                                </tr>
+                            </table>
+
+                            <p style="font-size: 15px; color: #555; line-height: 1.7; margin: 0 0 5px;">
+                                Please visit the dealership at your scheduled time. Remember to bring your valid driving license.
+                            </p>
+                            <p style="font-size: 14px; color: #888; margin: 0 0 30px;">
+                                Thank you for choosing YourDriveAi. We hope you enjoy your test drive!
+                            </p>
+
+                            <p style="font-size: 14px; color: #555; margin: 0 0 5px; line-height: 1.6;">
+                                Best regards,<br>
+                                <strong style="color: #16a34a;">YourDriveAi Team</strong>
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="background: #0f172a; padding: 22px 30px; text-align: center;">
+                            <p style="color: #94a3b8; font-size: 12px; margin: 0 0 4px;">&copy; 2026 YourDriveAi. All rights reserved.</p>
+                            <p style="color: #64748b; font-size: 11px; margin: 0;">Smart Multi-Brand Vehicle Recommendation &amp; Test Drive Platform</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

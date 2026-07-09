@@ -57,7 +57,8 @@ def car_detail(request, car_id):
 
     if request.user.is_authenticated:
         UserBehaviorLog.objects.create(
-            user=request.user, car=car, action='view'
+            user=request.user, car=car, action='view',
+            session_key=request.session.session_key or ''
         )
 
     context = {

@@ -40,7 +40,8 @@ def create_booking(request, car_id):
                 booking.save()
 
                 UserBehaviorLog.objects.create(
-                    user=request.user, car=car, action='book'
+                    user=request.user, car=car, action='book',
+                    session_key=request.session.session_key or ''
                 )
 
                 logger.info(
@@ -48,11 +49,14 @@ def create_booking(request, car_id):
                     f"car={car.brand.name} {car.name}, id={booking.id}"
                 )
 
+                from .utils import send_booking_confirmation
+                send_booking_confirmation(booking)
+
                 messages.success(
                     request,
                     f'Test drive requested for {car.brand.name} {car.name}! '
                     f'Your booking (#{booking.id}) is now pending admin approval. '
-                    f'You will receive an email once the status is updated.'
+                    f'A confirmation email has been sent to {request.user.email}.'
                 )
                 return redirect('my_bookings')
 
@@ -109,3 +113,63 @@ def my_bookings(request):
         'bookings': bookings,
         'counts': counts,
     })
+
+
+@login_required
+def admin_manage_bookings(request):
+    if not request.user.is_staff:
+        messages.error(request, 'Access denied. Admin only.')
+        return redirect('home')
+
+    status_filter = request.GET.get('status', '')
+
+    bookings = Booking.objects.select_related('user', 'car__brand').all()
+
+    if status_filter:
+        bookings = bookings.filter(status=status_filter)
+
+    counts = bookings.aggregate(
+        total=Count('id'),
+        pending=Count('id', filter=Q(status='Pending')),
+        approved=Count('id', filter=Q(status='Approved')),
+        completed=Count('id', filter=Q(status='Completed')),
+        rejected=Count('id', filter=Q(status='Rejected')),
+    )
+
+    return render(request, 'admin/manage_bookings.html', {
+        'bookings': bookings,
+        'counts': counts,
+        'current_status': status_filter,
+    })
+
+
+@login_required
+def approve_booking(request, booking_id):
+    if not request.user.is_staff:
+        messages.error(request, 'Access denied. Admin only.')
+        return redirect('home')
+
+    booking = get_object_or_404(Booking, id=booking_id)
+    if booking.status != 'Pending':
+        messages.warning(request, f'Booking #{booking.id} is already {booking.status}.')
+    else:
+        booking.status = 'Approved'
+        booking.save()
+        messages.success(request, f'Booking #{booking.id} approved successfully.')
+    return redirect('admin_manage_bookings')
+
+
+@login_required
+def reject_booking(request, booking_id):
+    if not request.user.is_staff:
+        messages.error(request, 'Access denied. Admin only.')
+        return redirect('home')
+
+    booking = get_object_or_404(Booking, id=booking_id)
+    if booking.status != 'Pending':
+        messages.warning(request, f'Booking #{booking.id} is already {booking.status}.')
+    else:
+        booking.status = 'Rejected'
+        booking.save()
+        messages.success(request, f'Booking #{booking.id} rejected.')
+    return redirect('admin_manage_bookings')
