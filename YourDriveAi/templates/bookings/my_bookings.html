@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+{% block title %}My Bookings - YourDriveAi{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0"><i class="bi bi-calendar-check me-2"></i>My Test Drive Bookings</h2>
+        <a href="{% url 'car_list' %}" class="btn btn-primary"><i class="bi bi-plus-lg"></i> New Booking</a>
+    </div>
+
+    {% if counts %}
+    <div class="row g-2 mb-4">
+        <div class="col">
+            <div class="card border-0 shadow-sm text-center py-2 bg-dark text-white">
+                <h5 class="mb-0">{{ counts.total }}</h5>
+                <small class="text-secondary">Total</small>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card border-0 shadow-sm text-center py-2" style="background: #fef3c7;">
+                <h5 class="mb-0 text-warning-emphasis">{{ counts.pending }}</h5>
+                <small class="text-warning-emphasis">Pending</small>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card border-0 shadow-sm text-center py-2" style="background: #dcfce7;">
+                <h5 class="mb-0 text-success-emphasis">{{ counts.approved }}</h5>
+                <small class="text-success-emphasis">Approved</small>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card border-0 shadow-sm text-center py-2" style="background: #dbeafe;">
+                <h5 class="mb-0 text-primary-emphasis">{{ counts.completed }}</h5>
+                <small class="text-primary-emphasis">Done</small>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card border-0 shadow-sm text-center py-2" style="background: #fee2e2;">
+                <h5 class="mb-0 text-danger-emphasis">{{ counts.rejected }}</h5>
+                <small class="text-danger-emphasis">Rejected</small>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if bookings %}
+    <div class="row g-3">
+        {% for booking in bookings %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card border-0 shadow-sm h-100 booking-card">
+                <div class="card-body d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h5 class="card-title mb-1">{{ booking.car.brand.name }} {{ booking.car.name }}</h5>
+                            <small class="text-muted">Request #{{ booking.id }}</small>
+                        </div>
+                        {% if booking.status == 'Pending' %}
+                        <span class="badge bg-warning text-dark fs-6 px-3 py-2">Pending</span>
+                        {% elif booking.status == 'Approved' %}
+                        <span class="badge bg-success fs-6 px-3 py-2">Approved</span>
+                        {% elif booking.status == 'Rejected' %}
+                        <span class="badge bg-danger fs-6 px-3 py-2">Rejected</span>
+                        {% elif booking.status == 'Completed' %}
+                        <span class="badge bg-info fs-6 px-3 py-2">Completed</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="booking-details mb-3">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="bi bi-calendar-event text-primary me-2"></i>
+                            <span>{{ booking.booking_date|date:"l, M d, Y" }}</span>
+                        </div>
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="bi bi-clock text-primary me-2"></i>
+                            <span>{{ booking.booking_time|time:"g:i A" }}</span>
+                        </div>
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="bi bi-geo-alt text-primary me-2"></i>
+                            <span>{{ booking.dealership|default:"Dealership TBD" }}</span>
+                        </div>
+                    </div>
+
+                    {% if booking.status == 'Pending' %}
+                    <div class="alert alert-warning py-2 mb-3 small d-flex align-items-center">
+                        <i class="bi bi-hourglass-split me-2"></i>
+                        Waiting for admin approval
+                    </div>
+                    {% elif booking.status == 'Approved' %}
+                    <div class="alert alert-success py-2 mb-3 small d-flex align-items-center">
+                        <i class="bi bi-check-circle me-2"></i>
+                        Your test drive has been approved! Visit the dealership at your scheduled time.
+                    </div>
+                    {% elif booking.status == 'Rejected' %}
+                    <div class="alert alert-danger py-2 mb-3 small d-flex align-items-center">
+                        <i class="bi bi-x-circle me-2"></i>
+                        This booking was not approved. Please try another car.
+                    </div>
+                    {% elif booking.status == 'Completed' %}
+                    <div class="alert alert-info py-2 mb-3 small d-flex align-items-center">
+                        <i class="bi bi-flag me-2"></i>
+                        Test drive completed. Leave a review!
+                    </div>
+                    {% endif %}
+
+                    {% if booking.predicted_probability and booking.status == 'Pending' %}
+                    <div class="mb-3">
+                        <small class="text-muted">Booking Success Probability</small>
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar {% if booking.predicted_probability >= 0.7 %}bg-success{% elif booking.predicted_probability >= 0.4 %}bg-warning{% else %}bg-danger{% endif %}"
+                                 style="width: {% widthratio booking.predicted_probability 1 100 %}%">
+                            </div>
+                        </div>
+                        <small class="{% if booking.predicted_probability >= 0.7 %}text-success{% elif booking.predicted_probability >= 0.4 %}text-warning{% else %}text-danger{% endif %}">
+                            {{ booking.customer_category }} ({% widthratio booking.predicted_probability 1 100 %}%)
+                        </small>
+                    </div>
+                    {% endif %}
+
+                    <div class="mt-auto">
+                        <a href="{% url 'car_detail' booking.car.id %}"
+                           class="btn btn-outline-primary btn-sm w-100">
+                            <i class="bi bi-eye me-1"></i> View Car Details
+                        </a>
+                    </div>
+
+                    {% if booking.admin_notes %}
+                    <div class="mt-3 p-2 bg-light rounded small">
+                        <i class="bi bi-chat-quote text-muted me-1"></i>
+                        <span class="text-muted">{{ booking.admin_notes }}</span>
+                    </div>
+                    {% endif %}
+
+                    {% if booking.status_changed_at and booking.status != 'Pending' %}
+                    <div class="mt-2">
+                        <small class="text-muted">
+                            Status updated {{ booking.status_changed_at|timesince }} ago
+                        </small>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <div class="mb-3">
+            <i class="bi bi-calendar-x display-1 text-muted"></i>
+        </div>
+        <h5 class="text-muted">No bookings yet</h5>
+        <p class="text-muted mb-4">Browse our cars and request your first test drive today!</p>
+        <a href="{% url 'car_list' %}" class="btn btn-primary btn-lg">
+            <i class="bi bi-car-front me-2"></i> Browse Cars
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

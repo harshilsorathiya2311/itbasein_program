@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% block title %}{{ car.brand.name }} {{ car.name }} - YourDriveAi{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'car_list' %}">Cars</a></li>
+            <li class="breadcrumb-item active">{{ car.brand.name }} {{ car.name }}</li>
+        </ol>
+    </nav>
+
+    <div class="row g-4">
+        <div class="col-md-6">
+            {% if car.image %}
+            <img src="{{ car.image.url }}" class="img-fluid rounded shadow" alt="{{ car.name }}">
+            {% else %}
+            <div class="bg-secondary rounded d-flex align-items-center justify-content-center" style="height: 350px;">
+                <i class="bi bi-car-front text-white" style="font-size: 5rem;"></i>
+            </div>
+            {% endif %}
+        </div>
+        <div class="col-md-6">
+            <h2>{{ car.brand.name }} {{ car.name }}</h2>
+            <h3 class="text-primary">${{ car.price|floatformat:2 }}</h3>
+            <div class="mb-3">
+                <span class="badge bg-primary me-1">{{ car.fuel_type }}</span>
+                <span class="badge bg-info me-1">{{ car.transmission }}</span>
+                <span class="badge bg-success me-1">{{ car.mileage }} kmpl</span>
+                <span class="badge bg-warning text-dark">{{ car.seating_capacity }} seats</span>
+            </div>
+            <table class="table table-borderless">
+                <tr><th>Brand</th><td>{{ car.brand.name }}</td></tr>
+                <tr><th>Fuel Type</th><td>{{ car.fuel_type }}</td></tr>
+                <tr><th>Transmission</th><td>{{ car.transmission }}</td></tr>
+                <tr><th>Mileage</th><td>{{ car.mileage }} kmpl</td></tr>
+                <tr><th>Seating</th><td>{{ car.seating_capacity }}</td></tr>
+                {% if car.engine_cc %}<tr><th>Engine</th><td>{{ car.engine_cc }} cc</td></tr>{% endif %}
+                {% if car.power %}<tr><th>Power</th><td>{{ car.power }} bhp</td></tr>{% endif %}
+            </table>
+            <p>{{ car.description }}</p>
+
+            <div class="d-flex gap-2">
+                <a href="{% url 'create_booking' car.id %}" class="btn btn-primary btn-lg flex-grow-1"><i class="bi bi-calendar-check"></i> Request Test Drive</a>
+                <a href="{% url 'car_compare' %}?ids={{ car.id }}" class="btn btn-outline-secondary btn-lg"><i class="bi bi-arrow-left-right"></i> Compare</a>
+            </div>
+            <div class="mt-2">
+                <small class="text-muted"><i class="bi bi-info-circle me-1"></i>Booking requires admin approval. You'll be notified via email.</small>
+            </div>
+
+            <div class="mt-3">
+                <strong>Rating:</strong>
+                {% if car.average_rating %}
+                {% for i in "12345" %}
+                <i class="bi bi-star{% if forloop.counter <= car.average_rating %}-fill text-warning{% else %}{% endif %}"></i>
+                {% endfor %}
+                <span class="ms-1">({{ car.average_rating }})</span>
+                {% else %}
+                <span class="text-muted">No reviews yet</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-md-8">
+            <h4>Reviews ({{ reviews|length }})</h4>
+            {% for review in reviews %}
+            <div class="card mb-2 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <strong>{{ review.user.username }}</strong>
+                        <span>
+                            {% for i in "12345" %}
+                            <i class="bi bi-star{% if forloop.counter <= review.rating %}-fill text-warning{% else %}{% endif %}"></i>
+                            {% endfor %}
+                        </span>
+                    </div>
+                    <p class="mb-0 mt-1">{{ review.comment }}</p>
+                    <small class="text-muted">{{ review.created_at|date:"M d, Y" }}</small>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-muted">No reviews yet. Be the first to review!</p>
+            {% endfor %}
+        </div>
+        <div class="col-md-4">
+            {% if user.is_authenticated %}
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5>Write a Review</h5>
+                    <form method="post">
+                        {% csrf_token %}
+                        {% for field in review_form %}
+                        <div class="mb-3">
+                            <label class="form-label">{{ field.label }}</label>
+                            {{ field }}
+                        </div>
+                        {% endfor %}
+                        <button type="submit" class="btn btn-primary w-100">Submit Review</button>
+                    </form>
+                </div>
+            </div>
+            {% else %}
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <p><a href="{% url 'login' %}">Login</a> to write a review.</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

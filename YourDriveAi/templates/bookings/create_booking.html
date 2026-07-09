@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Book Test Drive - YourDriveAi{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow border-0">
+                <div class="card-body p-4">
+                    <h3 class="mb-3">Book Test Drive</h3>
+                    <div class="alert alert-info d-flex align-items-center">
+                        <i class="bi bi-info-circle me-2"></i>
+                        <strong>{{ car.brand.name }} {{ car.name }}</strong>
+                        <span class="mx-2">—</span>
+                        <span>${{ car.price|floatformat:0 }}</span>
+                    </div>
+
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger py-2 small">
+                        {% for err in form.non_field_errors %}
+                        <i class="bi bi-exclamation-triangle me-1"></i>{{ err }}<br>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        {% for field in form %}
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold small text-uppercase text-muted">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for err in field.errors %}
+                                <i class="bi bi-exclamation-circle me-1"></i>{{ err }}<br>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            {% if field.help_text %}
+                            <div class="form-text">{{ field.help_text }}</div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                        <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold">
+                            <i class="bi bi-calendar-check me-2"></i>Confirm Booking Request
+                        </button>
+                    </form>
+
+                    <div class="text-center mt-3">
+                        <small class="text-muted">
+                            <i class="bi bi-shield-check me-1"></i>
+                            Your request will be reviewed by our team. Status updates are sent via email.
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

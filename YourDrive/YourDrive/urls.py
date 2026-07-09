@@ -8,15 +8,22 @@ from django.shortcuts import render
 def home(request):
     from cars.models import Car, Brand
     from bookings.models import TestDriveBooking
+    from reviews.models import Review
     cars = Car.objects.filter(is_available=True).select_related('brand')[:6]
     brands = Brand.objects.all()
     total_cars = Car.objects.count()
+    total_users = __import__('django.contrib.auth', fromlist=['get_user_model']).get_user_model().objects.count()
     total_bookings = TestDriveBooking.objects.count()
+    total_brands = Brand.objects.count()
+    reviews = Review.objects.select_related('user', 'car__brand').all()[:3]
     return render(request, 'home.html', {
         'featured_cars': cars,
         'brands': brands,
         'total_cars': total_cars,
         'total_bookings': total_bookings,
+        'total_brands': total_brands,
+        'total_users': total_users,
+        'reviews': reviews,
     })
 
 
@@ -75,6 +82,9 @@ urlpatterns = [
     path('bookings/', include('bookings.urls')),
     path('recommendations/', include('recommendations.urls')),
     path('dashboard/', include('dashboard.urls')),
+    path('reviews/', include('reviews.urls')),
+    path('wishlist/', include('wishlist.urls')),
+    path('notifications/', include('notifications.urls')),
     path('api/', include('rest_framework.urls')),
     path('api/cars/', include('cars.api_urls')),
     path('api/bookings/', include('bookings.api_urls')),

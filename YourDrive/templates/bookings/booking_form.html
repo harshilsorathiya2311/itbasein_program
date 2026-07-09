@@ -1,40 +1,67 @@
 {% extends 'base.html' %}
-{% block title %}Book Test Drive - YourDrive{% endblock %}
-{% block content %}
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-6 col-md-8">
-            <div class="card shadow-sm border-0 rounded-4">
-                <div class="card-header text-center py-3">
-                    <h4 class="mb-0"><i class="bi bi-calendar-check me-2"></i>Book a Test Drive</h4>
-                </div>
-                <div class="card-body p-4">
-                    {% if car %}
-                    <div class="alert bg-light border-0 rounded-3 d-flex align-items-center">
-                        <i class="bi bi-info-circle fs-4 me-3" style="color:var(--primary);"></i>
-                        <div>
-                            <strong class="d-block">{{ car.brand.name }} {{ car.name }}</strong>
-                            <small class="text-muted">₹ {{ car.price|floatformat:2 }}</small>
-                        </div>
-                    </div>
-                    {% endif %}
+{% load static %}
+{% block title %}Book a Test Drive — YourDrive{% endblock %}
 
-                    <form method="post">
-                        {% csrf_token %}
-                        {% for field in form %}
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">{{ field.label }}</label>
-                            {{ field }}
-                            {% if field.errors %}
-                            <div class="text-danger small mt-1"><i class="bi bi-exclamation-circle me-1"></i>{{ field.errors|striptags }}</div>
-                            {% endif %}
-                        </div>
-                        {% endfor %}
-                        <button type="submit" class="btn btn-primary w-100 py-3 mt-2"><i class="bi bi-check-lg me-2"></i>Confirm Booking</button>
-                    </form>
-                </div>
-            </div>
-        </div>
+{% block content %}
+
+<div class="page-header">
+  <div class="container">
+    <div class="breadcrumb-custom">
+      <a href="{% url 'home' %}">Home</a>
+      <span class="separator">/</span>
+      <a href="{% url 'my_bookings' %}">Bookings</a>
+      <span class="separator">/</span>
+      <span>Book Test Drive</span>
     </div>
+    <h1><i class="bi bi-calendar-check me-2"></i>Book a Test Drive</h1>
+    <p>Schedule your test drive at your preferred date and time</p>
+  </div>
 </div>
+
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-6 col-md-8">
+      <div class="form-card">
+        <div class="form-card-header">
+          <div class="form-icon">
+            <i class="bi bi-calendar-check"></i>
+          </div>
+          <h3>Schedule Test Drive</h3>
+          {% if car %}
+          <div class="alert alert-primary text-start mt-3 mb-0">
+            <div class="d-flex align-items-center">
+              <i class="bi bi-info-circle me-2 fs-5"></i>
+              <div>
+                <strong>{{ car.brand.name }} {{ car.name }}</strong><br>
+                <small>₹ {{ car.price|floatformat:2 }}</small>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+        <div class="form-card-body">
+          <form method="post">
+            {% csrf_token %}
+            {% for field in form %}
+            <div class="mb-3">
+              <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+              {{ field }}
+              {% if field.errors %}
+              <div class="invalid-feedback d-block">{% for e in field.errors %}{{ e }}{% endfor %}</div>
+              {% endif %}
+              {% if field.help_text %}
+              <div class="form-text">{{ field.help_text }}</div>
+              {% endif %}
+            </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary w-100 btn-lg mt-3">
+              <i class="bi bi-check2-circle me-2"></i>Confirm Booking
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 {% endblock %}

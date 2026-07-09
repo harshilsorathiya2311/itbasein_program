@@ -1,0 +1,28 @@
+from django.db import models
+from django.conf import settings
+
+
+class Notification(models.Model):
+    NOTIFICATION_TYPES = [
+        ('booking_confirmed', 'Booking Confirmed'),
+        ('booking_cancelled', 'Booking Cancelled'),
+        ('booking_pending', 'Booking Pending'),
+        ('welcome', 'Welcome'),
+        ('recommendation', 'New Recommendation'),
+        ('review_reply', 'Review Reply'),
+        ('general', 'General'),
+    ]
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='notifications')
+    notification_type = models.CharField(max_length=30, choices=NOTIFICATION_TYPES, default='general')
+    title = models.CharField(max_length=200)
+    message = models.TextField()
+    link = models.CharField(max_length=500, blank=True, null=True)
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.user.username} - {self.title}"

@@ -1,0 +1,49 @@
+brand,name,price,fuel_type,transmission,mileage,seating_capacity,engine_cc,power,description
+Toyota,Corolla,22000,Petrol,Automatic,16.5,5,1800,138,Reliable sedan with great fuel economy
+Toyota,Camry,32000,Hybrid,Automatic,21.0,5,2500,203,Premium hybrid sedan with luxury features
+Toyota,RAV4,28000,P petrol,Automatic,15.2,5,2000,169,Popular compact SUV with all-wheel drive
+Toyota,Fortuner,45000,Diesel,Manual,12.0,7,2800,174,Rugged SUV built for off-road adventures
+Honda,Civic,24000,P petrol,Automatic,15.5,5,1800,158,Sporty sedan with advanced safety features
+Honda,Accord,31000,Hybrid,Automatic,20.5,5,2000,212,Premium midsize sedan with hybrid efficiency
+Honda,CR-V,29000,P petrol,Automatic,14.8,5,2000,190,Comfortable compact SUV with spacious interior
+Honda,City,20000,P petrol,Manual,17.0,5,1500,118,Value-packed sedan with modern design
+Hyundai,Elantra,23000,P petrol,Automatic,15.0,5,1600,147,Stylish sedan with smart connectivity
+Hyundai,Tucson,27000,Diesel,Automatic,14.0,5,2000,185,Modern SUV with advanced driver assists
+Hyundai,Creta,24000,P petrol,Manual,16.0,5,1500,113,Compact SUV with bold design
+Hyundai,Sonata,28000,Hybrid,Automatic,22.0,5,2000,192,Elegant hybrid sedan with premium cabin
+Kia,Sportage,26000,P petrol,Automatic,14.2,5,1800,167,Bold SUV with distinctive styling
+Kia,Seltos,22000,Diesel,Manual,17.0,5,1500,113,Subcompact SUV with feature-rich interior
+Kia,Forte,20000,P petrol,Automatic,14.5,5,1600,147,Affordable compact car with great warranty
+Kia,Telluride,35000,P petrol,Automatic,11.5,7,3800,291,Full-size SUV with three-row seating
+Mercedes-Benz,C-Class,43000,P petrol,Automatic,14.0,5,2000,255,Luxury compact sedan with refined ride
+Mercedes-Benz,E-Class,56000,Diesel,Automatic,16.0,5,3000,330,Premium executive sedan with advanced tech
+Mercedes-Benz,GLC,49000,P petrol,Automatic,13.5,5,2000,258,Luxury SUV with elegant design
+Mercedes-Benz,A-Class,35000,P petrol,Automatic,15.0,5,1600,188,Entry-level luxury hatchback
+BMW,3 Series,42000,P petrol,Automatic,14.5,5,2000,255,Sports sedan with dynamic handling
+BMW,5 Series,55000,Diesel,Automatic,16.5,5,3000,335,Luxury business sedan with cutting-edge tech
+BMW,X3,47000,P petrol,Automatic,13.0,5,2000,248,Performance SUV with premium interior
+BMW,i4,55000,Electric,Automatic,22.0,5,0,335,All-electric gran coupe with sporty performance
+Audi,A3,35000,P petrol,Automatic,15.5,5,1800,201,Premium compact sedan with quattro option
+Audi,A4,44000,P petrol,Automatic,14.5,5,2000,261,Sophisticated sedan with virtual cockpit
+Audi,Q5,48000,Diesel,Automatic,14.0,5,2000,248,Luxury midsize SUV with refined interior
+Audi,e-tron,65000,Electric,Automatic,21.5,5,0,355,All-electric SUV with advanced aerodynamics
+Ford,Mustang,37000,P petrol,Manual,10.0,4,5000,450,Iconic muscle car with exhilarating performance
+Ford,Explorer,36000,P petrol,Automatic,11.0,7,3500,300,Spacious SUV with towing capability
+Ford,Escape,28000,Hybrid,Automatic,18.0,5,2000,198,Efficient compact SUV with hybrid option
+Ford,Bronco,33000,P petrol,Manual,12.0,5,2700,300,Off-road SUV with removable roof
+Tesla,Model 3,45000,Electric,Automatic,25.0,5,0,283,Best-selling electric sedan with autopilot
+Tesla,Model Y,49000,Electric,Automatic,24.0,5,0,384,Compact electric SUV with expansive cargo
+Tesla,Model S,85000,Electric,Automatic,28.0,5,0,670,Luxury electric sedan with ludicrous mode
+Tesla,Model X,95000,Electric,Automatic,26.0,7,0,670,All-electric SUV with falcon-wing doors
+Chevrolet,Malibu,24000,P petrol,Automatic,14.0,5,1600,163,Midsize sedan with modern styling
+Chevrolet,Tahoe,52000,P petrol,Automatic,10.0,8,5300,355,Full-size SUV with massive interior space
+Chevrolet,Equinox,26000,Diesel,Automatic,15.0,5,1700,170,Compact SUV with comfortable ride
+Chevrolet,Corvette,65000,P petrol,Manual,12.0,2,6200,490,Legendary sports car with mid-engine design
+Nissan,Altima,25000,P petrol,Automatic,14.5,5,1800,182,Midsize sedan with zero-gravity seats
+Nissan,Rogue,27000,P petrol,Automatic,14.0,5,1800,170,Compact SUV with safety shield
+Nissan,Leaf,29000,Electric,Automatic,23.0,5,0,147,Electric hatchback with e-pedal technology
+Nissan,Pathfinder,35000,P petrol,Automatic,12.0,7,3500,284,Family SUV with 8-speed transmission
+Volkswagen,Golf,24000,P petrol,Automatic,15.0,5,1500,147,Iconic hatchback with sporty handling
+Volkswagen,Tiguan,27000,P petrol,Automatic,13.5,5,1800,184,Compact SUV with premium feel
+Volkswagen,Passat,28000,Diesel,Automatic,16.0,5,2000,174,Midsize sedan with European refinement
+Volkswagen,ID.4,40000,Electric,Automatic,23.0,5,0,201,All-electric SUV with roomy interior

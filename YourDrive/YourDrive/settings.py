@@ -25,6 +25,10 @@ INSTALLED_APPS = [
     'bookings',
     'recommendations',
     'dashboard',
+    'reviews',
+    'wishlist',
+    'notifications',
+    'analytics',
 ]
 
 MIDDLEWARE = [

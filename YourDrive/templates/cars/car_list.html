@@ -1,136 +1,205 @@
 {% extends 'base.html' %}
-{% block title %}Browse Cars - YourDrive{% endblock %}
+{% load static %}
+{% block title %}Browse Cars — YourDrive{% endblock %}
+
 {% block content %}
+
+<div class="page-header">
+  <div class="container">
+    <div class="breadcrumb-custom">
+      <a href="{% url 'home' %}">Home</a>
+      <span class="separator">/</span>
+      <span>Cars</span>
+    </div>
+    <h1><i class="bi bi-grid me-2"></i>Browse Cars</h1>
+    <p>Find your perfect car from our extensive collection</p>
+  </div>
+</div>
+
 <div class="container py-4">
-    <div class="d-flex justify-content-between align-items-end mb-4">
+  <div class="row g-4">
+    <!-- Filter Sidebar -->
+    <div class="col-lg-3">
+      <div class="filter-card">
+        <div class="filter-title">
+          <i class="bi bi-funnel text-primary"></i>Filters
+        </div>
+        <form method="get" action="{% url 'car_list' %}">
+          <div class="mb-3">
+            <label class="filter-label">Search</label>
+            <input type="text" name="query" class="form-control" placeholder="Search cars..." value="{{ form.query.value|default:'' }}">
+          </div>
+          <div class="mb-3">
+            <label class="filter-label">Brand</label>
+            <select name="brand" class="form-select">
+              {% for value, label in form.fields.brand.choices %}
+              <option value="{{ value }}" {% if form.brand.value == value %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="filter-label">Fuel Type</label>
+            <select name="fuel_type" class="form-select">
+              {% for value, label in form.fields.fuel_type.choices %}
+              <option value="{{ value }}" {% if form.fuel_type.value == value %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="filter-label">Transmission</label>
+            <select name="transmission" class="form-select">
+              {% for value, label in form.fields.transmission.choices %}
+              <option value="{{ value }}" {% if form.transmission.value == value %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="filter-label">Seats</label>
+            <select name="seats" class="form-select">
+              {% for value, label in form.fields.seats.choices %}
+              <option value="{{ value }}" {% if form.seats.value == value %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <label class="filter-label">Min Price</label>
+              <input type="number" name="min_price" class="form-control" placeholder="Min" value="{{ form.min_price.value|default:'' }}">
+            </div>
+            <div class="col-6">
+              <label class="filter-label">Max Price</label>
+              <input type="number" name="max_price" class="form-control" placeholder="Max" value="{{ form.max_price.value|default:'' }}">
+            </div>
+          </div>
+          <div class="filter-actions">
+            <button type="submit" class="btn btn-primary"><i class="bi bi-search me-1"></i>Search</button>
+            <a href="{% url 'car_list' %}" class="btn btn-outline-primary">Clear</a>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Car Grid -->
+    <div class="col-lg-9">
+      <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h2 class="section-title mb-0"><i class="bi bi-grid me-2"></i>Browse Cars</h2>
-            <p class="text-muted">Find your perfect car from our collection</p>
+          <span class="fw-semibold">{{ cars.count }} cars found</span>
         </div>
-    </div>
-
-    <!-- Filter -->
-    <div class="filter-card card mb-4">
-        <div class="card-body">
-            <form method="get" class="row g-3">
-                <div class="col-lg-3 col-md-6">
-                    <label class="form-label">Search</label>
-                    {{ form.query }}
-                </div>
-                <div class="col-lg-2 col-md-6">
-                    <label class="form-label">Brand</label>
-                    {{ form.brand }}
-                </div>
-                <div class="col-lg-2 col-md-6">
-                    <label class="form-label">Fuel</label>
-                    {{ form.fuel_type }}
-                </div>
-                <div class="col-lg-2 col-md-6">
-                    <label class="form-label">Transmission</label>
-                    {{ form.transmission }}
-                </div>
-                <div class="col-lg-1 col-md-6">
-                    <label class="form-label">Seats</label>
-                    {{ form.seats }}
-                </div>
-                <div class="col-lg-2 col-md-6 d-flex align-items-end gap-2">
-                    <button type="submit" class="btn btn-primary flex-grow-1"><i class="bi bi-search me-1"></i>Search</button>
-                    <a href="{% url 'car_list' %}" class="btn btn-outline-secondary" title="Clear filters"><i class="bi bi-x-lg"></i></a>
-                </div>
-            </form>
-            <div class="row g-3 mt-2">
-                <div class="col-md-3">
-                    <label class="form-label">Min Price</label>
-                    {{ form.min_price }}
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label">Max Price</label>
-                    {{ form.max_price }}
-                </div>
-            </div>
+        <div>
+          <span class="text-muted small">Showing {{ cars.count }} result{{ cars.count|pluralize }}</span>
         </div>
-    </div>
+      </div>
 
-    <!-- Results -->
-    {% if cars %}
-    <p class="text-muted mb-3"><i class="bi bi-car-front me-1"></i>{{ cars.count }} car{{ cars.count|pluralize }} found</p>
-    {% endif %}
-    <div class="row g-4">
+      <div class="row g-4">
         {% for car in cars %}
-        <div class="col-lg-4 col-md-6 animate-on-scroll">
-            <div class="car-card card h-100">
-                {% if car.image %}
-                <img src="{{ car.image.url }}" class="card-img-top" alt="{{ car }}">
-                {% else %}
-                <div class="bg-light d-flex align-items-center justify-content-center" style="height:200px;">
-                    <i class="bi bi-car-front text-muted" style="font-size:4rem;"></i>
-                </div>
-                {% endif %}
-                <div class="card-body d-flex flex-column">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <h5 class="car-title mb-0">{{ car.brand.name }} {{ car.name }}</h5>
-                        {% if not car.is_available %}
-                        <span class="badge bg-danger ms-2">Unavailable</span>
-                        {% endif %}
-                    </div>
-                    <div class="mb-2">
-                        <span class="badge bg-primary me-1">{{ car.fuel_type }}</span>
-                        <span class="badge bg-secondary me-1">{{ car.transmission }}</span>
-                        <span class="badge bg-info">{{ car.seats }} seats</span>
-                    </div>
-                    <p class="car-price mb-1">₹ {{ car.price|floatformat:2 }}</p>
-                    <p class="text-muted small mb-1">{{ car.model_year }} &bull; {{ car.mileage }} kmpl{% if car.engine_cc %} &bull; {{ car.engine_cc }} cc{% endif %}</p>
-                    {% if car.description %}
-                    <p class="text-muted small text-truncate mb-2">{{ car.description }}</p>
-                    {% endif %}
-                    <div class="mt-auto">
-                        <div class="d-grid gap-2">
-                            <a href="{% url 'car_detail' car.pk %}" class="btn btn-outline-primary btn-sm">View Details</a>
-                            <div class="d-flex gap-2">
-                                <a href="{% url 'book_test_drive' car.pk %}" class="btn btn-primary btn-sm flex-grow-1">Book Test Drive</a>
-                                <div class="form-check d-flex align-items-center mb-0">
-                                    <input type="checkbox" class="form-check-input compare-check" value="{{ car.pk }}" id="cmp{{ car.pk }}" onchange="updateCompare()">
-                                    <label class="form-check-label small ms-1 text-nowrap" for="cmp{{ car.pk }}">Compare</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        <div class="col-xl-4 col-md-6 animate-on-scroll">
+          <div class="car-card">
+            <div class="car-image-wrapper">
+              {% if car.image %}
+              <img src="{{ car.image.url }}" class="car-image" alt="{{ car }}">
+              {% else %}
+              <div class="car-image-placeholder">
+                <i class="bi bi-car-front"></i>
+              </div>
+              {% endif %}
+              {% if car.is_available %}
+              <span class="badge bg-success car-badge">Available</span>
+              {% else %}
+              <span class="badge bg-danger car-badge">Unavailable</span>
+              {% endif %}
             </div>
+            <div class="car-body">
+              <div class="d-flex justify-content-between align-items-start">
+                <h5 class="car-title">{{ car.brand.name }} {{ car.name }}</h5>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" value="{{ car.pk }}"
+                         onchange="updateCompare(this)" id="compare_{{ car.pk }}">
+                  <label class="form-check-label" for="compare_{{ car.pk }}" style="font-size:0.75rem;color:var(--text-muted);cursor:pointer;">
+                    Compare
+                  </label>
+                </div>
+              </div>
+              <div class="car-specs">
+                <span class="spec-tag"><i class="bi bi-fuel-pump"></i> {{ car.fuel_type }}</span>
+                <span class="spec-tag"><i class="bi bi-gear"></i> {{ car.transmission }}</span>
+                <span class="spec-tag"><i class="bi bi-people"></i> {{ car.seats }} seats</span>
+              </div>
+              <div class="d-flex justify-content-between align-items-end mt-3">
+                <div>
+                  <div class="car-price">₹ {{ car.price|floatformat:2 }}</div>
+                  <div class="car-meta">{{ car.model_year }} · {{ car.mileage }} kmpl{% if car.engine_cc %} · {{ car.engine_cc }} cc{% endif %}</div>
+                </div>
+              </div>
+              {% if car.description %}
+              <p class="text-muted small mt-2 mb-0" style="line-height:1.5;">
+                {{ car.description|truncatewords:20 }}
+              </p>
+              {% endif %}
+            </div>
+            <div class="car-actions">
+              <a href="{% url 'car_detail' car.pk %}" class="btn btn-outline-primary btn-sm">View Details</a>
+              <a href="{% url 'book_test_drive' car.pk %}" class="btn btn-primary btn-sm">Book Test Drive</a>
+            </div>
+          </div>
         </div>
         {% empty %}
         <div class="col-12">
-            <div class="empty-state">
-                <i class="bi bi-car-front"></i>
-                <h4 class="mt-3">No cars found</h4>
-                <p class="text-muted">Try adjusting your search filters.</p>
-                <a href="{% url 'car_list' %}" class="btn btn-primary"><i class="bi bi-x-circle me-2"></i>Clear Filters</a>
-            </div>
+          <div class="empty-state">
+            <i class="bi bi-car-front"></i>
+            <h4>No cars found</h4>
+            <p>Try adjusting your filters or search criteria.</p>
+            <a href="{% url 'car_list' %}" class="btn btn-primary">Clear Filters</a>
+          </div>
         </div>
         {% endfor %}
+      </div>
     </div>
+  </div>
 </div>
 
 <!-- Compare Bar -->
-<div id="compareBar" class="compare-bar fixed-bottom text-white p-3 text-center d-none">
-    <span class="fw-semibold" id="compareCount">0</span> car(s) selected
-    <button class="btn btn-warning ms-3 px-4" onclick="compareSelected()"><i class="bi bi-arrow-left-right me-2"></i>Compare Now</button>
+<div class="compare-bar" id="compareBar">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-center">
+      <div>
+        <span class="compare-label"><i class="bi bi-arrow-left-right me-2"></i>Compare Cars</span>
+        <span class="compare-count ms-2" id="compareCount">0 selected</span>
+      </div>
+      <button class="btn btn-accent" onclick="compareSelected()">
+        <i class="bi bi-eye me-1"></i>Compare Now
+      </button>
+    </div>
+  </div>
 </div>
 
 {% endblock %}
 
 {% block extra_js %}
 <script>
-function updateCompare() {
-    const checks = document.querySelectorAll('.compare-check:checked');
-    document.getElementById('compareCount').textContent = checks.length;
-    document.getElementById('compareBar').classList.toggle('d-none', checks.length < 2);
-}
-function compareSelected() {
-    const ids = Array.from(document.querySelectorAll('.compare-check:checked')).map(c => c.value);
-    if (ids.length >= 2) {
-        window.location.href = "{% url 'compare_cars' %}?ids=" + ids.join('&ids=');
+let selectedCars = [];
+
+function updateCompare(checkbox) {
+  const pk = parseInt(checkbox.value);
+  if (checkbox.checked) {
+    if (!selectedCars.includes(pk)) {
+      selectedCars.push(pk);
     }
+  } else {
+    selectedCars = selectedCars.filter(function(id) { return id !== pk; });
+  }
+  updateCompareBar();
+}
+
+function updateCompareBar() {
+  const bar = document.getElementById('compareBar');
+  const count = document.getElementById('compareCount');
+  if (count) count.textContent = selectedCars.length + ' selected';
+  if (bar) bar.classList.toggle('active', selectedCars.length >= 2);
+}
+
+function compareSelected() {
+  if (selectedCars.length < 2) return;
+  window.location.href = '{% url "compare_cars" %}?ids=' + selectedCars.join('&ids=');
 }
 </script>
 {% endblock %}

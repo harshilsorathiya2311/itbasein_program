@@ -1,170 +1,555 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}Home - YourDrive{% endblock %}
+{% block title %}Home — YourDrive{% endblock %}
+
 {% block content %}
 
-<!-- Hero -->
-<div class="hero-section text-white">
-    <div class="container text-center position-relative">
-        <h1 class="fw-bold mb-3">Find Your Perfect Drive</h1>
-        <p class="lead mb-4 mx-auto" style="max-width:600px;">Browse, compare, and book test drives for the best cars from top brands. Your next car is just a click away.</p>
-        <div class="d-flex justify-content-center gap-3 flex-wrap">
-            <a href="{% url 'car_list' %}" class="btn btn-light btn-lg px-5"><i class="bi bi-search me-2"></i>Browse Cars</a>
-            <a href="{% url 'recommendations' %}" class="btn btn-outline-light btn-lg px-5"><i class="bi bi-magic me-2"></i>Get Recommendations</a>
+<!-- ============================================================
+     PREMIUM HERO — 2 Column Split
+============================================================ -->
+<section class="hero-wrap">
+  <div class="hero-container">
+    <div class="hero-grid">
+      <div class="hero-left">
+        <span class="hero-badge"><i class="bi bi-lightning-fill"></i> Smart Car Discovery Platform</span>
+        <h1>Find Your <span class="hero-gradient-text">Perfect</span> Drive</h1>
+        <p class="hero-desc">
+          Browse, compare, and book test drives for the best cars from top brands.
+          Get AI-powered recommendations tailored to your lifestyle and budget.
+        </p>
+        <div class="hero-actions">
+          <a href="{% url 'car_list' %}" class="btn btn-hero-primary">
+            <i class="bi bi-search me-2"></i>Explore Cars
+          </a>
+          <a href="{% url 'recommendations' %}" class="btn btn-hero-secondary">
+            <i class="bi bi-magic me-2"></i>AI Recommendations
+          </a>
         </div>
+      </div>
+      <div class="hero-right">
+        <div class="hero-car-img-wrap">
+          <img src="/media/cars/audi_a4_2024.jpg" alt="Premium Sports Car" class="hero-car-img" loading="eager">
+        </div>
+        <div class="float-card">
+          <div class="fc-icon blue"><i class="bi bi-car-front-fill"></i></div>
+          <div class="fc-info">
+            <div class="fc-number" data-count="{{ total_cars }}">{{ total_cars }}+</div>
+            <div class="fc-label">Cars Available</div>
+            <div class="fc-trend"><i class="bi bi-arrow-up-short"></i> Growing</div>
+          </div>
+        </div>
+        <div class="float-card">
+          <div class="fc-icon orange"><i class="bi bi-building"></i></div>
+          <div class="fc-info">
+            <div class="fc-number" data-count="{{ total_brands }}">{{ total_brands }}+</div>
+            <div class="fc-label">Premium Brands</div>
+            <div class="fc-trend"><i class="bi bi-arrow-up-short"></i> Expanding</div>
+          </div>
+        </div>
+        <div class="float-card">
+          <div class="fc-icon green"><i class="bi bi-calendar-check"></i></div>
+          <div class="fc-info">
+            <div class="fc-number" data-count="{{ total_bookings }}">{{ total_bookings }}+</div>
+            <div class="fc-label">Test Drives Booked</div>
+            <div class="fc-trend"><i class="bi bi-arrow-up-short"></i> Active</div>
+          </div>
+        </div>
+      </div>
     </div>
-</div>
+  </div>
+</section>
 
-<!-- Stats -->
-<div class="container" style="margin-top:-2rem;">
-    <div class="row g-3">
-        <div class="col-md-4 animate-on-scroll">
-            <div class="stat-card card p-4 text-center">
-                <div class="stat-number text-primary">{{ total_cars }}+</div>
-                <div class="stat-label">Cars Available</div>
-            </div>
-        </div>
-        <div class="col-md-4 animate-on-scroll">
-            <div class="stat-card card p-4 text-center">
-                <div class="stat-number text-success">{{ brands.count }}+</div>
-                <div class="stat-label">Car Brands</div>
-            </div>
-        </div>
-        <div class="col-md-4 animate-on-scroll">
-            <div class="stat-card card p-4 text-center">
-                <div class="stat-number text-info-emphasis">{{ total_bookings }}+</div>
-                <div class="stat-label">Test Drives Booked</div>
-            </div>
-        </div>
+<!-- ============================================================
+     PREMIUM STATS — Glassmorphism
+============================================================ -->
+<section class="stats-section">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-glass animate-on-scroll">
+        <div class="sg-icon"><i class="bi bi-car-front-fill"></i></div>
+        <div class="sg-number"><span class="counter" data-target="{{ total_cars }}">{{ total_cars }}</span>+</div>
+        <div class="sg-label">Cars in Collection</div>
+      </div>
+      <div class="stat-glass animate-on-scroll stagger-1">
+        <div class="sg-icon"><i class="bi bi-building"></i></div>
+        <div class="sg-number"><span class="counter" data-target="{{ total_brands }}">{{ total_brands }}</span>+</div>
+        <div class="sg-label">Premium Brands</div>
+      </div>
+      <div class="stat-glass animate-on-scroll stagger-2">
+        <div class="sg-icon"><i class="bi bi-people"></i></div>
+        <div class="sg-number"><span class="counter" data-target="{{ total_users }}">{{ total_users }}</span>+</div>
+        <div class="sg-label">Happy Users</div>
+      </div>
+      <div class="stat-glass animate-on-scroll stagger-3">
+        <div class="sg-icon"><i class="bi bi-calendar-check"></i></div>
+        <div class="sg-number"><span class="counter" data-target="{{ total_bookings }}">{{ total_bookings }}</span>+</div>
+        <div class="sg-label">Test Drives Done</div>
+      </div>
     </div>
-</div>
+  </div>
+</section>
 
-<!-- Brands -->
-<div class="container mt-5">
-    <h2 class="section-title text-center">Browse by Brand</h2>
-    <p class="text-muted text-center mb-4">Explore cars from the world's leading manufacturers</p>
-    <div class="row justify-content-center g-3">
-        {% for brand in brands %}
-        <div class="col-lg-2 col-md-3 col-4 col-xs-6">
-            <div class="brand-card card p-3 text-center h-100">
-                <div class="card-body d-flex flex-column align-items-center justify-content-center p-2">
-                    {% if brand.logo %}
-                    <img src="{{ brand.logo.url }}" alt="{{ brand.name }}" class="mb-2">
-                    {% endif %}
-                    <span class="brand-name">{{ brand.name }}</span>
-                </div>
-            </div>
-        </div>
-        {% empty %}
-        <p class="text-center text-muted">No brands added yet.</p>
-        {% endfor %}
+<!-- ============================================================
+     POPULAR BRANDS
+============================================================ -->
+<section class="brands-section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-subtitle"><i class="bi bi-building"></i> Top Brands</span>
+      <h2 class="section-title">Popular Brands</h2>
+      <p class="section-desc">Explore vehicles from the world's leading automobile manufacturers.</p>
     </div>
-</div>
-
-<!-- Featured Cars -->
-<div class="container mt-5">
-    <div class="d-flex justify-content-between align-items-end mb-4">
-        <div>
-            <h2 class="section-title mb-0">Featured Cars</h2>
-            <p class="text-muted">Hand-picked vehicles for you</p>
+    <div class="brands-grid">
+      {% for brand in brands %}
+      <a href="{% url 'car_list' %}?brand={{ brand.name }}" class="brand-item text-decoration-none animate-on-scroll stagger-{{ forloop.counter }}">
+        {% if brand.logo %}
+        <img src="{{ brand.logo.url }}" alt="{{ brand.name }}">
+        {% else %}
+        <div style="height:48px;display:flex;align-items:center;justify-content:center;font-size:2rem;color:var(--text-muted);margin-bottom:0.5rem;">
+          <i class="bi bi-building"></i>
         </div>
-        <a href="{% url 'car_list' %}" class="btn btn-outline-primary d-none d-md-inline-flex">View All <i class="bi bi-arrow-right ms-2"></i></a>
+        {% endif %}
+        <span class="brand-name">{{ brand.name }}</span>
+      </a>
+      {% empty %}
+      {% for name in "Toyota,Honda,BMW,Mercedes,Audi,Tata,Hyundai,Mahindra"|cut:" "|split:"," %}
+      <div class="brand-item">
+        <div style="height:48px;display:flex;align-items:center;justify-content:center;font-size:2rem;color:var(--text-muted);margin-bottom:0.5rem;">
+          <i class="bi bi-building"></i>
+        </div>
+        <span class="brand-name">{{ name }}</span>
+      </div>
+      {% endfor %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     WHY CHOOSE YOURDRIVE
+============================================================ -->
+<section class="why-choose">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-subtitle"><i class="bi bi-patch-check-fill"></i> Why YourDrive</span>
+      <h2 class="section-title">Why Choose YourDrive?</h2>
+      <p class="section-desc">We make finding your next car effortless, informed, and exciting.</p>
+    </div>
+    <div class="why-grid">
+      <div class="why-card-modern animate-on-scroll">
+        <div class="wc-icon wc-blue"><i class="bi bi-collection"></i></div>
+        <h5>Multiple Brands</h5>
+        <p>Compare cars from all leading manufacturers under one roof with detailed specs.</p>
+      </div>
+      <div class="why-card-modern animate-on-scroll stagger-1">
+        <div class="wc-icon wc-orange"><i class="bi bi-robot"></i></div>
+        <h5>Smart Recommendations</h5>
+        <p>AI-powered suggestions that match your preferences, budget, and lifestyle.</p>
+      </div>
+      <div class="why-card-modern animate-on-scroll stagger-2">
+        <div class="wc-icon wc-green"><i class="bi bi-calendar-check"></i></div>
+        <h5>Easy Test Drive Booking</h5>
+        <p>Schedule a test drive at your convenience with just a few clicks.</p>
+      </div>
+      <div class="why-card-modern animate-on-scroll stagger-3">
+        <div class="wc-icon wc-purple"><i class="bi bi-shield-check"></i></div>
+        <h5>Trusted Platform</h5>
+        <p>Secure, verified listings and transparent pricing you can rely on.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     HOW IT WORKS
+============================================================ -->
+<section class="how-section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-subtitle"><i class="bi bi-signpost-2"></i> Simple Process</span>
+      <h2 class="section-title">How It Works</h2>
+      <p class="section-desc">Get behind the wheel in four easy steps.</p>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card animate-on-scroll">
+        <div class="step-number">1</div>
+        <h5>Browse Cars</h5>
+        <p>Explore our extensive collection of cars from top brands with detailed specs and images.</p>
+      </div>
+      <div class="step-card animate-on-scroll stagger-1">
+        <div class="step-number">2</div>
+        <h5>Compare &amp; Choose</h5>
+        <p>Use our side-by-side comparison and AI recommendations to find your perfect match.</p>
+      </div>
+      <div class="step-card animate-on-scroll stagger-2">
+        <div class="step-number">3</div>
+        <h5>Book a Test Drive</h5>
+        <p>Schedule a test drive at your preferred date, time, and location with one click.</p>
+      </div>
+      <div class="step-card animate-on-scroll stagger-3">
+        <div class="step-number">4</div>
+        <h5>Drive Home</h5>
+        <p>Experience your chosen car, get expert guidance, and drive away with confidence.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FEATURED CARS
+============================================================ -->
+<section class="featured-section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-subtitle"><i class="bi bi-car-front-fill"></i> Our Collection</span>
+      <h2 class="section-title">Featured Cars</h2>
+      <p class="section-desc">Hand-picked vehicles from top brands, ready for your test drive.</p>
     </div>
     <div class="row g-4">
-        {% for car in featured_cars %}
-        <div class="col-lg-4 col-md-6 animate-on-scroll">
-            <div class="car-card card h-100">
-                {% if car.image %}
-                <img src="{{ car.image.url }}" class="card-img-top" alt="{{ car }}">
-                {% else %}
-                <div class="bg-light d-flex align-items-center justify-content-center" style="height:200px;">
-                    <i class="bi bi-car-front text-muted" style="font-size:4rem;"></i>
-                </div>
-                {% endif %}
-                <div class="card-body d-flex flex-column">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <h5 class="car-title mb-0">{{ car.brand.name }} {{ car.name }}</h5>
-                        {% if car.is_available %}
-                        <span class="badge bg-success ms-2">Available</span>
-                        {% endif %}
-                    </div>
-                    <div class="mb-2">
-                        <span class="badge bg-primary me-1">{{ car.fuel_type }}</span>
-                        <span class="badge bg-secondary me-1">{{ car.transmission }}</span>
-                        <span class="badge bg-info">{{ car.seats }} seats</span>
-                    </div>
-                    <p class="car-price mb-2">₹ {{ car.price|floatformat:2 }}</p>
-                    <p class="text-muted small mb-3">{{ car.mileage }} kmpl &bull; {{ car.model_year }}</p>
-                    <div class="mt-auto d-grid gap-2">
-                        <a href="{% url 'car_detail' car.pk %}" class="btn btn-outline-primary btn-sm">View Details</a>
-                        <a href="{% url 'book_test_drive' car.pk %}" class="btn btn-primary btn-sm">Book Test Drive</a>
-                    </div>
-                </div>
+      {% for car in featured_cars %}
+      <div class="col-lg-4 col-md-6 animate-on-scroll stagger-{{ forloop.counter }}">
+        <div class="car-card">
+          <div class="car-img-wrap">
+            {% if car.image %}
+            <img src="{{ car.image.url }}" alt="{{ car }}">
+            {% else %}
+            <div style="width:100%;height:100%;background:var(--surface-alt);display:flex;align-items:center;justify-content:center;font-size:2.5rem;color:var(--text-muted);">
+              <i class="bi bi-car-front-fill"></i>
             </div>
+            {% endif %}
+            <span class="car-badge"><i class="bi bi-check-circle-fill me-1" style="font-size:0.6rem;"></i> Available</span>
+          </div>
+          <div class="car-body">
+            <div class="brand-row">
+              {% if car.brand.image %}
+              <img src="{{ car.brand.image.url }}" alt="{{ car.brand.name }}" class="brand-logo">
+              {% endif %}
+              <span class="brand-label">{{ car.brand.name }}</span>
+            </div>
+            <h5>{{ car.name }}</h5>
+            <div class="specs-row">
+              <span class="spec"><i class="bi bi-fuel-pump"></i> {{ car.fuel_type }}</span>
+              <span class="spec"><i class="bi bi-gear"></i> {{ car.transmission }}</span>
+              <span class="spec"><i class="bi bi-speedometer2"></i> {{ car.mileage }} kmpl</span>
+            </div>
+            <div class="price-row">
+              <span class="price">₹ {{ car.price|floatformat:0 }}</span>
+              <span class="price-label">onwards</span>
+            </div>
+            <div class="action-row">
+              <a href="{% url 'car_detail' car.pk %}" class="btn btn-outline-primary">View Details</a>
+              <a href="{% url 'book_test_drive' car.pk %}" class="btn btn-primary">Book Now</a>
+            </div>
+          </div>
         </div>
-        {% empty %}
-        <div class="col-12 text-center py-5">
-            <i class="bi bi-car-front text-muted" style="font-size:4rem;opacity:0.3;"></i>
-            <p class="text-muted mt-3">No cars available yet.</p>
+      </div>
+      {% empty %}
+      <div class="col-12">
+        <div class="empty-state">
+          <i class="bi bi-car-front-fill"></i>
+          <h4>No cars available yet</h4>
+          <p>Check back soon for new listings from top brands.</p>
         </div>
-        {% endfor %}
+      </div>
+      {% endfor %}
     </div>
-    <div class="text-center mt-4 d-md-none">
-        <a href="{% url 'car_list' %}" class="btn btn-outline-primary">View All Cars <i class="bi bi-arrow-right ms-2"></i></a>
+    <div class="text-center mt-4">
+      <a href="{% url 'car_list' %}" class="btn btn-outline-primary">
+        View All Cars <i class="bi bi-arrow-right ms-1"></i>
+      </a>
     </div>
-</div>
+  </div>
+</section>
 
-<!-- AI Chat -->
-<div class="container mt-5 mb-5">
-    <div class="chat-card card">
-        <div class="card-header d-flex align-items-center">
-            <i class="bi bi-robot fs-5 me-2"></i>
-            <span class="fw-semibold">AI Car Assistant</span>
-        </div>
-        <div class="card-body">
-            <p class="text-muted small mb-3">Ask me about car recommendations — e.g. <em>"Suggest a car under 15 lakh with good mileage"</em></p>
-            <div id="chatMessages" class="mb-3">
-                <div class="text-muted text-center small">Start a conversation below...</div>
-            </div>
-            <div class="input-group">
-                <input type="text" id="chatInput" class="form-control chat-input" placeholder="Ask about cars...">
-                <button class="btn btn-primary px-4" onclick="sendChatMessage()"><i class="bi bi-send me-1"></i>Send</button>
-            </div>
-        </div>
+<!-- ============================================================
+     AI RECOMMENDATIONS
+============================================================ -->
+<section class="section-padding" style="background:var(--surface);">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-subtitle"><i class="bi bi-magic"></i> Smart Suggestions</span>
+      <h2 class="section-title">AI-Powered Recommendations</h2>
+      <p class="section-desc">Tell us what you need and let our AI find the perfect car for you.</p>
     </div>
-</div>
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+        <div class="recommend-card" style="padding:2rem;">
+          <form method="get" action="{% url 'recommendations' %}">
+            <div class="row g-3">
+              <div class="col-md-3">
+                <label class="form-label">Budget Range</label>
+                <select name="budget" class="form-select">
+                  <option value="">Any Budget</option>
+                  <option value="5000000">Under ₹5 Lakh</option>
+                  <option value="10000000">₹5 - ₹10 Lakh</option>
+                  <option value="15000000">₹10 - ₹15 Lakh</option>
+                  <option value="20000000">₹15 - ₹20 Lakh</option>
+                  <option value="30000000">₹20 Lakh+</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Fuel Type</label>
+                <select name="fuel_type" class="form-select">
+                  <option value="">Any Fuel</option>
+                  <option value="Petrol">Petrol</option>
+                  <option value="Diesel">Diesel</option>
+                  <option value="Electric">Electric</option>
+                  <option value="Hybrid">Hybrid</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Transmission</label>
+                <select name="transmission" class="form-select">
+                  <option value="">Any</option>
+                  <option value="Manual">Manual</option>
+                  <option value="Automatic">Automatic</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Seating Capacity</label>
+                <select name="seats" class="form-select">
+                  <option value="">Any</option>
+                  <option value="4">2-4 Seats</option>
+                  <option value="5">5 Seats</option>
+                  <option value="7">7 Seats+</option>
+                </select>
+              </div>
+            </div>
+            <div class="text-center mt-3">
+              <button type="submit" class="btn btn-primary">
+                <i class="bi bi-magic me-2"></i>Get Smart Recommendations
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     TESTIMONIALS
+============================================================ -->
+<section class="testimonials-section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-subtitle"><i class="bi bi-chat-quote"></i> Testimonials</span>
+      <h2 class="section-title">What Our Users Say</h2>
+      <p class="section-desc">Hear from people who found their perfect drive through YourDrive.</p>
+    </div>
+    <div class="testimonials-grid">
+      {% for review in reviews %}
+      <div class="testimonial-card animate-on-scroll stagger-{{ forloop.counter }}">
+        <div class="tc-stars">
+          {% for i in "12345"|make_list %}
+          <i class="bi bi-star{% if forloop.counter > review.rating %}-fill{% endif %}"></i>
+          {% endfor %}
+        </div>
+        <p class="tc-text">{{ review.comment|truncatewords:30 }}</p>
+        <div class="tc-author">
+          <div class="tc-avatar">{{ review.user.username|first|upper }}</div>
+          <div>
+            <div class="tc-name">{{ review.user.username }}</div>
+            <div class="tc-role">{{ review.car.brand.name }} {{ review.car.name }}</div>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="testimonial-card animate-on-scroll">
+        <div class="tc-stars"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i></div>
+        <p class="tc-text">YourDrive made finding and booking a test drive incredibly easy. The AI recommendations were spot-on and I found my dream car in minutes!</p>
+        <div class="tc-author">
+          <div class="tc-avatar">R</div>
+          <div>
+            <div class="tc-name">Rahul S.</div>
+            <div class="tc-role">Sedan Owner</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card animate-on-scroll stagger-1">
+        <div class="tc-stars"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i></div>
+        <p class="tc-text">The comparison feature helped me choose between two SUVs effortlessly. The whole process from browsing to booking took less than 10 minutes.</p>
+        <div class="tc-author">
+          <div class="tc-avatar">P</div>
+          <div>
+            <div class="tc-name">Priya M.</div>
+            <div class="tc-role">SUV Buyer</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card animate-on-scroll stagger-2">
+        <div class="tc-stars"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i></div>
+        <p class="tc-text">Excellent platform! The test drive booking was smooth and the dealer called me right away to confirm. Highly recommended for anyone car shopping.</p>
+        <div class="tc-author">
+          <div class="tc-avatar">A</div>
+          <div>
+            <div class="tc-name">Arjun K.</div>
+            <div class="tc-role">First-time Buyer</div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FAQ
+============================================================ -->
+<section class="faq-section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-subtitle"><i class="bi bi-question-circle"></i> FAQ</span>
+      <h2 class="section-title">Frequently Asked Questions</h2>
+      <p class="section-desc">Everything you need to know about YourDrive.</p>
+    </div>
+    <div class="faq-container">
+      <div class="faq-item active">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <span>How do I book a test drive?</span>
+          <i class="bi bi-chevron-down"></i>
+        </div>
+        <div class="faq-answer">Simply browse our car collection, select a car you're interested in, and click "Book Test Drive". Choose your preferred date, time, and submit. You'll receive a confirmation once the dealer approves your booking.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <span>Is the AI recommendation accurate?</span>
+          <i class="bi bi-chevron-down"></i>
+        </div>
+        <div class="faq-answer">Our AI recommendation engine uses multiple machine learning models trained on extensive car data. It considers budget, brand preference, fuel type, transmission, and more to suggest the best matches. You can also compare recommendations across different algorithms.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <span>Can I cancel or reschedule a booking?</span>
+          <i class="bi bi-chevron-down"></i>
+        </div>
+        <div class="faq-answer">Yes, you can cancel pending bookings from your "My Bookings" page. For rescheduling, please cancel the existing booking and create a new one with your preferred date and time.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <span>Is YourDrive free to use?</span>
+          <i class="bi bi-chevron-down"></i>
+        </div>
+        <div class="faq-answer">Absolutely! Browsing cars, comparing specs, getting AI recommendations, and booking test drives are completely free. You only pay the dealer when you decide to purchase a vehicle.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <span>How do I compare multiple cars?</span>
+          <i class="bi bi-chevron-down"></i>
+        </div>
+        <div class="faq-answer">Navigate to our car listing page and check the "Compare" box on at least 2 cars you're interested in. A comparison bar will appear at the bottom — click "Compare Now" to see a side-by-side view of features, specs, and pricing.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     NEWSLETTER
+============================================================ -->
+<section class="newsletter-section">
+  <div class="container">
+    <div class="newsletter-content">
+      <h2>Stay Updated</h2>
+      <p>Get the latest car listings, deals, and automotive insights delivered to your inbox.</p>
+      <form class="newsletter-form" onsubmit="event.preventDefault();alert('Thank you for subscribing! You\'ll hear from us soon.');this.querySelector('input').value='';">
+        <input type="email" placeholder="Enter your email address" required>
+        <button type="submit">Subscribe</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     AI CHAT (collapsed CTA)
+============================================================ -->
+<section class="section-padding" style="background:var(--surface-alt);">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-subtitle"><i class="bi bi-robot"></i> Virtual Assistant</span>
+      <h2 class="section-title">Ask Our AI Assistant</h2>
+      <p class="section-desc">Have questions about cars? Our AI is here to help 24/7.</p>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="chat-card">
+          <div class="chat-header">
+            <div class="d-flex align-items-center gap-3">
+              <div class="chat-avatar"><i class="bi bi-robot"></i></div>
+              <div>
+                <h5>AI Car Assistant</h5>
+                <p>Ask me about cars — e.g. <em>"Suggest a car under 15 lakh with good mileage"</em></p>
+              </div>
+            </div>
+          </div>
+          <div class="chat-messages" id="chatMessages">
+            <div class="text-center text-muted small py-3" id="chatPlaceholder">Start a conversation below...</div>
+          </div>
+          <div class="chat-input-wrapper">
+            <div class="input-group">
+              <input type="text" id="chatInput" class="form-control" placeholder="Ask about cars..." autocomplete="off">
+              <button class="btn btn-primary" onclick="sendChatMessage()">
+                <i class="bi bi-send me-1"></i>Send
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
 {% endblock %}
 
 {% block extra_js %}
 <script>
-function sendChatMessage() {
-    const input = document.getElementById('chatInput');
-    const message = input.value.trim();
-    if (!message) return;
-    const div = document.getElementById('chatMessages');
-    div.innerHTML += `<div class="text-end mb-2"><span class="badge bg-primary">You: ${message}</span></div>`;
-    div.innerHTML += `<div class="text-start mb-2"><em class="text-muted small">Thinking...</em></div>`;
-    input.value = '';
-    fetch('{% url "openai_chat" %}', {
-        method: 'POST',
-        headers: {'Content-Type':'application/json','X-CSRFToken':'{{ csrf_token }}'},
-        body: JSON.stringify({message:message})
-    })
-    .then(r => r.json())
-    .then(d => {
-        div.innerHTML = div.innerHTML.replace(
-            '<div class="text-start mb-2"><em class="text-muted small">Thinking...</em></div>',
-            `<div class="text-start mb-2"><span class="badge bg-success">Assistant: ${d.reply}</span></div>`
-        );
-        div.scrollTop = div.scrollHeight;
-    })
-    .catch(() => {
-        div.innerHTML = div.innerHTML.replace(
-            '<div class="text-start mb-2"><em class="text-muted small">Thinking...</em></div>',
-            '<div class="text-start mb-2"><span class="badge bg-danger">Error getting response</span></div>'
-        );
-    });
+(function() {
+  var scrollEls = document.querySelectorAll('.animate-on-scroll');
+  if (scrollEls.length) {
+    var scrollObs = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animate-in');
+          scrollObs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    scrollEls.forEach(function(el) { scrollObs.observe(el); });
+  }
+})();
+
+function toggleFaq(el) {
+  el.parentElement.classList.toggle('active');
 }
+
+function sendChatMessage() {
+  var input = document.getElementById('chatInput');
+  var msg = input.value.trim();
+  if (!msg) return;
+  var container = document.getElementById('chatMessages');
+  var placeholder = document.getElementById('chatPlaceholder');
+  if (placeholder) placeholder.remove();
+  container.insertAdjacentHTML('beforeend', '<div class="chat-msg user"><div class="msg-bubble">' + escapeHtml(msg) + '</div></div>');
+  container.insertAdjacentHTML('beforeend', '<div class="chat-msg thinking"><div class="msg-bubble">Thinking...</div></div>');
+  container.scrollTop = container.scrollHeight;
+  input.value = '';
+  fetch('{% url "openai_chat" %}', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+    body: JSON.stringify({ message: msg })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(d) {
+    container.querySelector('.chat-msg.thinking')?.remove();
+    container.insertAdjacentHTML('beforeend', '<div class="chat-msg assistant"><div class="msg-bubble">' + escapeHtml(d.reply || 'No response') + '</div></div>');
+    container.scrollTop = container.scrollHeight;
+  })
+  .catch(function() {
+    container.querySelector('.chat-msg.thinking')?.remove();
+    container.insertAdjacentHTML('beforeend', '<div class="chat-msg assistant"><div class="msg-bubble text-danger">Sorry, something went wrong. Please try again.</div></div>');
+    container.scrollTop = container.scrollHeight;
+  });
+}
+function escapeHtml(str) { var d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
+document.getElementById('chatInput')?.addEventListener('keydown', function(e) { if (e.key === 'Enter') sendChatMessage(); });
 </script>
 {% endblock %}

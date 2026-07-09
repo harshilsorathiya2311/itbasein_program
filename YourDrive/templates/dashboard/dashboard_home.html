@@ -1,193 +1,253 @@
 {% extends 'base.html' %}
-{% block title %}Admin Dashboard - YourDrive{% endblock %}
+{% load static %}
+{% block title %}Dashboard — YourDrive{% endblock %}
+
 {% block content %}
-<div class="container-fluid py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2><i class="bi bi-bar-chart"></i> Admin Dashboard</h2>
-        <a href="{% url 'retrain_model' %}" class="btn btn-warning" onclick="return confirm('Retrain ML models?')">
-            <i class="bi bi-arrow-repeat"></i> Retrain ML Models
-        </a>
+
+<div class="page-header">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+      <div>
+        <div class="breadcrumb-custom">
+          <a href="{% url 'home' %}">Home</a>
+          <span class="separator">/</span>
+          <span>Dashboard</span>
+        </div>
+        <h1><i class="bi bi-bar-chart me-2"></i>Admin Dashboard</h1>
+        <p>Overview of your platform's performance</p>
+      </div>
+      <a href="#" class="btn btn-outline-light btn-sm" data-confirm="Retrain ML models? This may take a moment."
+         onclick="event.preventDefault(); if(confirm('Retrain all ML models? This may take a moment.')) window.location.href='{% url 'dashboard_home' %}?retrain=1'">
+        <i class="bi bi-arrow-repeat me-1"></i>Retrain Models
+      </a>
     </div>
-
-    <!-- Stats Cards -->
-    <div class="row mb-4">
-        <div class="col-xl-2 col-md-4 mb-3">
-            <div class="card bg-primary text-white h-100">
-                <div class="card-body">
-                    <h5>{{ total_users }}</h5>
-                    <small>Total Users</small>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-2 col-md-4 mb-3">
-            <div class="card bg-success text-white h-100">
-                <div class="card-body">
-                    <h5>{{ total_cars }}</h5>
-                    <small>Total Cars</small>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-2 col-md-4 mb-3">
-            <div class="card bg-info text-white h-100">
-                <div class="card-body">
-                    <h5>{{ total_brands }}</h5>
-                    <small>Total Brands</small>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-2 col-md-4 mb-3">
-            <div class="card bg-warning text-dark h-100">
-                <div class="card-body">
-                    <h5>{{ total_bookings }}</h5>
-                    <small>Total Bookings</small>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-2 col-md-4 mb-3">
-            <div class="card bg-danger text-white h-100">
-                <div class="card-body">
-                    <h5>{{ pending_bookings }}</h5>
-                    <small>Pending</small>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-2 col-md-4 mb-3">
-            <div class="card bg-secondary text-white h-100">
-                <div class="card-body">
-                    <h5>{{ approved_bookings }}</h5>
-                    <small>Approved</small>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <!-- Booking Chart -->
-        <div class="col-md-6 mb-4">
-            <div class="card shadow-sm h-100">
-                <div class="card-header">
-                    <h5 class="mb-0"><i class="bi bi-graph-up"></i> Booking Trends (30 days)</h5>
-                </div>
-                <div class="card-body">
-                    {% if booking_chart %}
-                    <img src="data:image/png;base64,{{ booking_chart }}" class="img-fluid" alt="Booking Trends">
-                    {% else %}
-                    <p class="text-muted text-center">Not enough data</p>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-
-        <!-- ML Accuracy Chart -->
-        <div class="col-md-6 mb-4">
-            <div class="card shadow-sm h-100">
-                <div class="card-header">
-                    <h5 class="mb-0"><i class="bi bi-cpu"></i> ML Model Accuracy</h5>
-                </div>
-                <div class="card-body">
-                    {% if accuracy_chart %}
-                    <img src="data:image/png;base64,{{ accuracy_chart }}" class="img-fluid" alt="ML Accuracy">
-                    {% else %}
-                    <p class="text-muted text-center">Train models first</p>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <!-- Most Booked Car -->
-        <div class="col-md-4 mb-4">
-            <div class="card shadow-sm h-100">
-                <div class="card-header">
-                    <h5 class="mb-0"><i class="bi bi-trophy"></i> Most Booked Car</h5>
-                </div>
-                <div class="card-body text-center">
-                    {% if most_booked_car %}
-                    <h4>{{ most_booked_car.car__brand__name }} {{ most_booked_car.car__name }}</h4>
-                    <p class="text-muted">{{ most_booked_car.count }} bookings</p>
-                    {% else %}
-                    <p class="text-muted">No data</p>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-
-        <!-- Popular Cars -->
-        <div class="col-md-4 mb-4">
-            <div class="card shadow-sm h-100">
-                <div class="card-header">
-                    <h5 class="mb-0"><i class="bi bi-eye"></i> Most Viewed Cars</h5>
-                </div>
-                <div class="card-body">
-                    <ul class="list-group list-group-flush">
-                        {% for car in popular_cars %}
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            {{ car.car__brand__name }} {{ car.car__name }}
-                            <span class="badge bg-primary rounded-pill">{{ car.count }}</span>
-                        </li>
-                        {% empty %}
-                        <li class="list-group-item text-muted">No data yet</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <!-- Recent Bookings -->
-        <div class="col-md-4 mb-4">
-            <div class="card shadow-sm h-100">
-                <div class="card-header">
-                    <h5 class="mb-0"><i class="bi bi-clock-history"></i> Recent Bookings</h5>
-                </div>
-                <div class="card-body" style="max-height: 300px; overflow-y: auto;">
-                    <ul class="list-group list-group-flush">
-                        {% for booking in recent_bookings %}
-                        <li class="list-group-item">
-                            <strong>{{ booking.user.username }}</strong> -
-                            {{ booking.car.brand.name }} {{ booking.car.name }}
-                            <span class="badge bg-{% if booking.status == 'Pending' %}warning text-dark{% elif booking.status == 'Approved' %}success{% elif booking.status == 'Completed' %}info{% elif booking.status == 'Cancelled' %}secondary{% else %}danger{% endif %} float-end">
-                                {{ booking.status }}
-                            </span>
-                        </li>
-                        {% empty %}
-                        <li class="list-group-item text-muted">No bookings yet</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Booking Status Distribution -->
-    <div class="row">
-        <div class="col-md-6 mb-4">
-            <div class="card shadow-sm">
-                <div class="card-header">
-                    <h5 class="mb-0"><i class="bi bi-pie-chart"></i> Booking Status Distribution</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row text-center">
-                        {% for status, count in status_data.items %}
-                        <div class="col-3">
-                            <h6>{{ status }}</h6>
-                            <h4>{{ count }}</h4>
-                        </div>
-                        {% endfor %}
-                    </div>
-                    <div class="progress mt-3" style="height: 25px;">
-                        {% with total=total_bookings %}
-                        {% if total > 0 %}
-                        <div class="progress-bar bg-warning" style="width: {{ pending_bookings|floatformat:0 }}%">Pending</div>
-                        <div class="progress-bar bg-success" style="width: {{ approved_bookings|floatformat:0 }}%">Approved</div>
-                        <div class="progress-bar bg-info" style="width: {{ completed_bookings|floatformat:0 }}%">Done</div>
-                        <div class="progress-bar bg-danger" style="width: {{ cancelled_bookings|floatformat:0 }}%">Cancelled</div>
-                        {% endif %}
-                        {% endwith %}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+  </div>
 </div>
+
+<div class="container py-4">
+  <!-- Stat Cards -->
+  <div class="row g-3 mb-4">
+    <div class="col-xl-2 col-md-4 col-6 animate-on-scroll">
+      <div class="dashboard-stat">
+        <div class="ds-header">
+          <div class="ds-icon" style="background:var(--primary-bg);color:var(--primary);">
+            <i class="bi bi-people"></i>
+          </div>
+        </div>
+        <div class="ds-value" style="color:var(--primary);">{{ total_users }}</div>
+        <div class="ds-label">Total Users</div>
+      </div>
+    </div>
+    <div class="col-xl-2 col-md-4 col-6 animate-on-scroll stagger-1">
+      <div class="dashboard-stat">
+        <div class="ds-header">
+          <div class="ds-icon" style="background:var(--success-bg);color:var(--success);">
+            <i class="bi bi-car-front"></i>
+          </div>
+        </div>
+        <div class="ds-value" style="color:var(--success);">{{ total_cars }}</div>
+        <div class="ds-label">Total Cars</div>
+      </div>
+    </div>
+    <div class="col-xl-2 col-md-4 col-6 animate-on-scroll stagger-2">
+      <div class="dashboard-stat">
+        <div class="ds-header">
+          <div class="ds-icon" style="background:var(--accent-bg);color:var(--accent-dark);">
+            <i class="bi bi-building"></i>
+          </div>
+        </div>
+        <div class="ds-value" style="color:var(--accent-dark);">{{ total_brands }}</div>
+        <div class="ds-label">Total Brands</div>
+      </div>
+    </div>
+    <div class="col-xl-2 col-md-4 col-6 animate-on-scroll stagger-3">
+      <div class="dashboard-stat">
+        <div class="ds-header">
+          <div class="ds-icon" style="background:var(--warning-bg);color:var(--warning);">
+            <i class="bi bi-calendar-check"></i>
+          </div>
+        </div>
+        <div class="ds-value" style="color:var(--warning);">{{ total_bookings }}</div>
+        <div class="ds-label">Total Bookings</div>
+      </div>
+    </div>
+    <div class="col-xl-2 col-md-4 col-6 animate-on-scroll stagger-4">
+      <div class="dashboard-stat">
+        <div class="ds-header">
+          <div class="ds-icon" style="background:var(--danger-bg);color:var(--danger);">
+            <i class="bi bi-clock"></i>
+          </div>
+        </div>
+        <div class="ds-value" style="color:var(--danger);">{{ pending_bookings }}</div>
+        <div class="ds-label">Pending</div>
+      </div>
+    </div>
+    <div class="col-xl-2 col-md-4 col-6 animate-on-scroll stagger-5">
+      <div class="dashboard-stat">
+        <div class="ds-header">
+          <div class="ds-icon" style="background:var(--info-bg);color:var(--info);">
+            <i class="bi bi-check2-circle"></i>
+          </div>
+        </div>
+        <div class="ds-value" style="color:var(--info);">{{ approved_bookings }}</div>
+        <div class="ds-label">Approved</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts & Stats Row -->
+  <div class="row g-4 mb-4">
+    <!-- Booking Trends Chart -->
+    <div class="col-lg-6">
+      <div class="card card-hover h-100">
+        <div class="card-header">
+          <i class="bi bi-graph-up me-2"></i>Booking Trends (30 Days)
+        </div>
+        <div class="card-body text-center">
+          {% if booking_chart %}
+          <img src="data:image/png;base64,{{ booking_chart }}" alt="Booking Trends" class="img-fluid" style="max-height:280px;">
+          {% else %}
+          <div class="py-4 text-muted">No booking data available.</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- ML Model Accuracy -->
+    <div class="col-lg-6">
+      <div class="card card-hover h-100">
+        <div class="card-header">
+          <i class="bi bi-bar-chart me-2"></i>ML Model Accuracy
+        </div>
+        <div class="card-body text-center">
+          {% if accuracy_chart %}
+          <img src="data:image/png;base64,{{ accuracy_chart }}" alt="Model Accuracy" class="img-fluid" style="max-height:280px;">
+          {% else %}
+          <div class="py-4 text-muted">No accuracy data available.</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats & List Row -->
+  <div class="row g-4">
+    <!-- Most Booked Car -->
+    {% if most_booked_car %}
+    <div class="col-lg-4">
+      <div class="card card-hover h-100">
+        <div class="card-header">
+          <i class="bi bi-trophy me-2"></i>Most Booked Car
+        </div>
+        <div class="card-body text-center py-4">
+          <i class="bi bi-trophy" style="font-size:2.5rem;color:var(--warning);margin-bottom:1rem;display:block;"></i>
+          <h5 class="fw-bold">{{ most_booked_car.car__brand__name }} {{ most_booked_car.car__name }}</h5>
+          <span class="badge bg-warning mt-2">{{ most_booked_car.count }} booking{{ most_booked_car.count|pluralize }}</span>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Most Viewed Cars -->
+    <div class="col-lg-4">
+      <div class="card card-hover h-100">
+        <div class="card-header">
+          <i class="bi bi-eye me-2"></i>Most Viewed Cars
+        </div>
+        <div class="card-body p-0">
+          <ul class="list-group list-group-flush">
+            {% for car in popular_cars %}
+            <li class="list-group-item d-flex justify-content-between align-items-center py-3 px-4">
+              <div>
+                <span class="fw-semibold">{{ car.car__brand__name }} {{ car.car__name }}</span>
+              </div>
+              <span class="badge bg-primary rounded-pill">{{ car.count }}</span>
+            </li>
+            {% empty %}
+            <li class="list-group-item text-center text-muted py-4">No view data yet</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Bookings -->
+    <div class="col-lg-4">
+      <div class="card card-hover h-100">
+        <div class="card-header">
+          <i class="bi bi-clock-history me-2"></i>Recent Bookings
+        </div>
+        <div class="card-body p-0" style="max-height:300px;overflow-y:auto;">
+          <ul class="list-group list-group-flush">
+            {% for b in recent_bookings %}
+            <li class="list-group-item py-3 px-4">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <span class="fw-semibold d-block" style="font-size:0.875rem;">{{ b.car.brand.name }} {{ b.car.name }}</span>
+                  <small class="text-muted">{{ b.user.username }} · {{ b.booking_date|date:"M d, Y" }}</small>
+                </div>
+                <span class="badge {% if b.status == 'Pending' %}bg-warning{% elif b.status == 'Approved' %}bg-success{% elif b.status == 'Completed' %}bg-info{% else %}bg-secondary{% endif %}">
+                  {{ b.status }}
+                </span>
+              </div>
+            </li>
+            {% empty %}
+            <li class="list-group-item text-center text-muted py-4">No bookings yet</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Booking Status Distribution -->
+  <div class="row mt-4">
+    <div class="col-12">
+      <div class="card card-hover">
+        <div class="card-header">
+          <i class="bi bi-pie-chart me-2"></i>Booking Status Distribution
+        </div>
+        <div class="card-body">
+          <div class="row g-3 align-items-center">
+            <div class="col-md-8">
+              <div class="progress" style="height:28px;">
+                {% if total_bookings > 0 %}
+                <div class="progress-bar bg-warning" role="progressbar"
+                     style="width:{% widthratio pending_bookings total_bookings 100 %}%"
+                     title="Pending: {{ pending_bookings }}">
+                  {% widthratio pending_bookings total_bookings 100 %}%
+                </div>
+                <div class="progress-bar bg-success" role="progressbar"
+                     style="width:{% widthratio approved_bookings total_bookings 100 %}%"
+                     title="Approved: {{ approved_bookings }}">
+                  {% widthratio approved_bookings total_bookings 100 %}%
+                </div>
+                <div class="progress-bar bg-info" role="progressbar"
+                     style="width:{% widthratio completed_bookings total_bookings 100 %}%"
+                     title="Completed: {{ completed_bookings }}">
+                  {% widthratio completed_bookings total_bookings 100 %}%
+                </div>
+                <div class="progress-bar bg-secondary" role="progressbar"
+                     style="width:{% widthratio cancelled_bookings total_bookings 100 %}%"
+                     title="Cancelled: {{ cancelled_bookings }}">
+                  {% widthratio cancelled_bookings total_bookings 100 %}%
+                </div>
+                {% endif %}
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="d-flex flex-wrap gap-3 justify-content-md-end">
+                <div><span class="badge bg-warning">{{ pending_bookings }}</span> Pending</div>
+                <div><span class="badge bg-success">{{ approved_bookings }}</span> Approved</div>
+                <div><span class="badge bg-info">{{ completed_bookings }}</span> Completed</div>
+                <div><span class="badge bg-secondary">{{ cancelled_bookings }}</span> Cancelled</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 {% endblock %}

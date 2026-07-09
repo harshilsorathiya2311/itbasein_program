@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}YourDriveAi - Find Your Perfect Car{% endblock %}
+{% block content %}
+
+<section class="hero bg-dark text-white text-center py-5" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);">
+    <div class="container">
+        <h1 class="display-4 fw-bold mb-3">Find Your Perfect Drive</h1>
+        <p class="lead mb-4">AI-powered car recommendations tailored to your preferences. Book test drives instantly.</p>
+        <div class="d-flex justify-content-center gap-3">
+            <a href="{% url 'car_list' %}" class="btn btn-primary btn-lg px-4">Browse Cars</a>
+            <a href="{% url 'recommend_cars' %}" class="btn btn-outline-light btn-lg px-4">Get Recommendations</a>
+        </div>
+    </div>
+</section>
+
+<section class="features py-5 bg-light">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100 text-center p-4">
+                    <div class="card-body">
+                        <i class="bi bi-robot display-3 text-primary mb-3"></i>
+                        <h5>AI Recommendations</h5>
+                        <p class="text-muted">Smart algorithms match you with the perfect vehicle based on your preferences and budget.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100 text-center p-4">
+                    <div class="card-body">
+                        <i class="bi bi-calendar-check display-3 text-primary mb-3"></i>
+                        <h5>Easy Test Drive Booking</h5>
+                        <p class="text-muted">Schedule test drives at your convenience with real-time availability and instant confirmation.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100 text-center p-4">
+                    <div class="card-body">
+                        <i class="bi bi-graph-up-arrow display-3 text-primary mb-3"></i>
+                        <h5>Analytics Dashboard</h5>
+                        <p class="text-muted">Comprehensive insights into car popularity, booking trends, and user behavior.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% if featured_cars %}
+<section class="featured-cars py-5">
+    <div class="container">
+        <h2 class="text-center mb-4">Featured Cars</h2>
+        <div class="row g-4">
+            {% for car in featured_cars %}
+            <div class="col-md-4 col-lg-4">
+                <div class="card h-100 shadow-sm border-0 car-card">
+                    {% if car.image %}
+                    <img src="{{ car.image.url }}" class="card-img-top" alt="{{ car.name }}" style="height: 200px; object-fit: cover;">
+                    {% else %}
+                    <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" style="height: 200px;">
+                        <i class="bi bi-car-front text-white" style="font-size: 3rem;"></i>
+                    </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ car.brand.name }} {{ car.name }}</h5>
+                        <p class="text-primary fw-bold fs-5">${{ car.price|floatformat:0 }}</p>
+                        <div class="d-flex justify-content-between text-muted small mb-3">
+                            <span><i class="bi bi-fuel-pump"></i> {{ car.fuel_type }}</span>
+                            <span><i class="bi bi-gear"></i> {{ car.transmission }}</span>
+                            <span><i class="bi bi-speedometer2"></i> {{ car.mileage }} kmpl</span>
+                        </div>
+                        <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-primary w-100">View Details</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+{% if brands %}
+<section class="brands py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-4">Explore Brands</h2>
+        <div class="row g-3 justify-content-center">
+            {% for brand in brands %}
+            <div class="col-4 col-md-2">
+                <a href="{% url 'brand_cars' brand.id %}" class="text-decoration-none">
+                    <div class="card border-0 shadow-sm text-center p-3 brand-card">
+                        <div class="card-body">
+                            <i class="bi bi-trophy display-6 text-primary mb-2"></i>
+                            <h6 class="mb-0">{{ brand.name }}</h6>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+{% endblock %}

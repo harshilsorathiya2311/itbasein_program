@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% block title %}Analytics Dashboard - YourDriveAi{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <h2 class="mb-4"><i class="bi bi-graph-up me-2"></i>Analytics Dashboard</h2>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center p-3 bg-primary text-white">
+                <h3>{{ total_cars }}</h3>
+                <small>Total Cars</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center p-3 bg-success text-white">
+                <h3>{{ total_bookings }}</h3>
+                <small>Total Bookings</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center p-3 bg-info text-white">
+                <h3>{{ total_users }}</h3>
+                <small>Active Users</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center p-3 bg-warning text-dark">
+                <h3>{{ avg_rating }}</h3>
+                <small>Avg Rating</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        {% if popular_chart %}
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h5 class="card-title">Most Popular Cars</h5>
+                    <img src="data:image/png;base64,{{ popular_chart }}" class="img-fluid" alt="Popular Cars">
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        {% if monthly_chart %}
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h5 class="card-title">Monthly Bookings</h5>
+                    <img src="data:image/png;base64,{{ monthly_chart }}" class="img-fluid" alt="Monthly Bookings">
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        {% if brand_chart %}
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h5 class="card-title">Brand Performance</h5>
+                    <img src="data:image/png;base64,{{ brand_chart }}" class="img-fluid" alt="Brand Performance">
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        {% if rating_chart %}
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h5 class="card-title">Rating Distribution</h5>
+                    <img src="data:image/png;base64,{{ rating_chart }}" class="img-fluid" alt="Rating Distribution">
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="mt-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <h5 class="card-title">Recent Bookings</h5>
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr><th>User</th><th>Car</th><th>Date</th><th>Status</th></tr>
+                        </thead>
+                        <tbody>
+                            {% for b in recent_bookings %}
+                            <tr>
+                                <td>{{ b.user.username }}</td>
+                                <td>{{ b.car.brand.name }} {{ b.car.name }}</td>
+                                <td>{{ b.booking_date }}</td>
+                                <td><span class="badge bg-{% if b.status == 'Pending' %}warning text-dark{% elif b.status == 'Approved' %}success{% elif b.status == 'Completed' %}info{% else %}danger{% endif %}">{{ b.status }}</span></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

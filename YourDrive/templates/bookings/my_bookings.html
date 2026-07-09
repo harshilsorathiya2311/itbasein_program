@@ -1,64 +1,92 @@
 {% extends 'base.html' %}
-{% block title %}My Bookings - YourDrive{% endblock %}
-{% block content %}
-<div class="container py-4">
-    <h2 class="fw-bold mb-1"><i class="bi bi-calendar-check me-2"></i>My Bookings</h2>
-    <p class="text-muted mb-4">Manage your test drive appointments</p>
+{% load static %}
+{% block title %}My Bookings — YourDrive{% endblock %}
 
-    {% if bookings %}
-    <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
-        <div class="table-responsive">
-            <table class="table table-hover mb-0">
-                <thead>
-                    <tr>
-                        <th>Car</th>
-                        <th>Date</th>
-                        <th>Time</th>
-                        <th>Status</th>
-                        <th>Booked On</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for booking in bookings %}
-                    <tr>
-                        <td class="fw-semibold">{{ booking.car.brand.name }} {{ booking.car.name }}</td>
-                        <td>{{ booking.booking_date }}</td>
-                        <td>{{ booking.booking_time|time:"H:i" }}</td>
-                        <td>
-                            {% if booking.status == 'Pending' %}
-                            <span class="badge bg-warning text-dark">Pending</span>
-                            {% elif booking.status == 'Approved' %}
-                            <span class="badge bg-success">Approved</span>
-                            {% elif booking.status == 'Completed' %}
-                            <span class="badge bg-info">Completed</span>
-                            {% elif booking.status == 'Cancelled' %}
-                            <span class="badge bg-secondary">Cancelled</span>
-                            {% elif booking.status == 'Rejected' %}
-                            <span class="badge bg-danger">Rejected</span>
-                            {% endif %}
-                        </td>
-                        <td>{{ booking.created_at|date:"d M Y" }}</td>
-                        <td>
-                            {% if booking.status == 'Pending' %}
-                            <a href="{% url 'cancel_booking' booking.pk %}" class="btn btn-outline-danger btn-sm" onclick="return confirm('Cancel this booking?')"><i class="bi bi-x-circle me-1"></i>Cancel</a>
-                            {% else %}
-                            <span class="text-muted small">—</span>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+{% block content %}
+
+<div class="page-header">
+  <div class="container">
+    <div class="breadcrumb-custom">
+      <a href="{% url 'home' %}">Home</a>
+      <span class="separator">/</span>
+      <span>My Bookings</span>
     </div>
-    {% else %}
-    <div class="empty-state">
-        <i class="bi bi-calendar-x"></i>
-        <h4 class="mt-3">No bookings yet</h4>
-        <p class="text-muted">Browse cars and book your first test drive!</p>
-        <a href="{% url 'car_list' %}" class="btn btn-primary"><i class="bi bi-grid me-2"></i>Browse Cars</a>
-    </div>
-    {% endif %}
+    <h1><i class="bi bi-calendar-check me-2"></i>My Bookings</h1>
+    <p>View and manage your test drive bookings</p>
+  </div>
 </div>
+
+<div class="container py-4">
+  {% if bookings %}
+  <div class="table-wrapper">
+    <div class="table-header">
+      <h5>All Bookings</h5>
+      <div class="table-search">
+        <i class="bi bi-search"></i>
+        <input type="text" class="form-control" placeholder="Search bookings..." data-table-search="#bookingsTable">
+      </div>
+    </div>
+    <div class="table-responsive">
+      <table class="table" id="bookingsTable">
+        <thead>
+          <tr>
+            <th>Car</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Status</th>
+            <th>Booked On</th>
+            <th class="text-center">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for booking in bookings %}
+          <tr>
+            <td>
+              <div class="fw-semibold">{{ booking.car.brand.name }} {{ booking.car.name }}</div>
+              <small class="text-muted">{{ booking.car.model_year }}</small>
+            </td>
+            <td>{{ booking.booking_date|date:"M d, Y" }}</td>
+            <td>{{ booking.booking_time|time:"g:i A" }}</td>
+            <td>
+              {% if booking.status == 'Pending' %}
+              <span class="badge bg-warning">Pending</span>
+              {% elif booking.status == 'Approved' %}
+              <span class="badge bg-success">Approved</span>
+              {% elif booking.status == 'Completed' %}
+              <span class="badge bg-info">Completed</span>
+              {% elif booking.status == 'Cancelled' %}
+              <span class="badge bg-secondary">Cancelled</span>
+              {% elif booking.status == 'Rejected' %}
+              <span class="badge bg-danger">Rejected</span>
+              {% endif %}
+            </td>
+            <td><small class="text-muted">{{ booking.created_at|date:"M d, Y" }}</small></td>
+            <td class="text-center">
+              {% if booking.status == 'Pending' %}
+              <a href="#" class="btn btn-outline-danger btn-sm" data-confirm="Cancel this booking?"
+                 onclick="event.preventDefault(); if(confirm('Are you sure you want to cancel this booking?')) window.location.href='{% url 'cancel_booking' booking.pk %}'">
+                <i class="bi bi-x-circle me-1"></i>Cancel
+              </a>
+              {% else %}
+              <span class="text-muted small">—</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <i class="bi bi-calendar-x"></i>
+    <h4>No bookings yet</h4>
+    <p>You haven't booked any test drives yet. Browse our cars and book your first test drive!</p>
+    <a href="{% url 'car_list' %}" class="btn btn-primary">
+      <i class="bi bi-search me-2"></i>Browse Cars
+    </a>
+  </div>
+  {% endif %}
+</div>
+
 {% endblock %}

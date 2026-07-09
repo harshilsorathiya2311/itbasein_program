@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="font-family: 'Segoe UI', Arial, sans-serif; background: #f4f4f4; margin: 0; padding: 0;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background: #f4f4f4; padding: 30px 0;">
+        <tr>
+            <td align="center">
+                <table width="600" cellpadding="0" cellspacing="0" style="background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.1);">
+                    <tr>
+                        <td style="background: linear-gradient(135deg, #2563eb, #1d4ed8); padding: 30px; text-align: center;">
+                            <h1 style="color: #fff; margin: 0; font-size: 24px;">YourDriveAi</h1>
+                            <p style="color: rgba(255,255,255,0.85); margin: 8px 0 0;">Booking Status Update</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 30px;">
+                            <p style="font-size: 16px; color: #333;">Hi <strong>{{ user.first_name|default:user.username }}</strong>,</p>
+                            <p style="font-size: 15px; color: #555; line-height: 1.6;">
+                                Your test drive booking status has been updated from <strong>{{ old_status }}</strong> to
+                                <span style="color: {% if new_status == 'Approved' %}#16a34a{% elif new_status == 'Rejected' %}#dc2626{% elif new_status == 'Completed' %}#2563eb{% else %}#ca8a04{% endif %}; font-weight: bold;">{{ new_status }}</span>.
+                            </p>
+
+                            <table width="100%" cellpadding="10" style="background: #f9fafb; border-radius: 8px; margin: 20px 0;">
+                                <tr><td style="font-weight: 600; color: #333; width: 120px;">Car</td><td style="color: #555;">{{ car.brand.name }} {{ car.name }}</td></tr>
+                                <tr><td style="font-weight: 600; color: #333;">Date</td><td style="color: #555;">{{ booking.booking_date }}</td></tr>
+                                <tr><td style="font-weight: 600; color: #333;">Time</td><td style="color: #555;">{{ booking.booking_time|time:"H:i" }}</td></tr>
+                                <tr><td style="font-weight: 600; color: #333;">Dealership</td><td style="color: #555;">{{ booking.dealership|default:"TBD" }}</td></tr>
+                                <tr><td style="font-weight: 600; color: #333;">Status</td><td style="color: {% if new_status == 'Approved' %}#16a34a{% elif new_status == 'Rejected' %}#dc2626{% else %}#2563eb{% endif %}; font-weight: bold;">{{ new_status }}</td></tr>
+                            </table>
+
+                            {% if new_status == 'Approved' %}
+                            <p style="font-size: 15px; color: #555;">Your test drive has been approved! Please visit the dealership at your scheduled time.</p>
+                            {% elif new_status == 'Rejected' %}
+                            <p style="font-size: 15px; color: #555;">Your booking was not approved. Please contact the dealership or try booking another car.</p>
+                            {% elif new_status == 'Completed' %}
+                            <p style="font-size: 15px; color: #555;">Thank you for completing your test drive! We hope you enjoyed it. Please leave a review.</p>
+                            {% endif %}
+
+                            <p style="margin-top: 30px; font-size: 14px; color: #888;">
+                                Best regards,<br>
+                                <strong>YourDriveAi Team</strong>
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="background: #0f172a; padding: 20px; text-align: center;">
+                            <p style="color: #94a3b8; font-size: 12px; margin: 0;">&copy; 2026 YourDriveAi. All rights reserved.</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
