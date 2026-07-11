@@ -33,6 +33,10 @@ def car_list(request):
         if transmission:
             cars = cars.filter(transmission=transmission)
 
+        body_type = form.cleaned_data.get('body_type')
+        if body_type:
+            cars = cars.filter(body_type=body_type)
+
     context = {
         'cars': cars,
         'form': form,

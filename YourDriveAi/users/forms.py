@@ -19,7 +19,7 @@ class UserRegisterForm(UserCreationForm):
 class UserProfileForm(forms.ModelForm):
     class Meta:
         model = UserProfile
-        fields = ['budget', 'city', 'preferred_fuel_type', 'preferred_transmission', 'preferred_seating', 'phone']
+        fields = ['budget', 'city', 'preferred_fuel_type', 'preferred_transmission', 'preferred_seating', 'preferred_body_type', 'safety_priority', 'phone']
         widgets = {
             'budget': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
             'city': forms.TextInput(attrs={'class': 'form-control'}),
@@ -31,5 +31,14 @@ class UserProfileForm(forms.ModelForm):
                 ('', 'Any'), ('Manual', 'Manual'), ('Automatic', 'Automatic'), ('CVT', 'CVT'),
             ]),
             'preferred_seating': forms.NumberInput(attrs={'class': 'form-control'}),
+            'preferred_body_type': forms.Select(attrs={'class': 'form-control'}, choices=[
+                ('', 'Any'), ('SUV', 'SUV'), ('Sedan', 'Sedan'), ('Hatchback', 'Hatchback'),
+                ('Coupe', 'Coupe'), ('Convertible', 'Convertible'), ('Wagon', 'Wagon'),
+                ('Crossover', 'Crossover'), ('Pickup', 'Pickup'), ('Van', 'Van'),
+            ]),
+            'safety_priority': forms.Select(attrs={'class': 'form-control'}, choices=[
+                ('', 'Any'), ('1', '1 Star'), ('2', '2 Star'), ('3', '3 Star'),
+                ('4', '4 Star'), ('5', '5 Star'),
+            ]),
             'phone': forms.TextInput(attrs={'class': 'form-control'}),
         }

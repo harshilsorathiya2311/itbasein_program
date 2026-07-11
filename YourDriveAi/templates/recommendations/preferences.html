@@ -3,42 +3,66 @@
 {% block content %}
 <div class="container py-4">
     <div class="row justify-content-center">
-        <div class="col-md-6">
+        <div class="col-md-8">
             <div class="card shadow border-0">
                 <div class="card-body p-4">
-                    <h3 class="mb-4">My Preferences</h3>
+                    <h3 class="mb-3"><i class="bi bi-sliders me-2"></i>My Preferences</h3>
+                    <p class="text-muted mb-4">These preferences will be used as defaults when you visit the recommendation page.</p>
                     <form method="post">
                         {% csrf_token %}
-                        <div class="mb-3">
-                            <label class="form-label">Min Price</label>
-                            <input type="number" name="min_price" class="form-control" value="{{ pref.min_price|default:'' }}" step="0.01">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Max Budget ($)</label>
+                                <input type="number" name="max_price" class="form-control" value="{{ profile.budget|default:'' }}" step="500" placeholder="e.g. 50000">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Preferred Fuel Type</label>
+                                <select name="fuel_type" class="form-select">
+                                    <option value="">Any</option>
+                                    <option value="Petrol" {% if profile.preferred_fuel_type == 'Petrol' %}selected{% endif %}>Petrol</option>
+                                    <option value="Diesel" {% if profile.preferred_fuel_type == 'Diesel' %}selected{% endif %}>Diesel</option>
+                                    <option value="Electric" {% if profile.preferred_fuel_type == 'Electric' %}selected{% endif %}>Electric</option>
+                                    <option value="Hybrid" {% if profile.preferred_fuel_type == 'Hybrid' %}selected{% endif %}>Hybrid</option>
+                                    <option value="CNG" {% if profile.preferred_fuel_type == 'CNG' %}selected{% endif %}>CNG</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Transmission</label>
+                                <select name="transmission" class="form-select">
+                                    <option value="">Any</option>
+                                    <option value="Manual" {% if profile.preferred_transmission == 'Manual' %}selected{% endif %}>Manual</option>
+                                    <option value="Automatic" {% if profile.preferred_transmission == 'Automatic' %}selected{% endif %}>Automatic</option>
+                                    <option value="CVT" {% if profile.preferred_transmission == 'CVT' %}selected{% endif %}>CVT</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Min Seating</label>
+                                <input type="number" name="min_seating" class="form-control" value="{{ profile.preferred_seating|default:'' }}" min="2" max="10" placeholder="e.g. 5">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Preferred Body Type</label>
+                                <select name="body_type" class="form-select">
+                                    <option value="">Any</option>
+                                    <option value="SUV" {% if profile.preferred_body_type == 'SUV' %}selected{% endif %}>SUV</option>
+                                    <option value="Sedan" {% if profile.preferred_body_type == 'Sedan' %}selected{% endif %}>Sedan</option>
+                                    <option value="Hatchback" {% if profile.preferred_body_type == 'Hatchback' %}selected{% endif %}>Hatchback</option>
+                                    <option value="Coupe" {% if profile.preferred_body_type == 'Coupe' %}selected{% endif %}>Coupe</option>
+                                    <option value="Convertible" {% if profile.preferred_body_type == 'Convertible' %}selected{% endif %}>Convertible</option>
+                                    <option value="Crossover" {% if profile.preferred_body_type == 'Crossover' %}selected{% endif %}>Crossover</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Minimum Safety Rating</label>
+                                <select name="safety_priority" class="form-select">
+                                    <option value="">Any</option>
+                                    {% for i in '12345'|make_list %}<option value="{{ i }}" {% if profile.safety_priority|slugify == i %}selected{% endif %}>{{ i }} Star</option>{% endfor %}
+                                </select>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">Max Price</label>
-                            <input type="number" name="max_price" class="form-control" value="{{ pref.max_price|default:'' }}" step="0.01">
+                        <div class="mt-4 d-flex gap-2">
+                            <button type="submit" class="btn btn-primary px-4"><i class="bi bi-floppy me-2"></i>Save Preferences</button>
+                            <a href="{% url 'recommend_cars' %}" class="btn btn-outline-secondary px-3"><i class="bi bi-arrow-left me-1"></i>Back to Recommendations</a>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">Fuel Types (comma-separated)</label>
-                            <input type="text" name="fuel_types" class="form-control" value="{{ pref.fuel_types }}" placeholder="e.g. Petrol, Electric">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Transmission</label>
-                            <select name="transmission" class="form-control">
-                                <option value="">Any</option>
-                                <option value="Manual" {% if pref.transmission == 'Manual' %}selected{% endif %}>Manual</option>
-                                <option value="Automatic" {% if pref.transmission == 'Automatic' %}selected{% endif %}>Automatic</option>
-                                <option value="CVT" {% if pref.transmission == 'CVT' %}selected{% endif %}>CVT</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Min Seating</label>
-                            <input type="number" name="min_seating" class="form-control" value="{{ pref.min_seating|default:'' }}">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Max Mileage (kmpl)</label>
-                            <input type="number" name="max_mileage" class="form-control" value="{{ pref.max_mileage|default:'' }}" step="0.1">
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100">Save Preferences</button>
                     </form>
                 </div>
             </div>

@@ -2,6 +2,7 @@ import logging
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.http import JsonResponse
 from django.db.models import Count, Q
 from django.db import IntegrityError
 from .models import Booking
@@ -173,3 +174,19 @@ def reject_booking(request, booking_id):
         booking.save()
         messages.success(request, f'Booking #{booking.id} rejected.')
     return redirect('admin_manage_bookings')
+
+
+@login_required
+def api_recent_bookings(request):
+    if not request.user.is_staff:
+        return JsonResponse({'success': False, 'data': []})
+    bookings = Booking.objects.select_related('user', 'car__brand').order_by('-created_at')[:10]
+    data = [{
+        'id': b.id,
+        'user': b.user.username,
+        'car': f"{b.car.brand.name} {b.car.name}",
+        'date': b.booking_date.isoformat(),
+        'time': b.booking_time.strftime('%H:%M') if b.booking_time else '--',
+        'status': b.status,
+    } for b in bookings]
+    return JsonResponse({'success': True, 'data': data})

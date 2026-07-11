@@ -18,3 +18,8 @@ class CarSearchForm(forms.Form):
     transmission = forms.ChoiceField(required=False, choices=[
         ('', 'All Transmissions'), ('Manual', 'Manual'), ('Automatic', 'Automatic'), ('CVT', 'CVT'),
     ], widget=forms.Select(attrs={'class': 'form-control'}))
+    body_type = forms.ChoiceField(required=False, choices=[
+        ('', 'All Types'), ('SUV', 'SUV'), ('Sedan', 'Sedan'), ('Hatchback', 'Hatchback'),
+        ('Coupe', 'Coupe'), ('Convertible', 'Convertible'), ('Wagon', 'Wagon'),
+        ('Crossover', 'Crossover'), ('Pickup', 'Pickup'), ('Van', 'Van'),
+    ], widget=forms.Select(attrs={'class': 'form-control'}))

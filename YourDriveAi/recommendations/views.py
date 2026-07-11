@@ -1,61 +1,93 @@
-from django.shortcuts import render
+import logging
+from django.shortcuts import render, redirect
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from .ml_engine import recommender
-from .models import UserPreference, RecommendationLog
-from cars.models import Car
+from .models import RecommendationLog
+from cars.models import Car, Brand
 
-def recommend_cars(request):
-    user_prefs = {}
+logger = logging.getLogger(__name__)
 
-    if request.user.is_authenticated:
-        profile = request.user.profile
-        user_prefs = {
-            'min_price': profile.budget and float(profile.budget) * 0.5,
-            'max_price': profile.budget and float(profile.budget),
-            'fuel_type': profile.preferred_fuel_type,
-            'transmission': profile.preferred_transmission,
-            'min_seating': profile.preferred_seating,
-        }
-        user_prefs = {k: v for k, v in user_prefs.items() if v}
+BODY_CHOICES = ['SUV', 'Sedan', 'Hatchback', 'Coupe', 'Convertible', 'Wagon', 'Crossover', 'Pickup', 'Van']
+
+
+def _gather_preferences(request):
+    prefs = {}
 
     if request.method == 'POST':
-        user_prefs = {
-            'min_price': request.POST.get('min_price'),
-            'max_price': request.POST.get('max_price'),
-            'fuel_type': request.POST.get('fuel_type'),
-            'transmission': request.POST.get('transmission'),
-            'min_seating': request.POST.get('min_seating'),
-            'max_mileage': request.POST.get('max_mileage'),
-        }
-        user_prefs = {k: v for k, v in user_prefs.items() if v}
+        num_fields = ['min_price', 'max_price', 'min_seating', 'max_mileage', 'safety_priority']
+        text_fields = ['brand', 'fuel_type', 'transmission', 'body_type']
 
-    recommended = recommender.content_based_recommend(user_prefs)
+        for field in num_fields:
+            val = request.POST.get(field)
+            if val:
+                prefs[field] = val
 
-    if request.user.is_authenticated:
-        for car in recommended:
-            RecommendationLog.objects.create(
-                user=request.user, car=car,
-                score=1.0, method='content_based'
-            )
+        for field in text_fields:
+            val = request.POST.get(field, '').strip()
+            if val:
+                prefs[field] = val
+
+    if request.user.is_authenticated and not prefs:
+        profile = request.user.profile
+        if profile.budget:
+            prefs['max_price'] = str(profile.budget)
+        if profile.preferred_fuel_type:
+            prefs['fuel_type'] = profile.preferred_fuel_type
+        if profile.preferred_transmission:
+            prefs['transmission'] = profile.preferred_transmission
+        if profile.preferred_seating:
+            prefs['min_seating'] = str(profile.preferred_seating)
+        if profile.preferred_body_type:
+            prefs['body_type'] = profile.preferred_body_type
+        if profile.safety_priority:
+            prefs['safety_priority'] = str(profile.safety_priority)
+
+    return prefs
+
+
+def recommend_cars(request):
+    user_prefs = _gather_preferences(request)
+    results = []
+
+    if request.method == 'POST' or (request.method == 'GET' and user_prefs):
+        results = recommender.recommend(user_prefs, n=5)
+
+        if request.user.is_authenticated and results:
+            try:
+                log_entry = RecommendationLog.objects.create(
+                    user=request.user,
+                    car=results[0]['car'],
+                    score=results[0]['score_raw'],
+                    method='content_based',
+                )
+            except Exception as e:
+                logger.warning(f'Could not log recommendation: {e}')
 
     context = {
-        'recommended_cars': recommended,
+        'results': results,
         'user_prefs': user_prefs,
+        'brands': Brand.objects.all().order_by('name'),
+        'body_choices': BODY_CHOICES,
     }
     return render(request, 'recommendations/recommend.html', context)
+
 
 @login_required
 def save_preferences(request):
     if request.method == 'POST':
-        pref, created = UserPreference.objects.get_or_create(user=request.user)
-        pref.min_price = request.POST.get('min_price') or None
-        pref.max_price = request.POST.get('max_price') or None
-        pref.fuel_types = request.POST.get('fuel_types', '')
-        pref.transmission = request.POST.get('transmission', '')
-        pref.min_seating = request.POST.get('min_seating') or None
-        pref.max_mileage = request.POST.get('max_mileage') or None
-        pref.save()
-    return render(request, 'recommendations/preferences.html', {
-        'pref': UserPreference.objects.filter(user=request.user).first()
-    })
+        profile = request.user.profile
+        profile.budget = request.POST.get('max_price') or None
+        profile.preferred_fuel_type = request.POST.get('fuel_type', '')
+        profile.preferred_transmission = request.POST.get('transmission', '')
+        profile.preferred_seating = request.POST.get('min_seating') or None
+        profile.preferred_body_type = request.POST.get('body_type', '')
+        profile.safety_priority = request.POST.get('safety_priority') or None
+        profile.save()
+        messages.success(request, 'Preferences saved!')
+        return redirect('recommend_cars')
+
+    profile = request.user.profile
+    context = {'profile': profile}
+    return render(request, 'recommendations/preferences.html', context)

@@ -22,6 +22,17 @@ class Car(models.Model):
         ('Automatic', 'Automatic'),
         ('CVT', 'CVT'),
     ]
+    BODY_CHOICES = [
+        ('SUV', 'SUV'),
+        ('Sedan', 'Sedan'),
+        ('Hatchback', 'Hatchback'),
+        ('Coupe', 'Coupe'),
+        ('Convertible', 'Convertible'),
+        ('Wagon', 'Wagon'),
+        ('Crossover', 'Crossover'),
+        ('Pickup', 'Pickup'),
+        ('Van', 'Van'),
+    ]
 
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE, related_name='cars')
     name = models.CharField(max_length=200)
@@ -32,6 +43,8 @@ class Car(models.Model):
     seating_capacity = models.IntegerField(default=5)
     engine_cc = models.DecimalField(max_digits=6, decimal_places=0, null=True, blank=True)
     power = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True, help_text="bhp")
+    body_type = models.CharField(max_length=20, choices=BODY_CHOICES, default='Sedan')
+    safety_rating = models.IntegerField(default=3, help_text="Safety rating 1-5")
     image = models.ImageField(upload_to='cars/', blank=True)
     description = models.TextField(blank=True)
     is_available = models.BooleanField(default=True)

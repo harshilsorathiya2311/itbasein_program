@@ -1,93 +1,164 @@
-{% extends 'base.html' %}
-{% block title %}AI Recommendations - YourDriveAi{% endblock %}
+{% extends 'base.html' %}{% load static %}{% block title %}AI Recommendations - YourDriveAi{% endblock %}
 {% block content %}
 <div class="container py-4">
-    <h2 class="mb-4"><i class="bi bi-robot me-2"></i>AI Car Recommendations</h2>
-    <p class="text-muted">Tell us your preferences and our AI will find the perfect car for you.</p>
+    <h2 class="mb-1"><i class="bi bi-robot me-2"></i>AI Car Recommendations</h2>
+    <p class="text-muted mb-4">Tell us what you're looking for — our AI finds the perfect match.</p>
 
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-body">
-            <form method="post" class="row g-3">
+            <form method="post" class="row g-3" id="recommendForm">
                 {% csrf_token %}
                 <div class="col-md-3">
-                    <label class="form-label">Min Price</label>
-                    <input type="number" name="min_price" class="form-control" placeholder="Min $" step="0.01">
+                    <label class="form-label"><i class="bi bi-currency-dollar me-1"></i>Budget Range</label>
+                    <div class="input-group">
+                        <input type="number" name="min_price" class="form-control" placeholder="Min $" value="{{ user_prefs.min_price }}" step="500">
+                        <span class="input-group-text bg-light">-</span>
+                        <input type="number" name="max_price" class="form-control" placeholder="Max $" value="{{ user_prefs.max_price }}" step="500">
+                    </div>
                 </div>
-                <div class="col-md-3">
-                    <label class="form-label">Max Price</label>
-                    <input type="number" name="max_price" class="form-control" placeholder="Max $" step="0.01">
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label">Fuel Type</label>
-                    <select name="fuel_type" class="form-control">
+                <div class="col-md-2">
+                    <label class="form-label"><i class="bi bi-fuel-pump me-1"></i>Fuel</label>
+                    <select name="fuel_type" class="form-select">
                         <option value="">Any</option>
-                        <option value="Petrol">Petrol</option>
-                        <option value="Diesel">Diesel</option>
-                        <option value="Electric">Electric</option>
-                        <option value="Hybrid">Hybrid</option>
-                        <option value="CNG">CNG</option>
+                        <option value="Petrol" {% if user_prefs.fuel_type == 'Petrol' %}selected{% endif %}>Petrol</option>
+                        <option value="Diesel" {% if user_prefs.fuel_type == 'Diesel' %}selected{% endif %}>Diesel</option>
+                        <option value="Electric" {% if user_prefs.fuel_type == 'Electric' %}selected{% endif %}>Electric</option>
+                        <option value="Hybrid" {% if user_prefs.fuel_type == 'Hybrid' %}selected{% endif %}>Hybrid</option>
+                        <option value="CNG" {% if user_prefs.fuel_type == 'CNG' %}selected{% endif %}>CNG</option>
                     </select>
                 </div>
-                <div class="col-md-3">
-                    <label class="form-label">Transmission</label>
-                    <select name="transmission" class="form-control">
+                <div class="col-md-2">
+                    <label class="form-label"><i class="bi bi-gear me-1"></i>Transmission</label>
+                    <select name="transmission" class="form-select">
                         <option value="">Any</option>
-                        <option value="Manual">Manual</option>
-                        <option value="Automatic">Automatic</option>
-                        <option value="CVT">CVT</option>
+                        <option value="Manual" {% if user_prefs.transmission == 'Manual' %}selected{% endif %}>Manual</option>
+                        <option value="Automatic" {% if user_prefs.transmission == 'Automatic' %}selected{% endif %}>Automatic</option>
+                        <option value="CVT" {% if user_prefs.transmission == 'CVT' %}selected{% endif %}>CVT</option>
                     </select>
                 </div>
-                <div class="col-md-3">
-                    <label class="form-label">Min Seats</label>
-                    <input type="number" name="min_seating" class="form-control" placeholder="e.g. 5" min="2" max="10">
+                <div class="col-md-2">
+                    <label class="form-label"><i class="bi bi-car-front me-1"></i>Body Type</label>
+                    <select name="body_type" class="form-select">
+                        <option value="">Any</option>
+                        {% for bt in body_choices %}<option value="{{ bt }}" {% if user_prefs.body_type == bt %}selected{% endif %}>{{ bt }}</option>{% endfor %}
+                    </select>
                 </div>
-                <div class="col-md-3">
-                    <label class="form-label">Max Mileage (kmpl)</label>
-                    <input type="number" name="max_mileage" class="form-control" placeholder="e.g. 20" step="0.1">
+                <div class="col-md-2">
+                    <label class="form-label"><i class="bi bi-people me-1"></i>Min Seats</label>
+                    <input type="number" name="min_seating" class="form-control" placeholder="e.g. 5" value="{{ user_prefs.min_seating }}" min="2" max="10">
                 </div>
-                <div class="col-12">
-                    <button type="submit" class="btn btn-primary"><i class="bi bi-stars"></i> Get Recommendations</button>
+                <div class="col-md-2">
+                    <label class="form-label"><i class="bi bi-speedometer2 me-1"></i>Max Mileage</label>
+                    <input type="number" name="max_mileage" class="form-control" placeholder="kmpl" value="{{ user_prefs.max_mileage }}" step="0.1">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label"><i class="bi bi-shield-check me-1"></i>Min Safety</label>
+                    <select name="safety_priority" class="form-select">
+                        <option value="">Any</option>
+                        {% for i in '12345'|make_list %}<option value="{{ i }}" {% if user_prefs.safety_priority == i %}selected{% endif %}>{{ i }} Star</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="col-12 mt-3">
+                    <button type="submit" class="btn btn-primary btn-lg px-4"><i class="bi bi-stars me-2"></i>Get AI Recommendations</button>
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'save_preferences' %}" class="btn btn-outline-secondary btn-lg px-3 ms-2"><i class="bi bi-floppy me-1"></i>Save as Preferences</a>
+                    {% endif %}
                 </div>
             </form>
         </div>
     </div>
 
-    {% if recommended_cars %}
-    <h4 class="mb-3">Recommended for You</h4>
+    {% if results %}
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="mb-0"><i class="bi bi-stars me-2 text-primary"></i>Top {{ results|length }} AI Recommendations</h4>
+        <small class="text-muted">Hover cards for match details</small>
+    </div>
     <div class="row g-4">
-        {% for car in recommended_cars %}
-        <div class="col-md-4 col-lg-4">
-            <div class="card h-100 shadow-sm border-0 car-card">
-                {% if car.image %}
-                <img src="{{ car.image.url }}" class="card-img-top" alt="{{ car.name }}" style="height: 180px; object-fit: cover;">
+        {% for r in results %}
+        <div class="col-lg-4 col-md-6">
+            <div class="card h-100 shadow-sm border-0 car-card position-relative">
+                {% if r.score >= 80 %}<span class="position-absolute top-0 end-0 badge bg-success m-2"><i class="bi bi-star-fill me-1"></i>Best Match</span>{% endif %}
+                {% if r.car.image %}
+                <img src="{{ r.car.image.url }}" class="card-img-top" alt="{{ r.car.name }}" style="height: 180px; object-fit: cover;">
                 {% else %}
                 <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" style="height: 180px;">
                     <i class="bi bi-car-front text-white" style="font-size: 3rem;"></i>
                 </div>
                 {% endif %}
                 <div class="card-body">
-                    <span class="badge bg-success mb-2">Recommended</span>
-                    <h5 class="card-title">{{ car.brand.name }} {{ car.name }}</h5>
-                    <p class="text-primary fw-bold fs-5">${{ car.price|floatformat:0 }}</p>
-                    <div class="d-flex justify-content-between text-muted small mb-3">
-                        <span><i class="bi bi-fuel-pump"></i> {{ car.fuel_type }}</span>
-                        <span><i class="bi bi-gear"></i> {{ car.transmission }}</span>
-                        <span><i class="bi bi-speedometer2"></i> {{ car.mileage }} kmpl</span>
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <span class="badge bg-primary mb-1">{{ r.car.body_type }}</span>
+                            <h5 class="card-title mb-0">{{ r.car.brand.name }} {{ r.car.name }}</h5>
+                        </div>
+                        <div class="text-center ms-2">
+                            <div class="score-ring" style="--pct: {{ r.score }};">
+                                <svg width="48" height="48" viewBox="0 0 48 48">
+                                    <circle cx="24" cy="24" r="20" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="4"/>
+                                    <circle cx="24" cy="24" r="20" fill="none" stroke="{% if r.score >= 80 %}#10b981{% elif r.score >= 60 %}#f59e0b{% else %}#ef4444{% endif %}" stroke-width="4" stroke-dasharray="125.6" stroke-dashoffset="{{ 125.6|floatformat:0 }}" transform="rotate(-90 24 24)" stroke-linecap="round"/>
+                                </svg>
+                                <span class="score-text">{{ r.score }}%</span>
+                            </div>
+                        </div>
                     </div>
+
+                    <div class="d-flex flex-wrap gap-2 mb-3">
+                        <span class="badge bg-light text-dark"><i class="bi bi-currency-dollar"></i> ${{ r.car.price|floatformat:0 }}</span>
+                        <span class="badge bg-light text-dark"><i class="bi bi-fuel-pump"></i> {{ r.car.fuel_type }}</span>
+                        <span class="badge bg-light text-dark"><i class="bi bi-gear"></i> {{ r.car.transmission }}</span>
+                        <span class="badge bg-light text-dark"><i class="bi bi-speedometer2"></i> {{ r.car.mileage }} kmpl</span>
+                        <span class="badge bg-light text-dark"><i class="bi bi-people"></i> {{ r.car.seating_capacity }} seats</span>
+                        <span class="badge bg-light text-dark"><i class="bi bi-shield-check"></i> Safety {{ r.car.safety_rating }}/5</span>
+                    </div>
+
+                    <div class="alert alert-info py-2 px-3 mb-3 small">
+                        <i class="bi bi-info-circle me-1"></i>
+                        {% if r.explanation %}
+                        <strong>{{ r.explanation }}</strong>
+                        {% else %}
+                        {{ r.explanations|join:", " }}
+                        {% endif %}
+                    </div>
+
                     <div class="d-flex gap-2">
-                        <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-primary btn-sm flex-grow-1">Details</a>
-                        <a href="{% url 'create_booking' car.id %}" class="btn btn-primary btn-sm flex-grow-1">Book Test Drive</a>
+                        <a href="{% url 'car_detail' r.car.id %}" class="btn btn-outline-primary btn-sm flex-grow-1"><i class="bi bi-eye me-1"></i>Details</a>
+                        {% with car_ids=r.car.id|stringformat:"s" %}
+                        <a href="{% url 'car_compare' %}?ids={{ car_ids }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left-right"></i></a>
+                        {% endwith %}
+                        <a href="{% url 'create_booking' r.car.id %}" class="btn btn-primary btn-sm flex-grow-1"><i class="bi bi-calendar-check me-1"></i>Test Drive</a>
                     </div>
                 </div>
             </div>
         </div>
         {% endfor %}
     </div>
+
+    {% elif request.method == 'POST' %}
+    <div class="text-center py-5">
+        <i class="bi bi-search display-1 text-muted"></i>
+        <h4 class="mt-3 text-muted">No cars match your criteria</h4>
+        <p class="text-muted">Try adjusting your filters — the AI will find the closest alternatives.</p>
+        <button class="btn btn-outline-primary" onclick="document.getElementById('recommendForm').reset()">Reset Filters</button>
+    </div>
     {% else %}
     <div class="text-center py-5">
         <i class="bi bi-robot display-1 text-muted"></i>
-        <p class="mt-3 text-muted">Submit your preferences to get AI-powered car recommendations.</p>
+        <h4 class="mt-3 text-muted">Ready to find your perfect car?</h4>
+        <p class="text-muted">Set your preferences above and let AI do the rest.</p>
+        {% if user.is_authenticated %}
+        <a href="{% url 'save_preferences' %}" class="btn btn-outline-primary"><i class="bi bi-sliders me-2"></i>Set Default Preferences</a>
+        {% endif %}
     </div>
     {% endif %}
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<style>
+.score-ring { position: relative; display: inline-flex; align-items: center; justify-content: center; }
+.score-ring svg { display: block; }
+.score-text { position: absolute; font-size: 0.7rem; font-weight: 700; color: #e2e8f0; }
+.card-img-top { border-radius: 12px 12px 0 0; }
+.alert-info { background: rgba(79,140,247,0.08); border: 1px solid rgba(79,140,247,0.12); color: #93c5fd; border-radius: 8px; }
+</style>
 {% endblock %}
