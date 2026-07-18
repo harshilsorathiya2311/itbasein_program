@@ -25,8 +25,8 @@
     <div class="hero-shape"></div>
     <div class="hero-shape"></div>
     <div class="container hero-content">
-        <div class="row align-items-center">
-            <div class="col-lg-8 col-xl-7">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-6 col-xl-6">
                 <div class="hero-badge">
                     <span class="badge-dot"></span>
                     <span>AI-Powered Car Recommendations</span>
@@ -61,6 +61,23 @@
                     <div class="hero-stat">
                         <div class="hero-stat-value">{{ total_bookings|default:"2" }},500+</div>
                         <div class="hero-stat-label">Test Drives</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 col-xl-6">
+                <div class="hero-viewer-wrap">
+                    <div class="hero-viewer-container" id="heroCarViewer" data-model-url="{% static 'models/bmw_m4.glb' %}">
+                        <div class="hero-model-loading" id="heroViewerLoading">
+                            <div class="viewer-spinner-ring"></div>
+                            <div class="hero-loading-text">Loading 3D Model...</div>
+                        </div>
+                        <div class="hero-model-error" id="heroViewerError" style="display:none;">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            <span>3D Car Model Unavailable. Place a GLB model in static/models/ to enable the interactive viewer.</span>
+                        </div>
+                    </div>
+                    <div class="hero-model-badge">
+                        <i class="bi bi-arrow-repeat"></i> 360° Interactive
                     </div>
                 </div>
             </div>
@@ -657,399 +674,341 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
-document.addEventListener('DOMContentLoaded', function () {
-    var container = document.getElementById('carViewer');
+// ===== Shared procedural car factory =====
+function buildProceduralCar() {
+    var g = new THREE.Group();
+
+    var bodyMat = new THREE.MeshPhysicalMaterial({
+        color: 0x1a237e, metalness: 0.25, roughness: 0.15,
+        clearcoat: 1.0, clearcoatRoughness: 0.08,
+    });
+    var glassMat = new THREE.MeshPhysicalMaterial({
+        color: 0x0a0a23, metalness: 0.95, roughness: 0.05,
+        transparent: true, opacity: 0.3, envMapIntensity: 1.5,
+    });
+    var wheelMat = new THREE.MeshPhysicalMaterial({
+        color: 0x111111, metalness: 0.2, roughness: 0.9,
+    });
+    var rimMat = new THREE.MeshPhysicalMaterial({
+        color: 0xbbbbbb, metalness: 1.0, roughness: 0.1,
+    });
+    var lightMat = new THREE.MeshPhysicalMaterial({
+        color: 0xffffff, emissive: 0xaaccff, emissiveIntensity: 0.6,
+        metalness: 0, roughness: 0.05, transparent: true, opacity: 0.9,
+    });
+    var tailMat = new THREE.MeshPhysicalMaterial({
+        color: 0xff2200, emissive: 0xff0000, emissiveIntensity: 0.4,
+        metalness: 0, roughness: 0.3,
+    });
+
+    // Body
+    var body = new THREE.Mesh(new THREE.BoxGeometry(1.85, 0.42, 4.2), bodyMat);
+    body.position.y = 0.32; body.castShadow = true; g.add(body);
+
+    // Fenders
+    var fb = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.08, 0.8), bodyMat);
+    fb.position.set(0, 0.45, 1.6); g.add(fb);
+    var rb = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.08, 0.7), bodyMat);
+    rb.position.set(0, 0.45, -1.55); g.add(rb);
+
+    // Bumpers
+    var bMat = new THREE.MeshPhysicalMaterial({ color: 0x222233, metalness: 0.1, roughness: 0.8 });
+    var bmp = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.12, 0.35), bMat);
+    bmp.position.set(0, 0.12, 2.2); g.add(bmp);
+    var df = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.1, 0.3), bMat);
+    df.position.set(0, 0.12, -2.2); g.add(df);
+
+    // Grille
+    var grMat = new THREE.MeshPhysicalMaterial({ color: 0x111111, metalness: 0.8, roughness: 0.3 });
+    var gr = new THREE.Mesh(new THREE.PlaneGeometry(0.8, 0.25), grMat);
+    gr.position.set(0, 0.2, 2.12); g.add(gr);
+
+    // Cabin/glass
+    var cabin = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.32, 1.8), glassMat);
+    cabin.position.set(0, 0.62, 0.15); g.add(cabin);
+
+    // Windshield
+    var wsMat = new THREE.MeshPhysicalMaterial({
+        color: 0x0a0a2e, metalness: 0.9, roughness: 0.05,
+        transparent: true, opacity: 0.25,
+    });
+    var ws = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 0.35), wsMat);
+    ws.position.set(0, 0.55, 1.1); ws.rotation.x = 0.35; g.add(ws);
+    var rw = new THREE.Mesh(new THREE.PlaneGeometry(1.1, 0.3), wsMat);
+    rw.position.set(0, 0.55, -0.95); rw.rotation.x = -0.3; g.add(rw);
+
+    // Side windows
+    var sdMat = new THREE.MeshPhysicalMaterial({
+        color: 0x0a0a2e, metalness: 0.9, roughness: 0.05,
+        transparent: true, opacity: 0.2, side: THREE.DoubleSide,
+    });
+    var swL = new THREE.Mesh(new THREE.PlaneGeometry(1.3, 0.25), sdMat);
+    swL.position.set(0.71, 0.6, 0.2); swL.rotation.y = Math.PI / 2; g.add(swL);
+    var swR = new THREE.Mesh(new THREE.PlaneGeometry(1.3, 0.25), sdMat);
+    swR.position.set(-0.71, 0.6, 0.2); swR.rotation.y = -Math.PI / 2; g.add(swR);
+
+    // Wheels
+    var wp = [[-0.92, 0.12, 1.2],[0.92, 0.12, 1.2],[-0.92, 0.12,-1.25],[0.92, 0.12,-1.25]];
+    wp.forEach(function (p) {
+        var t = new THREE.Mesh(new THREE.CylinderGeometry(0.27, 0.27, 0.14, 24), wheelMat);
+        t.rotation.z = Math.PI / 2; t.position.set(p[0], p[1], p[2]); t.castShadow = true; g.add(t);
+        var r = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.17, 0.15, 16), rimMat);
+        r.rotation.z = Math.PI / 2; r.position.set(p[0], p[1], p[2]); g.add(r);
+        var s1 = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.15, 0.16), rimMat);
+        s1.position.set(p[0], p[1], p[2]); g.add(s1);
+        var s2 = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.03, 0.16), rimMat);
+        s2.position.set(p[0], p[1], p[2]); g.add(s2);
+    });
+
+    // Lights
+    [-0.5, 0.5].forEach(function (x) {
+        var hl = new THREE.Mesh(new THREE.SphereGeometry(0.065, 8, 8), lightMat);
+        hl.position.set(x, 0.32, 2.14); g.add(hl);
+    });
+    var drlMat = new THREE.MeshBasicMaterial({ color: 0x4488ff, transparent: true, opacity: 0.4 });
+    [-0.7, 0.7].forEach(function (x) {
+        var drl = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.03, 0.15), drlMat);
+        drl.position.set(x, 0.2, 2.12); g.add(drl);
+    });
+    [-0.45, 0.45].forEach(function (x) {
+        var tl = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.06, 0.04), tailMat);
+        tl.position.set(x, 0.35, -2.12); g.add(tl);
+    });
+
+    // Mirrors
+    var mM = new THREE.MeshPhysicalMaterial({ color: 0x111122, metalness: 0.3, roughness: 0.4 });
+    [-0.92, 0.92].forEach(function (x) {
+        var m = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.12, 0.15), mM);
+        m.position.set(x, 0.48, 1.35); g.add(m);
+    });
+
+    // Underglow
+    var glMat = new THREE.MeshBasicMaterial({ color: 0x3b82f6, transparent: true, opacity: 0.04 });
+    var gl = new THREE.Mesh(new THREE.PlaneGeometry(2.2, 4.5), glMat);
+    gl.rotation.x = -Math.PI / 2; gl.position.y = 0.005; g.add(gl);
+
+    g.rotation.y = -Math.PI / 4;
+    return g;
+}
+
+// ===== Real-image car (Sprite always faces camera) =====
+function buildImageCar(texture) {
+    var g = new THREE.Group();
+    var aspect = texture.image.width / texture.image.height;
+    var h = 1.8;
+    var w = h * aspect;
+
+    var mat = new THREE.SpriteMaterial({
+        map: texture,
+        transparent: false,
+        depthWrite: true,
+        color: 0xffffff,
+    });
+    var sprite = new THREE.Sprite(mat);
+    sprite.scale.set(w, h, 1);
+    sprite.position.y = 0.6;
+    g.add(sprite);
+
+    // Glow ring at feet
+    var glowMat = new THREE.MeshBasicMaterial({
+        color: 0x3b82f6, transparent: true, opacity: 0.08, side: THREE.DoubleSide,
+    });
+    var glow = new THREE.Mesh(new THREE.RingGeometry(1.0, 2.0, 48), glowMat);
+    glow.rotation.x = -Math.PI / 2;
+    glow.position.y = 0.01;
+    g.add(glow);
+
+    return g;
+}
+
+// ===== Reusable viewer factory =====
+function initCarViewer(cfg) {
+    var container = document.getElementById(cfg.id);
     if (!container) return;
 
-    var loadingEl = document.getElementById('viewerLoading');
-    var badge360 = document.getElementById('badge360');
-    var badgeAI = document.getElementById('badgeAI');
-    var badgeExplore = document.getElementById('badgeExplore');
+    var loadingEl = document.getElementById(cfg.loadingId);
+    var errorEl = document.getElementById(cfg.errorId);
+    var badges = (cfg.badgeIds || []).map(function (id) { return document.getElementById(id); });
+    var hintEl = document.getElementById(cfg.hintId);
+    var modelUrl = container.dataset.modelUrl;
 
     var width = container.clientWidth;
-    var height = Math.max(width * 0.65, 360);
+    var height = Math.max(width * (cfg.heightRatio || 0.65), cfg.minHeight || 360);
 
     // Scene
     var scene = new THREE.Scene();
-    scene.background = null;
 
     // Camera
-    var camera = new THREE.PerspectiveCamera(28, width / height, 0.1, 100);
-    camera.position.set(4.5, 2.2, 6.5);
+    var camPos = cfg.cameraPos || [4.5, 2.2, 6.5];
+    var camera = new THREE.PerspectiveCamera(cfg.fov || 28, width / height, 0.1, 100);
+    camera.position.set(camPos[0], camPos[1], camPos[2]);
 
     // Renderer
-    var renderer = new THREE.WebGLRenderer({
-        antialias: true,
-        alpha: true
-    });
+    var renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.0;
+    renderer.toneMappingExposure = cfg.exposure || 1.0;
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     container.appendChild(renderer.domElement);
+
+    // HDR Environment map for reflections
+    if (cfg.envMap !== false) {
+        var pmrem = new THREE.PMREMGenerator(renderer);
+        var envScene = new RoomEnvironment();
+        var envTexture = pmrem.fromScene(envScene, 0.04).texture;
+        scene.environment = envTexture;
+        envScene.dispose();
+        pmrem.dispose();
+    }
 
     // Controls
     var controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.08;
     controls.autoRotate = true;
-    controls.autoRotateSpeed = 2.5;
-    controls.minDistance = 3.5;
-    controls.maxDistance = 14;
+    controls.autoRotateSpeed = cfg.rotateSpeed || 2.5;
+    controls.minDistance = cfg.minDist || 3.5;
+    controls.maxDistance = cfg.maxDist || 14;
     controls.maxPolarAngle = Math.PI / 2.1;
     controls.minPolarAngle = 0.1;
-    controls.target.set(0, 0.5, 0);
+    controls.enablePan = cfg.enablePan === true;
+    controls.target.set(0, cfg.targetY || 0.5, 0);
     controls.update();
 
     // Lighting
-    var ambientLight = new THREE.AmbientLight(0x404060, 0.6);
-    scene.add(ambientLight);
+    var ambient = new THREE.AmbientLight(0x404060, cfg.ambientIntensity || 0.6);
+    scene.add(ambient);
 
-    var keyLight = new THREE.DirectionalLight(0xffeedd, 1.8);
-    keyLight.position.set(4, 8, 4);
-    keyLight.castShadow = true;
-    keyLight.shadow.mapSize.width = 1024;
-    keyLight.shadow.mapSize.height = 1024;
+    var key = new THREE.DirectionalLight(0xffeedd, cfg.keyIntensity || 1.8);
+    key.position.set(4, 8, 4);
+    key.castShadow = true;
+    key.shadow.mapSize.width = 1024; key.shadow.mapSize.height = 1024;
     var d = 8;
-    keyLight.shadow.camera.left = -d;
-    keyLight.shadow.camera.right = d;
-    keyLight.shadow.camera.top = d;
-    keyLight.shadow.camera.bottom = -d;
-    keyLight.shadow.camera.near = 1;
-    keyLight.shadow.camera.far = 15;
-    scene.add(keyLight);
+    key.shadow.camera.left = -d; key.shadow.camera.right = d;
+    key.shadow.camera.top = d; key.shadow.camera.bottom = -d;
+    key.shadow.camera.near = 1; key.shadow.camera.far = 15;
+    scene.add(key);
 
-    var fillLight = new THREE.DirectionalLight(0x8888ff, 0.6);
-    fillLight.position.set(-5, 3, 4);
-    scene.add(fillLight);
+    var fill = new THREE.DirectionalLight(0x8888ff, cfg.fillIntensity || 0.6);
+    fill.position.set(-5, 3, 4); scene.add(fill);
 
-    var rimLight = new THREE.DirectionalLight(0xffffff, 0.8);
-    rimLight.position.set(0, 3, -8);
-    scene.add(rimLight);
+    var rim = new THREE.DirectionalLight(0xffffff, cfg.rimIntensity || 0.8);
+    rim.position.set(0, 3, -8); scene.add(rim);
 
-    var topLight = new THREE.DirectionalLight(0xffffff, 0.4);
-    topLight.position.set(0, 10, 0);
-    scene.add(topLight);
+    var top = new THREE.DirectionalLight(0xffffff, cfg.topIntensity || 0.4);
+    top.position.set(0, 10, 0); scene.add(top);
 
     // Ground shadow
-    var shadowMat = new THREE.ShadowMaterial({ opacity: 0.12, color: 0x000000 });
+    var shadowMat = new THREE.ShadowMaterial({ opacity: cfg.shadowOpacity || 0.12, color: 0x000000 });
     var ground = new THREE.Mesh(new THREE.PlaneGeometry(14, 14), shadowMat);
     ground.rotation.x = -Math.PI / 2;
     ground.position.y = -0.05;
     ground.receiveShadow = true;
     scene.add(ground);
 
-    // Ground reflection ring
-    var ringMat = new THREE.MeshBasicMaterial({
-        color: 0x3b82f6,
-        transparent: true,
-        opacity: 0.04,
-        side: THREE.DoubleSide,
+    // Glow rings
+    var ringMat1 = new THREE.MeshBasicMaterial({
+        color: cfg.ringColor || 0x3b82f6, transparent: true,
+        opacity: cfg.ringOpacity || 0.04, side: THREE.DoubleSide,
     });
-    var ring = new THREE.Mesh(new THREE.RingGeometry(2.8, 3.8, 64), ringMat);
-    ring.rotation.x = -Math.PI / 2;
-    ring.position.y = 0.005;
-    scene.add(ring);
+    var ring1 = new THREE.Mesh(new THREE.RingGeometry(cfg.ringOuter || 2.8, (cfg.ringOuter || 2.8) + 1.0, 64), ringMat1);
+    ring1.rotation.x = -Math.PI / 2; ring1.position.y = 0.005; scene.add(ring1);
 
-    // Inner ring
-    var innerRing = new THREE.Mesh(
-        new THREE.RingGeometry(1.8, 2.2, 48),
-        new THREE.MeshBasicMaterial({
-            color: 0x3b82f6,
-            transparent: true,
-            opacity: 0.03,
-            side: THREE.DoubleSide,
-        })
-    );
-    innerRing.rotation.x = -Math.PI / 2;
-    innerRing.position.y = 0.005;
-    scene.add(innerRing);
+    var ringMat2 = new THREE.MeshBasicMaterial({
+        color: cfg.ringColor || 0x3b82f6, transparent: true,
+        opacity: (cfg.ringOpacity || 0.04) * 0.75, side: THREE.DoubleSide,
+    });
+    var ring2 = new THREE.Mesh(new THREE.RingGeometry(1.8, 2.2, 48), ringMat2);
+    ring2.rotation.x = -Math.PI / 2; ring2.position.y = 0.005; scene.add(ring2);
 
-    // Model loading
-    var modelUrl = container.dataset.modelUrl;
+    // Car model
     var carGroup;
+
+    function showBadges() {
+        badges.forEach(function (b, i) {
+            if (b) {
+                setTimeout(function () { b.style.opacity = '1'; }, i * 200);
+            }
+        });
+        if (hintEl) {
+            setTimeout(function () { hintEl.style.opacity = '1'; }, 800);
+        }
+    }
 
     function onModelReady() {
         if (loadingEl) {
             loadingEl.style.opacity = '0';
             setTimeout(function () { loadingEl.style.display = 'none'; }, 600);
         }
-        if (badge360) badge360.style.opacity = '1';
-        if (badgeAI) badgeAI.style.opacity = '1';
-        setTimeout(function () {
-            if (badgeExplore) badgeExplore.style.opacity = '1';
-        }, 600);
+        showBadges();
     }
 
-    function tryLoadModel(url) {
-        if (!url) return false;
+    function loadGLTF() {
         var loader = new GLTFLoader();
-        loader.load(url, function (gltf) {
+        loader.load(modelUrl, function (gltf) {
             carGroup = gltf.scene;
             carGroup.scale.set(1, 1, 1);
-            carGroup.position.set(0, 0, 0);
             carGroup.rotation.y = -Math.PI / 4;
-            carGroup.traverse(function (child) {
-                if (child.isMesh) {
-                    child.castShadow = true;
-                    child.receiveShadow = true;
-                    if (child.material) {
-                        child.material.envMapIntensity = 1.5;
-                        child.material.needsUpdate = true;
+            carGroup.traverse(function (ch) {
+                if (ch.isMesh) {
+                    ch.castShadow = true; ch.receiveShadow = true;
+                    if (ch.material) {
+                        ch.material.envMapIntensity = 2.0;
+                        ch.material.needsUpdate = true;
                     }
                 }
             });
             scene.add(carGroup);
             onModelReady();
         }, undefined, function () {
-            createProceduralCar();
+            if (errorEl) {
+                errorEl.style.display = 'flex';
+                if (loadingEl) {
+                    loadingEl.style.opacity = '0';
+                    setTimeout(function () { loadingEl.style.display = 'none'; }, 600);
+                }
+                showBadges();
+            } else {
+                carGroup = buildProceduralCar();
+                scene.add(carGroup);
+                onModelReady();
+            }
+        });
+    }
+
+    if (cfg.imageUrl) {
+        var imgLoader = new THREE.TextureLoader();
+        imgLoader.load(cfg.imageUrl, function (texture) {
+            carGroup = buildImageCar(texture);
+            scene.add(carGroup);
             onModelReady();
+        }, undefined, function () {
+            if (modelUrl) { loadGLTF(); } else {
+                carGroup = buildProceduralCar();
+                scene.add(carGroup);
+                onModelReady();
+            }
         });
-        return true;
-    }
-
-    function createProceduralCar() {
-        carGroup = new THREE.Group();
-
-        var bodyMat = new THREE.MeshPhysicalMaterial({
-            color: 0x1a237e,
-            metalness: 0.25,
-            roughness: 0.15,
-            clearcoat: 1.0,
-            clearcoatRoughness: 0.08,
-        });
-        var darkMat = new THREE.MeshPhysicalMaterial({
-            color: 0x0a0a1a,
-            metalness: 0.1,
-            roughness: 0.6,
-        });
-        var glassMat = new THREE.MeshPhysicalMaterial({
-            color: 0x0a0a23,
-            metalness: 0.95,
-            roughness: 0.05,
-            transparent: true,
-            opacity: 0.3,
-            envMapIntensity: 1.5,
-        });
-        var chromeMat = new THREE.MeshPhysicalMaterial({
-            color: 0xdddddd,
-            metalness: 1.0,
-            roughness: 0.05,
-        });
-        var wheelMat = new THREE.MeshPhysicalMaterial({
-            color: 0x111111,
-            metalness: 0.2,
-            roughness: 0.9,
-        });
-        var rimMat = new THREE.MeshPhysicalMaterial({
-            color: 0xbbbbbb,
-            metalness: 1.0,
-            roughness: 0.1,
-        });
-        var lightMat = new THREE.MeshPhysicalMaterial({
-            color: 0xffffff,
-            emissive: 0xaaccff,
-            emissiveIntensity: 0.6,
-            metalness: 0,
-            roughness: 0.05,
-            transparent: true,
-            opacity: 0.9,
-        });
-        var tailMat = new THREE.MeshPhysicalMaterial({
-            color: 0xff2200,
-            emissive: 0xff0000,
-            emissiveIntensity: 0.4,
-            metalness: 0,
-            roughness: 0.3,
-        });
-
-        // Main body
-        var bodyGeo = new THREE.BoxGeometry(1.85, 0.42, 4.2);
-        var body = new THREE.Mesh(bodyGeo, bodyMat);
-        body.position.y = 0.32;
-        body.castShadow = true;
-        carGroup.add(body);
-
-        // Front fender bulge
-        var frontBulge = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.08, 0.8), bodyMat);
-        frontBulge.position.set(0, 0.45, 1.6);
-        carGroup.add(frontBulge);
-
-        // Rear fender
-        var rearBulge = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.08, 0.7), bodyMat);
-        rearBulge.position.set(0, 0.45, -1.55);
-        carGroup.add(rearBulge);
-
-        // Front bumper
-        var bumperMat = new THREE.MeshPhysicalMaterial({
-            color: 0x222233,
-            metalness: 0.1,
-            roughness: 0.8,
-        });
-        var bumper = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.12, 0.35), bumperMat);
-        bumper.position.set(0, 0.12, 2.2);
-        carGroup.add(bumper);
-
-        // Rear diffuser
-        var diffuser = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.1, 0.3), bumperMat);
-        diffuser.position.set(0, 0.12, -2.2);
-        carGroup.add(diffuser);
-
-        // Grille
-        var grilleMat = new THREE.MeshPhysicalMaterial({
-            color: 0x111111,
-            metalness: 0.8,
-            roughness: 0.3,
-        });
-        var grille = new THREE.Mesh(new THREE.PlaneGeometry(0.8, 0.25), grilleMat);
-        grille.position.set(0, 0.2, 2.12);
-        carGroup.add(grille);
-
-        // Cabin/glass
-        var cabin = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.32, 1.8), glassMat);
-        cabin.position.set(0, 0.62, 0.15);
-        carGroup.add(cabin);
-
-        // Windshield accent
-        var wsMat = new THREE.MeshPhysicalMaterial({
-            color: 0x0a0a2e,
-            metalness: 0.9,
-            roughness: 0.05,
-            transparent: true,
-            opacity: 0.25,
-        });
-        var ws = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 0.35), wsMat);
-        ws.position.set(0, 0.55, 1.1);
-        ws.rotation.x = 0.35;
-        carGroup.add(ws);
-
-        // Rear window
-        var rw = new THREE.Mesh(new THREE.PlaneGeometry(1.1, 0.3), wsMat);
-        rw.position.set(0, 0.55, -0.95);
-        rw.rotation.x = -0.3;
-        carGroup.add(rw);
-
-        // Side windows - left
-        var sideMat = new THREE.MeshPhysicalMaterial({
-            color: 0x0a0a2e,
-            metalness: 0.9,
-            roughness: 0.05,
-            transparent: true,
-            opacity: 0.2,
-            side: THREE.DoubleSide,
-        });
-        var swL = new THREE.Mesh(new THREE.PlaneGeometry(1.3, 0.25), sideMat);
-        swL.position.set(0.71, 0.6, 0.2);
-        swL.rotation.y = Math.PI / 2;
-        carGroup.add(swL);
-
-        var swR = new THREE.Mesh(new THREE.PlaneGeometry(1.3, 0.25), sideMat);
-        swR.position.set(-0.71, 0.6, 0.2);
-        swR.rotation.y = -Math.PI / 2;
-        carGroup.add(swR);
-
-        // Wheels
-        var wheelPos = [[-0.92, 0.12, 1.2], [0.92, 0.12, 1.2], [-0.92, 0.12, -1.25], [0.92, 0.12, -1.25]];
-        wheelPos.forEach(function (pos) {
-            var tire = new THREE.Mesh(new THREE.CylinderGeometry(0.27, 0.27, 0.14, 24), wheelMat);
-            tire.rotation.z = Math.PI / 2;
-            tire.position.set(pos[0], pos[1], pos[2]);
-            tire.castShadow = true;
-            carGroup.add(tire);
-
-            var rim = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.17, 0.15, 16), rimMat);
-            rim.rotation.z = Math.PI / 2;
-            rim.position.set(pos[0], pos[1], pos[2]);
-            carGroup.add(rim);
-
-            var spoke1 = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.15, 0.16), rimMat);
-            spoke1.position.set(pos[0], pos[1], pos[2]);
-            carGroup.add(spoke1);
-
-            var spoke2 = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.03, 0.16), rimMat);
-            spoke2.position.set(pos[0], pos[1], pos[2]);
-            carGroup.add(spoke2);
-        });
-
-        // Headlights
-        [-0.5, 0.5].forEach(function (x) {
-            var hl = new THREE.Mesh(new THREE.SphereGeometry(0.065, 8, 8), lightMat);
-            hl.position.set(x, 0.32, 2.14);
-            carGroup.add(hl);
-        });
-
-        // DRL strips
-        var drlMat = new THREE.MeshBasicMaterial({
-            color: 0x4488ff,
-            transparent: true,
-            opacity: 0.4,
-        });
-        [-0.7, 0.7].forEach(function (x) {
-            var drl = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.03, 0.15), drlMat);
-            drl.position.set(x, 0.2, 2.12);
-            carGroup.add(drl);
-        });
-
-        // Taillights
-        [-0.45, 0.45].forEach(function (x) {
-            var tl = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.06, 0.04), tailMat);
-            tl.position.set(x, 0.35, -2.12);
-            carGroup.add(tl);
-        });
-
-        // Mirror caps
-        var mirrorMat = new THREE.MeshPhysicalMaterial({
-            color: 0x111122,
-            metalness: 0.3,
-            roughness: 0.4,
-        });
-        [-0.92, 0.92].forEach(function (x) {
-            var mirror = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.12, 0.15), mirrorMat);
-            mirror.position.set(x, 0.48, 1.35);
-            carGroup.add(mirror);
-        });
-
-        // Subtle underglow
-        var glowMat = new THREE.MeshBasicMaterial({
-            color: 0x3b82f6,
-            transparent: true,
-            opacity: 0.04,
-        });
-        var glow = new THREE.Mesh(new THREE.PlaneGeometry(2.2, 4.5), glowMat);
-        glow.rotation.x = -Math.PI / 2;
-        glow.position.y = 0.005;
-        carGroup.add(glow);
-
-        carGroup.position.y = 0;
-        carGroup.rotation.y = -Math.PI / 4;
+    } else if (modelUrl) {
+        loadGLTF();
+    } else {
+        carGroup = buildProceduralCar();
         scene.add(carGroup);
-    }
-
-    // Try loading the model
-    var loaded = false;
-    if (modelUrl) {
-        loaded = tryLoadModel(modelUrl);
-    }
-    if (!loaded) {
-        createProceduralCar();
         onModelReady();
     }
 
-    // Animation loop
+    // Animation
     function animate() {
         requestAnimationFrame(animate);
         controls.update();
-
-        // Subtle floating
         if (carGroup && !controls.autoRotate) {
-            var time = Date.now() * 0.001;
-            carGroup.position.y = Math.sin(time * 0.5) * 0.03;
+            carGroup.position.y = Math.sin(Date.now() * 0.0005) * 0.03;
         }
-
         renderer.render(scene, camera);
     }
     animate();
@@ -1057,12 +1016,58 @@ document.addEventListener('DOMContentLoaded', function () {
     // Resize
     function onResize() {
         var w = container.clientWidth;
-        var h = Math.max(w * 0.65, 360);
+        var h = Math.max(w * (cfg.heightRatio || 0.65), cfg.minHeight || 360);
         camera.aspect = w / h;
         camera.updateProjectionMatrix();
         renderer.setSize(w, h);
     }
     window.addEventListener('resize', onResize);
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    // Hero BMW 360° viewer
+    initCarViewer({
+        id: 'heroCarViewer',
+        loadingId: 'heroViewerLoading',
+        errorId: 'heroViewerError',
+        heightRatio: 0.85,
+        minHeight: 500,
+        cameraPos: [4.2, 1.8, 5.0],
+        targetY: 0.3,
+        fov: 20,
+        rotateSpeed: 1.5,
+        ambientIntensity: 0.8,
+        keyIntensity: 2.5,
+        fillIntensity: 0.8,
+        rimIntensity: 1.0,
+        topIntensity: 0.5,
+        exposure: 1.2,
+        shadowOpacity: 0.18,
+        ringOpacity: 0.08,
+        ringOuter: 3.0,
+        ringColor: 0x3b82f6,
+        minDist: 2.8,
+        maxDist: 10,
+        enablePan: false,
+        envMap: true,
+    });
+
+    // Section 5 viewer
+    initCarViewer({
+        id: 'carViewer',
+        loadingId: 'viewerLoading',
+        badgeIds: ['badge360', 'badgeAI', 'badgeExplore'],
+        hintId: null,
+        heightRatio: 0.65,
+        minHeight: 360,
+        cameraPos: [4.5, 2.2, 6.5],
+        targetY: 0.5,
+        rotateSpeed: 2.5,
+        shadowOpacity: 0.12,
+        ringOpacity: 0.04,
+        imageUrl: "{% static 'images/bmw_blue_hero.jpg' %}",
+    });
+
 });
 </script>
 {% endblock %}
