@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %}{% load inr_filters %}
 {% block title %}My Preferences - YourDriveAi{% endblock %}
 {% block content %}
 <div class="container py-4">
@@ -12,7 +12,7 @@
                         {% csrf_token %}
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label class="form-label">Max Budget ($)</label>
+                                <label class="form-label">Max Budget (₹)</label>
                                 <input type="number" name="max_price" class="form-control" value="{{ profile.budget|default:'' }}" step="500" placeholder="e.g. 50000">
                             </div>
                             <div class="col-md-6">

@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %}{% load inr_filters %}
 {% block title %}{{ brand.name }} Cars - YourDriveAi{% endblock %}
 {% block content %}
 <div class="container py-4">
@@ -16,7 +16,7 @@
                 {% endif %}
                 <div class="card-body">
                     <h6 class="fw-bold">{{ car.name }}</h6>
-                    <p class="text-primary fw-bold">${{ car.price|floatformat:0 }}</p>
+                    <p class="text-primary fw-bold">₹{{ car.price|inr_value }}</p>
                     <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-primary btn-sm w-100">View</a>
                 </div>
             </div>

@@ -106,7 +106,7 @@
                         <small class="text-muted">Booking Success Probability</small>
                         <div class="progress" style="height: 8px;">
                             <div class="progress-bar {% if booking.predicted_probability >= 0.7 %}bg-success{% elif booking.predicted_probability >= 0.4 %}bg-warning{% else %}bg-danger{% endif %}"
-                                style="width: {% widthratio booking.predicted_probability 1 100 %}%">
+                                style="width: {% widthratio booking.predicted_probability 1 100 %}%;">
                             </div>
                         </div>
                         <small

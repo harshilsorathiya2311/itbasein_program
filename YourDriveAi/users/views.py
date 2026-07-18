@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -11,9 +12,21 @@ def home(request):
     brands = Brand.objects.annotate(
         available_cars=Count('cars', filter=Q(cars__is_available=True))
     )
+    total_cars = Car.objects.filter(is_available=True).count()
+    total_brands = Brand.objects.count()
+    total_users = User.objects.count()
+    total_bookings = Booking.objects.count()
+    approved_bookings = Booking.objects.filter(status='Approved').count()
+    latest_cars = Car.objects.filter(is_available=True).select_related('brand').order_by('-created_at')[:8]
     context = {
         'featured_cars': featured_cars,
         'brands': brands,
+        'total_cars': total_cars,
+        'total_brands': total_brands,
+        'total_users': total_users,
+        'total_bookings': total_bookings,
+        'approved_bookings': approved_bookings,
+        'latest_cars': latest_cars,
     }
     return render(request, 'home.html', context)
 

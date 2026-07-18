@@ -54,7 +54,7 @@
         <div class="row g-4 mb-4">
             <div class="col-lg-4">
                 <div class="chart-card glass-chart">
-                    <div class="chart-header"><h5><i class="bi bi-currency-dollar me-2 text-danger"></i>Price Analysis</h5><small class="text-muted">Real-time pricing intelligence</small></div>
+                    <div class="chart-header"><h5><i class="bi bi-currency-rupee me-2 text-danger"></i>Price Analysis</h5><small class="text-muted">Real-time pricing intelligence</small></div>
                     <div class="chart-body">
                         <div class="price-container text-center" id="priceContainer">
                             <div class="row g-3">
@@ -108,11 +108,11 @@ const COLORS = {
 };
 const darkLayout = {
     paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
-    font: { color: '#e2e8f0', family: "'Segoe UI', system-ui, sans-serif" },
+    font: { color: '#FFFFFF', family: "'Segoe UI', system-ui, sans-serif" },
     margin: { l: 50, r: 20, t: 20, b: 50 },
     hovermode: 'closest',
-    xaxis: { gridcolor: 'rgba(255,255,255,0.05)', zerolinecolor: 'rgba(255,255,255,0.1)', tickfont: { color: '#94a3b8' } },
-    yaxis: { gridcolor: 'rgba(255,255,255,0.05)', zerolinecolor: 'rgba(255,255,255,0.1)', tickfont: { color: '#94a3b8' } },
+    xaxis: { gridcolor: 'rgba(255,255,255,0.05)', zerolinecolor: 'rgba(255,255,255,0.1)', tickfont: { color: '#D1D5DB' } },
+    yaxis: { gridcolor: 'rgba(255,255,255,0.05)', zerolinecolor: 'rgba(255,255,255,0.1)', tickfont: { color: '#D1D5DB' } },
 };
 
 function showLoading(container) {
@@ -230,10 +230,10 @@ async function loadStatusChart() {
         };
         const layout = {
             paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
-            font: { color: '#e2e8f0', family: "'Segoe UI', system-ui, sans-serif" },
+            font: { color: '#FFFFFF', family: "'Segoe UI', system-ui, sans-serif" },
             margin: { l: 10, r: 10, t: 10, b: 40 },
             showlegend: true,
-            legend: { orientation: 'h', y: -0.15, font: { color: '#94a3b8', size: 11 } },
+            legend: { orientation: 'h', y: -0.15, font: { color: '#FFFFFF', size: 11 } },
         };
         Plotly.react('chartStatus', [trace], layout, { responsive: true, displayModeBar: false });
     } catch (e) {
@@ -306,7 +306,7 @@ async function loadPopularChart() {
 async function loadPriceData() {
     try {
         const d = await fetchJSON('/analytics/api/price/');
-        const fmt = v => '$' + Number(v).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        const fmt = v => '\u20b9' + Number(v).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
         document.getElementById('priceAvg').textContent = fmt(d.avg_price);
         document.getElementById('priceMin').textContent = fmt(d.min_price);
         document.getElementById('priceMax').textContent = fmt(d.max_price);
@@ -320,10 +320,10 @@ async function loadPriceData() {
             type: 'indicator',
             mode: 'gauge+number+delta',
             value: d.avg_price,
-            number: { prefix: '$', font: { color: '#4f8cf7', size: 28 } },
+            number: { prefix: '\u20b9', font: { color: '#4f8cf7', size: 28 } },
             delta: { reference: d.min_price, increasing: { color: '#10b981' } },
             gauge: {
-                axis: { range: [null, d.max_price || 100000], tickcolor: '#475569', tickfont: { color: '#94a3b8' } },
+                axis: { range: [null, d.max_price || 100000], tickcolor: '#475569', tickfont: { color: '#D1D5DB' } },
                 bar: { color: '#4f8cf7' },
                 bgcolor: 'rgba(255,255,255,0.02)',
                 borderwidth: 0,
@@ -336,7 +336,7 @@ async function loadPriceData() {
         };
         const layout = {
             paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
-            font: { color: '#e2e8f0', family: "'Segoe UI', system-ui, sans-serif" },
+            font: { color: '#FFFFFF', family: "'Segoe UI', system-ui, sans-serif" },
             margin: { l: 30, r: 30, t: 10, b: 10 },
             height: 200,
         };
@@ -376,7 +376,7 @@ async function loadUserChart() {
             yaxis: { ...darkLayout.yaxis, title: 'New Users', dtick: 1 },
             yaxis2: { title: 'Total Users', overlaying: 'y', side: 'right', gridcolor: 'rgba(255,255,255,0)', tickfont: { color: '#ec4899' } },
             barmode: 'group',
-            legend: { orientation: 'h', y: 1.1, font: { color: '#94a3b8', size: 11 } },
+            legend: { orientation: 'h', y: 1.1, font: { color: '#FFFFFF', size: 11 } },
         };
         Plotly.react('chartUsers', [trace1, trace2], layout, { responsive: true, displayModeBar: false });
     } catch (e) {

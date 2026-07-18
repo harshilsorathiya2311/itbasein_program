@@ -6,11 +6,10 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.preprocessing import StandardScaler
 from sklearn.neighbors import NearestNeighbors
 from django.db.models import Count, Q
-
 logger = logging.getLogger(__name__)
 
-TEXT_WEIGHT = 0.35
-NUMERIC_WEIGHT = 0.40
+TEXT_WEIGHT = 0.25
+NUMERIC_WEIGHT = 0.50
 CATEGORICAL_WEIGHT = 0.25
 
 
@@ -86,11 +85,13 @@ class CarRecommender:
 
         candidates = self._filter_candidates(preferences)
         explanations = []
+        is_fallback = False
 
         if candidates.empty:
             logger.info('No exact matches, falling back to closest cars')
             candidates = self._fallback_closest(preferences)
-            explanations = ['No exact match — closest available option']
+            explanations = []
+            is_fallback = True
         else:
             explanations = self._generate_explanations(preferences)
 
@@ -102,16 +103,18 @@ class CarRecommender:
             candidate_indices = candidates.index.tolist()
             candidate_features = self._feature_matrix[candidate_indices]
             sims = cosine_similarity(query_vec.reshape(1, -1), candidate_features)[0]
-            sims = np.nan_to_num(sims, nan=0.3)
+            sims = np.nan_to_num(sims, nan=0.0)
             candidates = candidates.copy()
-            base = 0.3
-            candidates['_score'] = base + (1 - base) * (sims - sims.min()) / max(sims.max() - sims.min(), 1e-6)
+            min_sim = sims.min()
+            max_sim = sims.max()
+            if max_sim > min_sim:
+                candidates['_score'] = (sims - min_sim) / (max_sim - min_sim)
+            else:
+                candidates['_score'] = 0.5
             candidates = candidates.sort_values('_score', ascending=False)
         else:
             candidates = candidates.head(n).copy()
             candidates['_score'] = 0.5
-
-        min_possible_score = 50 if query_vec is not None else 50
 
         top_n = candidates.head(n)
         car_ids = top_n['id'].tolist()
@@ -119,25 +122,29 @@ class CarRecommender:
         cars = list(Car.objects.filter(id__in=car_ids).select_related('brand'))
         cars.sort(key=lambda c: car_ids.index(c.id))
 
+        CIRCUMFERENCE = 125.6
         results = []
         for car in cars:
             raw = score_map.get(car.id, 0.5)
             pct = max(0, min(100, round(raw * 100)))
-            if pct < 5 and explanations:
-                pct = max(pct, 50)
             why = self._why_this_car(car, preferences, pct)
+            dashoff = CIRCUMFERENCE * (1 - pct / 100)
             results.append({
                 'car': car,
                 'score': pct,
                 'score_raw': round(raw, 3),
+                'dashoffset': f'{dashoff:.1f}',
                 'explanation': why,
-                'explanations': explanations,
+                'explanations': ['matches your preferences'] if is_fallback else explanations,
             })
 
         return results
 
     def _filter_candidates(self, prefs):
         df = self._car_data.copy()
+        logger.info('_filter_candidates: start with %d cars', len(df))
+        logger.info('  prefs price: min=%s max=%s brand=%s',
+                     prefs.get('min_price'), prefs.get('max_price'), prefs.get('brand'))
 
         min_p = prefs.get('min_price')
         max_p = prefs.get('max_price')
@@ -151,16 +158,22 @@ class CarRecommender:
 
         if min_p:
             try:
+                before = len(df)
                 df = df[df['price'] >= float(min_p)]
+                logger.info('  after min_price >= %s: %d cars (was %d)', min_p, len(df), before)
             except (ValueError, TypeError):
-                pass
+                logger.warning('  min_price filter failed for value: %s', min_p)
         if max_p:
             try:
+                before = len(df)
                 df = df[df['price'] <= float(max_p)]
+                logger.info('  after max_price <= %s: %d cars (was %d)', max_p, len(df), before)
             except (ValueError, TypeError):
-                pass
+                logger.warning('  max_price filter failed for value: %s', max_p)
         if brand:
+            before = len(df)
             df = df[df['brand'].str.lower() == brand.lower()]
+            logger.info('  after brand=%s: %d cars (was %d)', brand, len(df), before)
         if fuel:
             df = df[df['fuel_type'].str.lower() == fuel.lower()]
         if trans:
@@ -183,15 +196,55 @@ class CarRecommender:
             except (ValueError, TypeError):
                 pass
 
+        logger.info('_filter_candidates: final count = %d', len(df))
         return df
 
     def _fallback_closest(self, prefs):
+        logger.info('_fallback_closest called with prefs price: min=%s max=%s',
+                     prefs.get('min_price'), prefs.get('max_price'))
         df = self._car_data.copy()
+        logger.info('  start with %d cars, price range INR %.0f - INR %.0f',
+                     len(df), df['price'].min(), df['price'].max())
+
+        min_p = prefs.get('min_price')
+        max_p = prefs.get('max_price')
+
+        if min_p:
+            try:
+                before = len(df)
+                df = df[df['price'] >= float(min_p)]
+                logger.info('  after min >= %s: %d cars (was %d)', min_p, len(df), before)
+            except (ValueError, TypeError):
+                logger.warning('  min_price filter failed: %s', min_p)
+        if max_p:
+            try:
+                before = len(df)
+                df = df[df['price'] <= float(max_p)]
+                logger.info('  after max <= %s: %d cars (was %d)', max_p, len(df), before)
+            except (ValueError, TypeError):
+                logger.warning('  max_price filter failed: %s', max_p)
+
+        if df.empty:
+            logger.warning('Fallback: all cars filtered out — relaxing to max_price only')
+            df = self._car_data.copy()
+            if max_p:
+                try:
+                    df = df[df['price'] <= float(max_p)]
+                    logger.info('  relaxed: after max <= %s: %d cars', max_p, len(df))
+                except (ValueError, TypeError):
+                    pass
+
+        if df.empty:
+            logger.warning('Fallback: STILL empty after relaxation! Returning empty set.')
+            return df
+        else:
+            logger.info('Fallback: %d candidates after price filter', len(df))
+
         query_vec = self._build_query_vector(prefs)
         if query_vec is None:
             return df.head(5)
 
-        sims = cosine_similarity(query_vec.reshape(1, -1), self._feature_matrix)[0]
+        sims = cosine_similarity(query_vec.reshape(1, -1), self._feature_matrix[df.index])[0]
         df = df.copy()
         df['_sim'] = sims
         df = df.sort_values('_sim', ascending=False)
@@ -213,9 +266,14 @@ class CarRecommender:
             tfidf_vec = np.zeros((1, self._tfidf_matrix.shape[1]))
 
         try:
-            q_price = float(prefs.get('max_price', 0) or 0)
+            q_min = float(prefs.get('min_price', 0) or 0)
         except (ValueError, TypeError):
-            q_price = 0.0
+            q_min = 0.0
+        try:
+            q_max = float(prefs.get('max_price', 0) or 0)
+        except (ValueError, TypeError):
+            q_max = 0.0
+        q_price = (q_min + q_max) / 2 if q_max > 0 else q_max
         try:
             q_mileage = float(prefs.get('max_mileage', 0) or 0)
         except (ValueError, TypeError):
@@ -270,16 +328,18 @@ class CarRecommender:
 
     def _why_this_car(self, car, prefs, score):
         parts = []
+        car_price_inr = float(car.price)
+
         if prefs.get('max_price'):
             try:
-                if float(car.price) <= float(prefs['max_price']):
-                    parts.append(f"Under ${float(prefs['max_price']):,.0f}")
+                if car_price_inr <= float(prefs['max_price']):
+                    parts.append(f"Fits your budget")
             except (ValueError, TypeError):
                 pass
         if prefs.get('min_price'):
             try:
-                if float(car.price) >= float(prefs['min_price']):
-                    parts.append(f"Above ${float(prefs['min_price']):,.0f}")
+                if car_price_inr >= float(prefs['min_price']):
+                    pass  # already covered by "Fits your budget"
             except (ValueError, TypeError):
                 pass
         if prefs.get('brand') and car.brand.name.lower() == prefs['brand'].lower():
@@ -299,17 +359,17 @@ class CarRecommender:
         if prefs.get('max_mileage'):
             try:
                 if float(car.mileage) <= float(prefs['max_mileage']):
-                    parts.append(f"Great mileage: {car.mileage} kmpl")
+                    parts.append(f"Good mileage: {car.mileage} kmpl")
             except (ValueError, TypeError):
                 pass
         if parts:
-            return ' | '.join(parts[:3])
-        if score >= 80:
+            return ' | '.join(parts[:4])
+        if score >= 75:
             return 'Top match based on your preferences'
-        elif score >= 60:
+        elif score >= 50:
             return 'Strong match across multiple features'
         else:
-            return 'Closest available option'
+            return 'Closest available option in your range'
 
 
 class BookingPredictor:

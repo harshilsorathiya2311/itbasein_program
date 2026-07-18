@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %}{% load inr_filters %}
 {% block title %}Compare Cars - YourDriveAi{% endblock %}
 {% block content %}
 <div class="container py-4">
@@ -26,7 +26,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr><td><strong>Price</strong></td>{% for car in cars %}<td class="text-center">${{ car.price|floatformat:2 }}</td>{% endfor %}</tr>
+                <tr><td><strong>Price</strong></td>{% for car in cars %}<td class="text-center">₹{{ car.price|inr_value }}</td>{% endfor %}</tr>
                 <tr><td><strong>Fuel Type</strong></td>{% for car in cars %}<td class="text-center">{{ car.fuel_type }}</td>{% endfor %}</tr>
                 <tr><td><strong>Transmission</strong></td>{% for car in cars %}<td class="text-center">{{ car.transmission }}</td>{% endfor %}</tr>
                 <tr><td><strong>Mileage</strong></td>{% for car in cars %}<td class="text-center">{{ car.mileage }} kmpl</td>{% endfor %}</tr>

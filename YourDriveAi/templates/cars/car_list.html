@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %}{% load inr_filters %}
 {% block title %}Browse Cars - YourDriveAi{% endblock %}
 {% block content %}
 <div class="container py-4">
@@ -29,7 +29,7 @@
                 {% endif %}
                 <div class="card-body">
                     <h6 class="card-title fw-bold">{{ car.brand.name }} {{ car.name }}</h6>
-                    <p class="text-primary fw-bold fs-5">${{ car.price|floatformat:0 }}</p>
+                    <p class="text-primary fw-bold fs-5">₹{{ car.price|inr_value }}</p>
                     <div class="d-flex justify-content-between text-muted small mb-2">
                         <span><i class="bi bi-fuel-pump"></i> {{ car.fuel_type }}</span>
                         <span><i class="bi bi-gear"></i> {{ car.transmission }}</span>

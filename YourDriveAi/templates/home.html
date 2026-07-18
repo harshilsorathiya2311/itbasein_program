@@ -1,77 +1,232 @@
 {% extends 'base.html' %}
-{% load static %}
-{% block title %}YourDriveAi - Find Your Perfect Car{% endblock %}
+{% load static %}{% load inr_filters %}
+{% block title %}YourDriveAi — Find Your Perfect Car{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+{% endblock %}
 {% block content %}
+<div class="home-page">
 
-<section class="hero bg-dark text-white text-center py-5" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);">
-    <div class="container">
-        <h1 class="display-4 fw-bold mb-3">Find Your Perfect Drive</h1>
-        <p class="lead mb-4">AI-powered car recommendations tailored to your preferences. Book test drives instantly.</p>
-        <div class="d-flex justify-content-center gap-3">
-            <a href="{% url 'car_list' %}" class="btn btn-primary btn-lg px-4">Browse Cars</a>
-            <a href="{% url 'recommend_cars' %}" class="btn btn-outline-light btn-lg px-4">Get Recommendations</a>
+<!-- ============================================================
+     1. HERO
+     ============================================================ -->
+<section class="hero-section" id="home">
+    <div class="hero-gradient-bg"></div>
+    <div class="hero-particles">
+        <div class="hero-particle"></div>
+        <div class="hero-particle"></div>
+        <div class="hero-particle"></div>
+        <div class="hero-particle"></div>
+        <div class="hero-particle"></div>
+        <div class="hero-particle"></div>
+        <div class="hero-particle"></div>
+    </div>
+    <div class="hero-overlay"></div>
+    <div class="hero-shape"></div>
+    <div class="hero-shape"></div>
+    <div class="container hero-content">
+        <div class="row align-items-center">
+            <div class="col-lg-8 col-xl-7">
+                <div class="hero-badge">
+                    <span class="badge-dot"></span>
+                    <span>AI-Powered Car Recommendations</span>
+                </div>
+                <h1 class="hero-title">
+                    Find Your<br><span class="gradient-text">Perfect Drive</span>
+                </h1>
+                <p class="hero-subtitle">
+                    Discover, Compare, and Book Test Drives from India's Leading Car Brands with AI-Powered Recommendations.
+                </p>
+                <div class="hero-buttons">
+                    <a href="{% url 'car_list' %}" class="btn-hp-primary">
+                        <i class="bi bi-car-front-fill"></i> Explore Cars
+                    </a>
+                    <a href="{% url 'car_list' %}" class="btn-hp-secondary">
+                        <i class="bi bi-calendar-check"></i> Book Test Drive
+                    </a>
+                </div>
+                <div class="hero-stats stagger animate-on-scroll">
+                    <div class="hero-stat">
+                        <div class="hero-stat-value">{{ total_brands|default:"25" }}+</div>
+                        <div class="hero-stat-label">Brands</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-value">{{ total_cars|default:"500" }}+</div>
+                        <div class="hero-stat-label">Cars</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-value">{{ total_users|default:"10" }},000+</div>
+                        <div class="hero-stat-label">Happy Users</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-value">{{ total_bookings|default:"2" }},500+</div>
+                        <div class="hero-stat-label">Test Drives</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </section>
 
-<section class="features py-5 bg-light">
+<!-- ============================================================
+     2. SEARCH & FILTER
+     ============================================================ -->
+<section class="search-section">
     <div class="container">
-        <div class="row g-4">
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm h-100 text-center p-4">
-                    <div class="card-body">
-                        <i class="bi bi-robot display-3 text-primary mb-3"></i>
-                        <h5>AI Recommendations</h5>
-                        <p class="text-muted">Smart algorithms match you with the perfect vehicle based on your preferences and budget.</p>
+        <div class="search-panel animate-on-scroll">
+            <form method="get" action="{% url 'car_list' %}">
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-3">
+                        <label class="form-label"><i class="bi bi-bookmark me-1"></i> Brand</label>
+                        <select name="brand" class="form-select">
+                            <option value="">All Brands</option>
+                            {% for b in brands %}
+                            <option value="{{ b.name }}">{{ b.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label"><i class="bi bi-currency-rupee me-1"></i> Budget</label>
+                        <select name="max_price" class="form-select">
+                            <option value="">Any Budget</option>
+                            <option value="500000">Under ₹5 Lakh</option>
+                            <option value="1000000">₹5 - 10 Lakh</option>
+                            <option value="1500000">₹10 - 15 Lakh</option>
+                            <option value="2500000">₹15 - 25 Lakh</option>
+                            <option value="5000000">₹25 - 50 Lakh</option>
+                            <option value="10000000">₹50 Lakh - 1 Crore</option>
+                            <option value="10000001">Above ₹1 Crore</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label"><i class="bi bi-fuel-pump me-1"></i> Fuel</label>
+                        <select name="fuel_type" class="form-select">
+                            <option value="">Any</option>
+                            <option value="Petrol">Petrol</option>
+                            <option value="Diesel">Diesel</option>
+                            <option value="Electric">Electric</option>
+                            <option value="Hybrid">Hybrid</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label"><i class="bi bi-gear me-1"></i> Transmission</label>
+                        <select name="transmission" class="form-select">
+                            <option value="">Any</option>
+                            <option value="Manual">Manual</option>
+                            <option value="Automatic">Automatic</option>
+                            <option value="CVT">CVT</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label"><i class="bi bi-car-front me-1"></i> Body</label>
+                        <select name="body_type" class="form-select">
+                            <option value="">Any</option>
+                            <option value="SUV">SUV</option>
+                            <option value="Sedan">Sedan</option>
+                            <option value="Hatchback">Hatchback</option>
+                            <option value="Coupe">Coupe</option>
+                            <option value="Convertible">Convertible</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label"><i class="bi bi-people me-1"></i> Seating</label>
+                        <select name="seating" class="form-select">
+                            <option value="">Any</option>
+                            <option value="2">2 Seats</option>
+                            <option value="4">4 Seats</option>
+                            <option value="5">5 Seats</option>
+                            <option value="7">7 Seats</option>
+                            <option value="8">8+ Seats</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{% url 'recommend_cars' %}" class="btn-hp-ai">
+                            <i class="bi bi-robot"></i> AI Recommendation
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn-hp-search">
+                            <i class="bi bi-search me-1"></i> Search Cars
+                        </button>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm h-100 text-center p-4">
-                    <div class="card-body">
-                        <i class="bi bi-calendar-check display-3 text-primary mb-3"></i>
-                        <h5>Easy Test Drive Booking</h5>
-                        <p class="text-muted">Schedule test drives at your convenience with real-time availability and instant confirmation.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm h-100 text-center p-4">
-                    <div class="card-body">
-                        <i class="bi bi-graph-up-arrow display-3 text-primary mb-3"></i>
-                        <h5>Analytics Dashboard</h5>
-                        <p class="text-muted">Comprehensive insights into car popularity, booking trends, and user behavior.</p>
-                    </div>
-                </div>
-            </div>
+            </form>
         </div>
     </div>
 </section>
 
+<!-- ============================================================
+     3. FEATURED CARS
+     ============================================================ -->
 {% if featured_cars %}
-<section class="featured-cars py-5">
+<section class="featured-section section-padding">
     <div class="container">
-        <h2 class="text-center mb-4">Featured Cars</h2>
-        <div class="row g-4">
+        <div class="section-header animate-on-scroll">
+            <div class="section-tag"><span class="dot"></span> Collection</div>
+            <h2 class="section-title">Featured <span class="gradient">Cars</span></h2>
+            <p class="section-subtitle">Handpicked vehicles waiting for you. Find your perfect match today.</p>
+        </div>
+        <div class="row g-4 stagger animate-on-scroll">
             {% for car in featured_cars %}
-            <div class="col-md-4 col-lg-4">
-                <div class="card h-100 shadow-sm border-0 car-card">
-                    {% if car.image %}
-                    <img src="{{ car.image.url }}" class="card-img-top" alt="{{ car.name }}" style="height: 200px; object-fit: cover;">
-                    {% else %}
-                    <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" style="height: 200px;">
-                        <i class="bi bi-car-front text-white" style="font-size: 3rem;"></i>
-                    </div>
-                    {% endif %}
-                    <div class="card-body">
-                        <h5 class="card-title">{{ car.brand.name }} {{ car.name }}</h5>
-                        <p class="text-primary fw-bold fs-5">${{ car.price|floatformat:0 }}</p>
-                        <div class="d-flex justify-content-between text-muted small mb-3">
-                            <span><i class="bi bi-fuel-pump"></i> {{ car.fuel_type }}</span>
-                            <span><i class="bi bi-gear"></i> {{ car.transmission }}</span>
-                            <span><i class="bi bi-speedometer2"></i> {{ car.mileage }} kmpl</span>
+            <div class="col-lg-4 col-md-6">
+                <div class="car-card">
+                    <div class="card-img-wrap">
+                        {% if car.image %}
+                        <img src="{{ car.image.url }}" alt="{{ car.name }}" loading="lazy">
+                        {% else %}
+                        <div class="card-img-placeholder">
+                            <i class="bi bi-car-front"></i>
                         </div>
-                        <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-primary w-100">View Details</a>
+                        {% endif %}
+                        <span class="card-badge card-badge-ai"><i class="bi bi-cpu me-1"></i>AI Match</span>
+                        <button class="card-wishlist" title="Add to Wishlist">
+                            <i class="bi bi-heart"></i>
+                        </button>
+                        {% with rating=car.average_rating %}
+                        {% if rating %}
+                        <svg class="match-ring" viewBox="0 0 36 36">
+                            <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="3"/>
+                            <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#22c55e" stroke-width="3" stroke-dasharray="75, 100" stroke-linecap="round"/>
+                        </svg>
+                        {% endif %}
+                        {% endwith %}
+                    </div>
+                    <div class="card-body">
+                        <h6 class="car-name">{{ car.brand.name }} {{ car.name }}</h6>
+                        <div class="car-price">₹{{ car.price|inr_value }}</div>
+                        <div class="car-specs">
+                            <div class="car-spec">
+                                <i class="bi bi-fuel-pump"></i>
+                                <span>{{ car.fuel_type }}</span>
+                            </div>
+                            <div class="car-spec">
+                                <i class="bi bi-gear"></i>
+                                <span>{{ car.transmission }}</span>
+                            </div>
+                            <div class="car-spec">
+                                <i class="bi bi-speedometer2"></i>
+                                <span>{{ car.mileage }} kmpl</span>
+                            </div>
+                        </div>
+                        <div class="car-rating">
+                            {% with rating=car.average_rating %}
+                            {% if rating %}
+                            {% for i in "12345"|make_list %}
+                            {% if forloop.counter <= rating %}<i class="bi bi-star-fill stars"></i>{% else %}<i class="bi bi-star stars"></i>{% endif %}
+                            {% endfor %}
+                            <span class="rating-value">{{ rating }}/5</span>
+                            {% else %}
+                            <i class="bi bi-star text-muted"></i>
+                            <span class="rating-value">No reviews</span>
+                            {% endif %}
+                            {% endwith %}
+                        </div>
+                        <div class="card-actions">
+                            <a href="{% url 'car_detail' car.id %}" class="btn btn-primary btn-sm">View Details</a>
+                            <a href="{% url 'car_compare' %}?ids={{ car.id }}" class="btn btn-outline btn-sm"><i class="bi bi-arrow-left-right me-1"></i>Compare</a>
+                            <a href="{% url 'create_booking' car.id %}" class="btn btn-outline btn-sm"><i class="bi bi-calendar-check me-1"></i>Book</a>
+                            <button class="btn btn-outline btn-sm"><i class="bi bi-heart me-1"></i>Save</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -81,38 +236,32 @@
 </section>
 {% endif %}
 
+<!-- ============================================================
+     4. BRANDS
+     ============================================================ -->
 {% if brands %}
-{% load static %}
-<section class="brands-section py-5 bg-light">
+<section class="brands-section section-padding">
     <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="fw-bold">Explore Brands</h2>
-            <p class="text-muted">Choose your preferred brand and find the perfect car</p>
+        <div class="section-header animate-on-scroll">
+            <div class="section-tag"><span class="dot"></span> Manufacturers</div>
+            <h2 class="section-title">Explore <span class="gradient">Brands</span></h2>
+            <p class="section-subtitle">Choose your preferred brand and discover the perfect car.</p>
         </div>
-        <div class="row g-4">
+        <div class="row g-3 stagger animate-on-scroll">
             {% for brand in brands %}
-            <div class="col-6 col-md-4 col-lg-3">
-                <a href="{% url 'brand_cars' brand.id %}" class="text-decoration-none">
-                    <div class="card brand-card border-0 h-100">
-                        <div class="card-body text-center d-flex flex-column align-items-center justify-content-center py-4">
-                            <div class="brand-logo-wrapper mb-3">
-                                <img src="{% get_static_prefix %}images/brands/{{ brand.name|slugify }}.svg"
-                                     alt="{{ brand.name }}"
-                                     class="brand-logo img-fluid"
-                                     loading="lazy"
-                                     onerror="this.onerror=null;this.parentElement.classList.add('logo-fallback')">
-                            </div>
-                            <h6 class="brand-name fw-semibold mb-1">{{ brand.name }}</h6>
-                            {% if brand.available_cars %}
-                            <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-1 rounded-pill small">
-                                {{ brand.available_cars }} car{{ brand.available_cars|pluralize }}
-                            </span>
-                            {% endif %}
-                            <span class="btn btn-outline-primary btn-sm mt-3 view-cars-btn">
-                                View Cars <i class="bi bi-arrow-right ms-1"></i>
-                            </span>
-                        </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <a href="{% url 'brand_cars' brand.id %}" class="brand-card">
+                    <div class="brand-avatar brand-avatar-{{ forloop.counter }}">
+                        {% if brand.logo %}
+                        <img src="{{ brand.logo.url }}" alt="{{ brand.name }}">
+                        {% else %}
+                        {{ brand.name|slice:":2"|upper }}
+                        {% endif %}
                     </div>
+                    <h6 class="brand-name">{{ brand.name }}</h6>
+                    {% if brand.available_cars %}
+                    <span class="brand-count">{{ brand.available_cars }} car{{ brand.available_cars|pluralize }}</span>
+                    {% endif %}
                 </a>
             </div>
             {% endfor %}
@@ -121,4 +270,799 @@
 </section>
 {% endif %}
 
+<!-- ============================================================
+     5. AI RECOMMENDATION + 360° CAR VIEWER
+     ============================================================ -->
+<section class="ai-section" id="ai-section">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-5 col-xl-5">
+                <div class="ai-card animate-on-scroll">
+                    <div class="ai-icon-wrap">
+                        <i class="bi bi-robot"></i>
+                    </div>
+                    <h3>AI-Powered Car Recommendations</h3>
+                    <p>Find Your Perfect Drive. Our intelligent engine analyzes your preferences — budget, style, mileage, and more — to recommend the ideal match from thousands of options.</p>
+                    <a href="{% url 'recommend_cars' %}" class="btn-hp-primary">
+                        <i class="bi bi-magic"></i> Get AI Recommendation
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-7 col-xl-7">
+                <div class="car-viewer-wrap animate-on-scroll">
+                    <div class="car-viewer-container" id="carViewer" data-model-url="{% static 'models/car.glb' %}">
+                        <div class="viewer-loading" id="viewerLoading">
+                            <div class="viewer-spinner-ring"></div>
+                            <div class="viewer-loading-text">Loading 360° Experience...</div>
+                        </div>
+                    </div>
+                    <div class="viewer-badge badge-360" id="badge360">
+                        <i class="bi bi-arrow-repeat"></i> 360° View
+                    </div>
+                    <div class="viewer-badge badge-ai-badge" id="badgeAI">
+                        <i class="bi bi-cpu"></i> AI Recommended
+                    </div>
+                    <div class="viewer-badge badge-explore" id="badgeExplore">
+                        <i class="bi bi-search"></i> Explore Vehicle
+                    </div>
+                    <div class="viewer-hint">
+                        <i class="bi bi-hand-index-thumb"></i> Drag to rotate &middot; Scroll to zoom
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================
+     6. WHY CHOOSE YOURDRIVEAI
+     ============================================================ -->
+<section class="section-padding">
+    <div class="container">
+        <div class="section-header animate-on-scroll">
+            <div class="section-tag"><span class="dot"></span> Why Us</div>
+            <h2 class="section-title">Why Choose <span class="gradient">YourDriveAI</span></h2>
+            <p class="section-subtitle">Everything you need to find and book the perfect car.</p>
+        </div>
+        <div class="row g-4 features-grid stagger animate-on-scroll">
+            <div class="col-md-3 col-6">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="bi bi-robot"></i></div>
+                    <h6>AI Recommendations</h6>
+                    <p>Smart matching based on your unique preferences</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="bi bi-collection"></i></div>
+                    <h6>Multiple Brands</h6>
+                    <p>Compare across 10+ leading automobile brands</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="bi bi-arrow-left-right"></i></div>
+                    <h6>Compare Cars</h6>
+                    <p>Side-by-side comparison of specs and pricing</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="bi bi-calendar-check"></i></div>
+                    <h6>Easy Test Drive</h6>
+                    <p>Book test drives with just a few clicks</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="bi bi-envelope"></i></div>
+                    <h6>Email Notifications</h6>
+                    <p>Real-time updates on booking status changes</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="bi bi-graph-up-arrow"></i></div>
+                    <h6>Advanced Analytics</h6>
+                    <p>Insights into car popularity and trends</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="bi bi-shield-check"></i></div>
+                    <h6>Secure Login</h6>
+                    <p>Your data and privacy are fully protected</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="bi bi-phone"></i></div>
+                    <h6>Responsive Platform</h6>
+                    <p>Seamless experience across all devices</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================
+     7. STATISTICS
+     ============================================================ -->
+<section class="stats-section section-padding">
+    <div class="container">
+        <div class="row stagger animate-on-scroll">
+            <div class="col-md-2 col-4">
+                <div class="stat-item">
+                    <div class="stat-icon"><i class="bi bi-car-front-fill"></i></div>
+                    <div class="stat-number" data-target="{{ total_cars|default:500 }}">{{ total_cars|default:"0" }}</div>
+                    <div class="stat-label">Total Cars</div>
+                </div>
+            </div>
+            <div class="col-md-2 col-4">
+                <div class="stat-item">
+                    <div class="stat-icon"><i class="bi bi-tags-fill"></i></div>
+                    <div class="stat-number" data-target="{{ total_brands|default:25 }}">{{ total_brands|default:"0" }}</div>
+                    <div class="stat-label">Total Brands</div>
+                </div>
+            </div>
+            <div class="col-md-2 col-4">
+                <div class="stat-item">
+                    <div class="stat-icon"><i class="bi bi-people-fill"></i></div>
+                    <div class="stat-number" data-target="{{ total_users|default:10000 }}">{{ total_users|default:"0" }}</div>
+                    <div class="stat-label">Registered Users</div>
+                </div>
+            </div>
+            <div class="col-md-2 col-4">
+                <div class="stat-item">
+                    <div class="stat-icon"><i class="bi bi-calendar-check-fill"></i></div>
+                    <div class="stat-number" data-target="{{ total_bookings|default:2500 }}">{{ total_bookings|default:"0" }}</div>
+                    <div class="stat-label">Test Drives</div>
+                </div>
+            </div>
+            <div class="col-md-2 col-4">
+                <div class="stat-item">
+                    <div class="stat-icon"><i class="bi bi-check-circle-fill"></i></div>
+                    <div class="stat-number" data-target="{{ approved_bookings|default:1800 }}">{{ approved_bookings|default:"0" }}</div>
+                    <div class="stat-label">Approved</div>
+                </div>
+            </div>
+            <div class="col-md-2 col-4">
+                <div class="stat-item">
+                    <div class="stat-icon"><i class="bi bi-emoji-smile-fill"></i></div>
+                    <div class="stat-number" data-target="9500">9,500</div>
+                    <div class="stat-label">Happy Customers</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================
+     8. LATEST CARS
+     ============================================================ -->
+{% if latest_cars %}
+<section class="latest-section section-padding">
+    <div class="container">
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 animate-on-scroll">
+            <div class="section-header text-start mb-0">
+                <div class="section-tag"><span class="dot"></span> New Arrivals</div>
+                <h2 class="section-title mb-0">Latest <span class="gradient">Cars</span></h2>
+                <p class="section-subtitle mb-0">Newly added vehicles to our collection.</p>
+            </div>
+            <div class="d-flex gap-2">
+                <button class="scroll-btn scroll-btn-left"><i class="bi bi-chevron-left"></i></button>
+                <button class="scroll-btn scroll-btn-right"><i class="bi bi-chevron-right"></i></button>
+            </div>
+        </div>
+        <div class="position-relative animate-on-scroll">
+            <div class="cars-scroll-wrap">
+                <div class="cars-scroll">
+                    {% for car in latest_cars %}
+                    <div class="car-card">
+                        <div class="card-img-wrap" style="height: 170px;">
+                            {% if car.image %}
+                            <img src="{{ car.image.url }}" alt="{{ car.name }}" loading="lazy">
+                            {% else %}
+                            <div class="card-img-placeholder" style="font-size: 2rem;">
+                                <i class="bi bi-car-front"></i>
+                            </div>
+                            {% endif %}
+                            <span class="card-badge card-badge-new"><i class="bi bi-clock me-1"></i>New</span>
+                        </div>
+                        <div class="card-body">
+                            <h6 class="car-name" style="font-size: 0.88rem;">{{ car.brand.name }} {{ car.name }}</h6>
+                            <div class="car-price" style="font-size: 1.1rem;">₹{{ car.price|inr_value }}</div>
+                            <div class="car-specs" style="padding: 0.5rem 0;">
+                                <div class="car-spec"><i class="bi bi-fuel-pump"></i><span>{{ car.fuel_type }}</span></div>
+                                <div class="car-spec"><i class="bi bi-gear"></i><span>{{ car.transmission }}</span></div>
+                                <div class="car-spec"><i class="bi bi-speedometer2"></i><span>{{ car.mileage }} kmpl</span></div>
+                            </div>
+                            <div class="card-actions">
+                                <a href="{% url 'car_detail' car.id %}" class="btn btn-primary btn-sm">View</a>
+                                <a href="{% url 'car_compare' %}?ids={{ car.id }}" class="btn btn-outline btn-sm"><i class="bi bi-arrow-left-right"></i></a>
+                                <a href="{% url 'create_booking' car.id %}" class="btn btn-outline btn-sm"><i class="bi bi-calendar-check"></i></a>
+                                <button class="btn btn-outline btn-sm"><i class="bi bi-heart"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- ============================================================
+     9. TESTIMONIALS
+     ============================================================ -->
+<section class="testimonials-section section-padding">
+    <div class="container">
+        <div class="section-header animate-on-scroll">
+            <div class="section-tag"><span class="dot"></span> Testimonials</div>
+            <h2 class="section-title">What Our <span class="gradient">Users Say</span></h2>
+            <p class="section-subtitle">Real stories from real car buyers.</p>
+        </div>
+        <div class="testimonial-carousel animate-on-scroll">
+            <div class="testimonial-card-ui">
+                <div class="test-avatar">RK</div>
+                <div class="test-stars">
+                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                    <i class="bi bi-star-fill"></i>
+                </div>
+                <p class="test-text">"YourDriveAI made finding my first car incredibly easy. The AI recommendation was spot on — I found the perfect SUV within my budget. Highly recommended!"</p>
+                <h6 class="test-name">Rahul Kumar</h6>
+                <span class="test-role">First-time Car Buyer</span>
+            </div>
+            <div class="testimonial-card-ui" style="display:none;">
+                <div class="test-avatar">SP</div>
+                <div class="test-stars">
+                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                    <i class="bi bi-star-fill"></i>
+                </div>
+                <p class="test-text">"The compare feature saved me hours of research. I could see all specs side by side and book a test drive instantly. A game-changer for car shopping!"</p>
+                <h6 class="test-name">Priya Sharma</h6>
+                <span class="test-role">Car Enthusiast</span>
+            </div>
+            <div class="testimonial-card-ui" style="display:none;">
+                <div class="test-avatar">AV</div>
+                <div class="test-stars">
+                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                    <i class="bi bi-star-half"></i>
+                </div>
+                <p class="test-text">"As a dealer, the analytics dashboard gives me incredible insights into customer preferences. YourDriveAI is a powerful tool for both buyers and sellers."</p>
+                <h6 class="test-name">Arun Verma</h6>
+                <span class="test-role">Car Dealer</span>
+            </div>
+            <div class="test-dots">
+                <button class="test-dot active" data-index="0"></button>
+                <button class="test-dot" data-index="1"></button>
+                <button class="test-dot" data-index="2"></button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================
+     10. CALL TO ACTION
+     ============================================================ -->
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-content animate-on-scroll">
+            <h2>Ready to Find Your Next Car?</h2>
+            <p>Join thousands of happy customers. Start your journey today with AI-powered recommendations.</p>
+            <div class="cta-buttons">
+                <a href="{% url 'car_list' %}" class="btn-hp-primary">
+                    <i class="bi bi-car-front-fill"></i> Explore Cars
+                </a>
+                <a href="{% url 'recommend_cars' %}" class="btn-hp-secondary">
+                    <i class="bi bi-robot"></i> Get AI Recommendation
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================
+     11. FOOTER
+     ============================================================ -->
+<footer class="home-footer">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <h5 class="fw-bold mb-3">
+                    <i class="bi bi-car-front-fill me-2" style="color: var(--hp-primary-light);"></i>YourDriveAi
+                </h5>
+                <p class="small" style="color: var(--hp-text-muted); max-width: 340px; line-height: 1.7;">
+                    Smart Vehicle Recommendation &amp; Test Drive Analytics System powered by AI/ML. Find your perfect drive today.
+                </p>
+                <div class="d-flex gap-2 mt-3 footer-social">
+                    <a href="#" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="bi bi-twitter-x"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+                    <a href="#" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+                    <a href="#" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4">
+                <h6 class="fw-bold mb-3 small text-uppercase" style="color: var(--hp-text-muted); letter-spacing: 0.06em;">Quick Links</h6>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="{% url 'car_list' %}" class="text-decoration-none" style="color: var(--hp-text-muted); font-size: 0.85rem;">Browse Cars</a></li>
+                    <li class="mb-2"><a href="{% url 'recommend_cars' %}" class="text-decoration-none" style="color: var(--hp-text-muted); font-size: 0.85rem;">AI Recommendations</a></li>
+                    <li class="mb-2"><a href="{% url 'car_compare' %}" class="text-decoration-none" style="color: var(--hp-text-muted); font-size: 0.85rem;">Compare Cars</a></li>
+                    <li class="mb-2"><a href="{% url 'my_bookings' %}" class="text-decoration-none" style="color: var(--hp-text-muted); font-size: 0.85rem;">My Bookings</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-2 col-md-4">
+                <h6 class="fw-bold mb-3 small text-uppercase" style="color: var(--hp-text-muted); letter-spacing: 0.06em;">Brands</h6>
+                <ul class="list-unstyled">
+                    {% for brand in brands|slice:":6" %}
+                    <li class="mb-2"><a href="{% url 'brand_cars' brand.id %}" class="text-decoration-none" style="color: var(--hp-text-muted); font-size: 0.85rem;">{{ brand.name }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="col-lg-2 col-md-4">
+                <h6 class="fw-bold mb-3 small text-uppercase" style="color: var(--hp-text-muted); letter-spacing: 0.06em;">Services</h6>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="{% url 'car_list' %}" class="text-decoration-none" style="color: var(--hp-text-muted); font-size: 0.85rem;">Car Listing</a></li>
+                    <li class="mb-2"><a href="{% url 'recommend_cars' %}" class="text-decoration-none" style="color: var(--hp-text-muted); font-size: 0.85rem;">AI Match</a></li>
+                    <li class="mb-2"><a href="{% url 'car_compare' %}" class="text-decoration-none" style="color: var(--hp-text-muted); font-size: 0.85rem;">Compare</a></li>
+                    <li class="mb-2"><a href="{% url 'my_bookings' %}" class="text-decoration-none" style="color: var(--hp-text-muted); font-size: 0.85rem;">Test Drive</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-2 col-md-4">
+                <h6 class="fw-bold mb-3 small text-uppercase" style="color: var(--hp-text-muted); letter-spacing: 0.06em;">Contact</h6>
+                <ul class="list-unstyled" style="color: var(--hp-text-muted); font-size: 0.85rem;">
+                    <li class="mb-2"><i class="bi bi-envelope me-1" style="color: var(--hp-primary-light);"></i> support@yourdriveai.com</li>
+                    <li class="mb-2"><i class="bi bi-telephone me-1" style="color: var(--hp-primary-light);"></i> +91 1800-123-4567</li>
+                    <li class="mb-2"><i class="bi bi-geo-alt me-1" style="color: var(--hp-primary-light);"></i> Bengaluru, India</li>
+                </ul>
+                <div class="mt-3">
+                    <label class="small fw-bold text-uppercase" style="color: var(--hp-text-muted); font-size: 0.65rem; letter-spacing: 0.06em;">Newsletter</label>
+                    <div class="input-group input-group-sm mt-1">
+                        <input type="email" class="form-control" placeholder="Your email" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); color: #fff; border-radius: 8px 0 0 8px; font-size: 0.8rem;">
+                        <button class="btn btn-primary" type="button" style="border-radius: 0 8px 8px 0; font-size: 0.75rem; padding: 0.3rem 0.75rem;"><i class="bi bi-send"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr class="my-4" style="border-color: rgba(255,255,255,0.04);">
+        <div class="d-flex flex-wrap justify-content-between align-items-center pb-4">
+            <p class="small mb-0" style="color: var(--hp-text-muted);">&copy; 2026 <span class="fw-semibold" style="color: var(--hp-text);">YourDriveAi</span>. All rights reserved.</p>
+            <div class="d-flex gap-3">
+                <a href="#" class="small text-decoration-none" style="color: var(--hp-text-muted);">Privacy Policy</a>
+                <a href="#" class="small text-decoration-none" style="color: var(--hp-text-muted);">Terms of Service</a>
+                <a href="#" class="small text-decoration-none" style="color: var(--hp-text-muted);">Cookie Policy</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+</div>
+{% endblock %}
+{% block extra_js %}
+<script src="{% static 'js/home.js' %}"></script>
+<script type="importmap">
+{
+    "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.163.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.163.0/examples/jsm/"
+    }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+document.addEventListener('DOMContentLoaded', function () {
+    var container = document.getElementById('carViewer');
+    if (!container) return;
+
+    var loadingEl = document.getElementById('viewerLoading');
+    var badge360 = document.getElementById('badge360');
+    var badgeAI = document.getElementById('badgeAI');
+    var badgeExplore = document.getElementById('badgeExplore');
+
+    var width = container.clientWidth;
+    var height = Math.max(width * 0.65, 360);
+
+    // Scene
+    var scene = new THREE.Scene();
+    scene.background = null;
+
+    // Camera
+    var camera = new THREE.PerspectiveCamera(28, width / height, 0.1, 100);
+    camera.position.set(4.5, 2.2, 6.5);
+
+    // Renderer
+    var renderer = new THREE.WebGLRenderer({
+        antialias: true,
+        alpha: true
+    });
+    renderer.setSize(width, height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.0;
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    container.appendChild(renderer.domElement);
+
+    // Controls
+    var controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.08;
+    controls.autoRotate = true;
+    controls.autoRotateSpeed = 2.5;
+    controls.minDistance = 3.5;
+    controls.maxDistance = 14;
+    controls.maxPolarAngle = Math.PI / 2.1;
+    controls.minPolarAngle = 0.1;
+    controls.target.set(0, 0.5, 0);
+    controls.update();
+
+    // Lighting
+    var ambientLight = new THREE.AmbientLight(0x404060, 0.6);
+    scene.add(ambientLight);
+
+    var keyLight = new THREE.DirectionalLight(0xffeedd, 1.8);
+    keyLight.position.set(4, 8, 4);
+    keyLight.castShadow = true;
+    keyLight.shadow.mapSize.width = 1024;
+    keyLight.shadow.mapSize.height = 1024;
+    var d = 8;
+    keyLight.shadow.camera.left = -d;
+    keyLight.shadow.camera.right = d;
+    keyLight.shadow.camera.top = d;
+    keyLight.shadow.camera.bottom = -d;
+    keyLight.shadow.camera.near = 1;
+    keyLight.shadow.camera.far = 15;
+    scene.add(keyLight);
+
+    var fillLight = new THREE.DirectionalLight(0x8888ff, 0.6);
+    fillLight.position.set(-5, 3, 4);
+    scene.add(fillLight);
+
+    var rimLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    rimLight.position.set(0, 3, -8);
+    scene.add(rimLight);
+
+    var topLight = new THREE.DirectionalLight(0xffffff, 0.4);
+    topLight.position.set(0, 10, 0);
+    scene.add(topLight);
+
+    // Ground shadow
+    var shadowMat = new THREE.ShadowMaterial({ opacity: 0.12, color: 0x000000 });
+    var ground = new THREE.Mesh(new THREE.PlaneGeometry(14, 14), shadowMat);
+    ground.rotation.x = -Math.PI / 2;
+    ground.position.y = -0.05;
+    ground.receiveShadow = true;
+    scene.add(ground);
+
+    // Ground reflection ring
+    var ringMat = new THREE.MeshBasicMaterial({
+        color: 0x3b82f6,
+        transparent: true,
+        opacity: 0.04,
+        side: THREE.DoubleSide,
+    });
+    var ring = new THREE.Mesh(new THREE.RingGeometry(2.8, 3.8, 64), ringMat);
+    ring.rotation.x = -Math.PI / 2;
+    ring.position.y = 0.005;
+    scene.add(ring);
+
+    // Inner ring
+    var innerRing = new THREE.Mesh(
+        new THREE.RingGeometry(1.8, 2.2, 48),
+        new THREE.MeshBasicMaterial({
+            color: 0x3b82f6,
+            transparent: true,
+            opacity: 0.03,
+            side: THREE.DoubleSide,
+        })
+    );
+    innerRing.rotation.x = -Math.PI / 2;
+    innerRing.position.y = 0.005;
+    scene.add(innerRing);
+
+    // Model loading
+    var modelUrl = container.dataset.modelUrl;
+    var carGroup;
+
+    function onModelReady() {
+        if (loadingEl) {
+            loadingEl.style.opacity = '0';
+            setTimeout(function () { loadingEl.style.display = 'none'; }, 600);
+        }
+        if (badge360) badge360.style.opacity = '1';
+        if (badgeAI) badgeAI.style.opacity = '1';
+        setTimeout(function () {
+            if (badgeExplore) badgeExplore.style.opacity = '1';
+        }, 600);
+    }
+
+    function tryLoadModel(url) {
+        if (!url) return false;
+        var loader = new GLTFLoader();
+        loader.load(url, function (gltf) {
+            carGroup = gltf.scene;
+            carGroup.scale.set(1, 1, 1);
+            carGroup.position.set(0, 0, 0);
+            carGroup.rotation.y = -Math.PI / 4;
+            carGroup.traverse(function (child) {
+                if (child.isMesh) {
+                    child.castShadow = true;
+                    child.receiveShadow = true;
+                    if (child.material) {
+                        child.material.envMapIntensity = 1.5;
+                        child.material.needsUpdate = true;
+                    }
+                }
+            });
+            scene.add(carGroup);
+            onModelReady();
+        }, undefined, function () {
+            createProceduralCar();
+            onModelReady();
+        });
+        return true;
+    }
+
+    function createProceduralCar() {
+        carGroup = new THREE.Group();
+
+        var bodyMat = new THREE.MeshPhysicalMaterial({
+            color: 0x1a237e,
+            metalness: 0.25,
+            roughness: 0.15,
+            clearcoat: 1.0,
+            clearcoatRoughness: 0.08,
+        });
+        var darkMat = new THREE.MeshPhysicalMaterial({
+            color: 0x0a0a1a,
+            metalness: 0.1,
+            roughness: 0.6,
+        });
+        var glassMat = new THREE.MeshPhysicalMaterial({
+            color: 0x0a0a23,
+            metalness: 0.95,
+            roughness: 0.05,
+            transparent: true,
+            opacity: 0.3,
+            envMapIntensity: 1.5,
+        });
+        var chromeMat = new THREE.MeshPhysicalMaterial({
+            color: 0xdddddd,
+            metalness: 1.0,
+            roughness: 0.05,
+        });
+        var wheelMat = new THREE.MeshPhysicalMaterial({
+            color: 0x111111,
+            metalness: 0.2,
+            roughness: 0.9,
+        });
+        var rimMat = new THREE.MeshPhysicalMaterial({
+            color: 0xbbbbbb,
+            metalness: 1.0,
+            roughness: 0.1,
+        });
+        var lightMat = new THREE.MeshPhysicalMaterial({
+            color: 0xffffff,
+            emissive: 0xaaccff,
+            emissiveIntensity: 0.6,
+            metalness: 0,
+            roughness: 0.05,
+            transparent: true,
+            opacity: 0.9,
+        });
+        var tailMat = new THREE.MeshPhysicalMaterial({
+            color: 0xff2200,
+            emissive: 0xff0000,
+            emissiveIntensity: 0.4,
+            metalness: 0,
+            roughness: 0.3,
+        });
+
+        // Main body
+        var bodyGeo = new THREE.BoxGeometry(1.85, 0.42, 4.2);
+        var body = new THREE.Mesh(bodyGeo, bodyMat);
+        body.position.y = 0.32;
+        body.castShadow = true;
+        carGroup.add(body);
+
+        // Front fender bulge
+        var frontBulge = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.08, 0.8), bodyMat);
+        frontBulge.position.set(0, 0.45, 1.6);
+        carGroup.add(frontBulge);
+
+        // Rear fender
+        var rearBulge = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.08, 0.7), bodyMat);
+        rearBulge.position.set(0, 0.45, -1.55);
+        carGroup.add(rearBulge);
+
+        // Front bumper
+        var bumperMat = new THREE.MeshPhysicalMaterial({
+            color: 0x222233,
+            metalness: 0.1,
+            roughness: 0.8,
+        });
+        var bumper = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.12, 0.35), bumperMat);
+        bumper.position.set(0, 0.12, 2.2);
+        carGroup.add(bumper);
+
+        // Rear diffuser
+        var diffuser = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.1, 0.3), bumperMat);
+        diffuser.position.set(0, 0.12, -2.2);
+        carGroup.add(diffuser);
+
+        // Grille
+        var grilleMat = new THREE.MeshPhysicalMaterial({
+            color: 0x111111,
+            metalness: 0.8,
+            roughness: 0.3,
+        });
+        var grille = new THREE.Mesh(new THREE.PlaneGeometry(0.8, 0.25), grilleMat);
+        grille.position.set(0, 0.2, 2.12);
+        carGroup.add(grille);
+
+        // Cabin/glass
+        var cabin = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.32, 1.8), glassMat);
+        cabin.position.set(0, 0.62, 0.15);
+        carGroup.add(cabin);
+
+        // Windshield accent
+        var wsMat = new THREE.MeshPhysicalMaterial({
+            color: 0x0a0a2e,
+            metalness: 0.9,
+            roughness: 0.05,
+            transparent: true,
+            opacity: 0.25,
+        });
+        var ws = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 0.35), wsMat);
+        ws.position.set(0, 0.55, 1.1);
+        ws.rotation.x = 0.35;
+        carGroup.add(ws);
+
+        // Rear window
+        var rw = new THREE.Mesh(new THREE.PlaneGeometry(1.1, 0.3), wsMat);
+        rw.position.set(0, 0.55, -0.95);
+        rw.rotation.x = -0.3;
+        carGroup.add(rw);
+
+        // Side windows - left
+        var sideMat = new THREE.MeshPhysicalMaterial({
+            color: 0x0a0a2e,
+            metalness: 0.9,
+            roughness: 0.05,
+            transparent: true,
+            opacity: 0.2,
+            side: THREE.DoubleSide,
+        });
+        var swL = new THREE.Mesh(new THREE.PlaneGeometry(1.3, 0.25), sideMat);
+        swL.position.set(0.71, 0.6, 0.2);
+        swL.rotation.y = Math.PI / 2;
+        carGroup.add(swL);
+
+        var swR = new THREE.Mesh(new THREE.PlaneGeometry(1.3, 0.25), sideMat);
+        swR.position.set(-0.71, 0.6, 0.2);
+        swR.rotation.y = -Math.PI / 2;
+        carGroup.add(swR);
+
+        // Wheels
+        var wheelPos = [[-0.92, 0.12, 1.2], [0.92, 0.12, 1.2], [-0.92, 0.12, -1.25], [0.92, 0.12, -1.25]];
+        wheelPos.forEach(function (pos) {
+            var tire = new THREE.Mesh(new THREE.CylinderGeometry(0.27, 0.27, 0.14, 24), wheelMat);
+            tire.rotation.z = Math.PI / 2;
+            tire.position.set(pos[0], pos[1], pos[2]);
+            tire.castShadow = true;
+            carGroup.add(tire);
+
+            var rim = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.17, 0.15, 16), rimMat);
+            rim.rotation.z = Math.PI / 2;
+            rim.position.set(pos[0], pos[1], pos[2]);
+            carGroup.add(rim);
+
+            var spoke1 = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.15, 0.16), rimMat);
+            spoke1.position.set(pos[0], pos[1], pos[2]);
+            carGroup.add(spoke1);
+
+            var spoke2 = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.03, 0.16), rimMat);
+            spoke2.position.set(pos[0], pos[1], pos[2]);
+            carGroup.add(spoke2);
+        });
+
+        // Headlights
+        [-0.5, 0.5].forEach(function (x) {
+            var hl = new THREE.Mesh(new THREE.SphereGeometry(0.065, 8, 8), lightMat);
+            hl.position.set(x, 0.32, 2.14);
+            carGroup.add(hl);
+        });
+
+        // DRL strips
+        var drlMat = new THREE.MeshBasicMaterial({
+            color: 0x4488ff,
+            transparent: true,
+            opacity: 0.4,
+        });
+        [-0.7, 0.7].forEach(function (x) {
+            var drl = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.03, 0.15), drlMat);
+            drl.position.set(x, 0.2, 2.12);
+            carGroup.add(drl);
+        });
+
+        // Taillights
+        [-0.45, 0.45].forEach(function (x) {
+            var tl = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.06, 0.04), tailMat);
+            tl.position.set(x, 0.35, -2.12);
+            carGroup.add(tl);
+        });
+
+        // Mirror caps
+        var mirrorMat = new THREE.MeshPhysicalMaterial({
+            color: 0x111122,
+            metalness: 0.3,
+            roughness: 0.4,
+        });
+        [-0.92, 0.92].forEach(function (x) {
+            var mirror = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.12, 0.15), mirrorMat);
+            mirror.position.set(x, 0.48, 1.35);
+            carGroup.add(mirror);
+        });
+
+        // Subtle underglow
+        var glowMat = new THREE.MeshBasicMaterial({
+            color: 0x3b82f6,
+            transparent: true,
+            opacity: 0.04,
+        });
+        var glow = new THREE.Mesh(new THREE.PlaneGeometry(2.2, 4.5), glowMat);
+        glow.rotation.x = -Math.PI / 2;
+        glow.position.y = 0.005;
+        carGroup.add(glow);
+
+        carGroup.position.y = 0;
+        carGroup.rotation.y = -Math.PI / 4;
+        scene.add(carGroup);
+    }
+
+    // Try loading the model
+    var loaded = false;
+    if (modelUrl) {
+        loaded = tryLoadModel(modelUrl);
+    }
+    if (!loaded) {
+        createProceduralCar();
+        onModelReady();
+    }
+
+    // Animation loop
+    function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+
+        // Subtle floating
+        if (carGroup && !controls.autoRotate) {
+            var time = Date.now() * 0.001;
+            carGroup.position.y = Math.sin(time * 0.5) * 0.03;
+        }
+
+        renderer.render(scene, camera);
+    }
+    animate();
+
+    // Resize
+    function onResize() {
+        var w = container.clientWidth;
+        var h = Math.max(w * 0.65, 360);
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+        renderer.setSize(w, h);
+    }
+    window.addEventListener('resize', onResize);
+});
+</script>
 {% endblock %}

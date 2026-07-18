@@ -240,7 +240,7 @@ body {
     color: #e2e8f0;
 }
 .analytics-wrap .dashboard-title {
-    color: #f1f5f9;
+    color: #FFFFFF;
     font-weight: 700;
     letter-spacing: -0.02em;
     text-shadow: 0 0 30px rgba(79,140,247,0.3);
@@ -318,11 +318,11 @@ body {
     margin: 0;
     line-height: 1.2;
     letter-spacing: -0.02em;
-    color: #f1f5f9;
+    color: #FFFFFF;
     text-shadow: 0 0 20px rgba(255,255,255,0.06);
 }
 .stat-label {
-    color: #94a3b8;
+    color: #D1D5DB;
     font-size: 0.8rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -352,7 +352,7 @@ body {
     margin: 0;
     font-size: 0.95rem;
     font-weight: 600;
-    color: #e2e8f0;
+    color: #FFFFFF;
 }
 .chart-card .chart-body { padding: 0.5rem; }
 .plotly-chart {
@@ -365,6 +365,20 @@ body {
     min-height: 180px;
 }
 
+/* Fix text contrast on dark analytics background */
+.analytics-wrap .text-muted {
+    color: #D1D5DB !important;
+}
+.analytics-wrap .chart-header .text-muted {
+    color: #E5E7EB !important;
+}
+.analytics-wrap .text-dark {
+    color: #FFFFFF !important;
+}
+.analytics-wrap .text-secondary {
+    color: #D1D5DB !important;
+}
+
 /* Placeholder/loading */
 .chart-placeholder {
     display: flex;
@@ -372,7 +386,7 @@ body {
     align-items: center;
     justify-content: center;
     min-height: 280px;
-    color: #64748b;
+    color: #D1D5DB;
     font-size: 0.9rem;
     gap: 0.75rem;
 }
@@ -421,7 +435,7 @@ body {
     letter-spacing: -0.01em;
 }
 .price-label {
-    color: #94a3b8;
+    color: #D1D5DB;
     font-size: 0.7rem;
     text-transform: uppercase;
     letter-spacing: 0.04em;
@@ -443,7 +457,7 @@ body {
 /* Analytics table */
 .analytics-table { margin-bottom: 0; }
 .analytics-table thead th {
-    color: #64748b;
+    color: #FFFFFF;
     font-weight: 600;
     font-size: 0.75rem;
     text-transform: uppercase;
@@ -455,7 +469,7 @@ body {
 .analytics-table td {
     padding: 0.6rem 1rem;
     border-bottom: 1px solid rgba(255,255,255,0.03);
-    color: #cbd5e1;
+    color: #E5E7EB;
     font-size: 0.875rem;
 }
 .analytics-table tbody tr:hover {
@@ -464,7 +478,7 @@ body {
 
 /* Plotly overrides */
 .js-plotly-plot .plotly .main-svg { background: transparent !important; }
-.js-plotly-plot .plotly .hoverlayer .hovertext { background: #1e293b !important; border-color: rgba(255,255,255,0.1) !important; color: #e2e8f0 !important; }
+.js-plotly-plot .plotly .hoverlayer .hovertext { background: #1e293b !important; border-color: rgba(255,255,255,0.1) !important; color: #FFFFFF !important; }
 
 /* Container padding for analytics */
 .analytics-wrap .container-fluid {
