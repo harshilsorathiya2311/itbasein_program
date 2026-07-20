@@ -266,14 +266,14 @@
         </div>
         <div class="row g-3 stagger animate-on-scroll">
             {% for brand in brands %}
+            {% with brand.name|slugify as brand_slug %}
             <div class="col-6 col-md-4 col-lg-2">
                 <a href="{% url 'brand_cars' brand.id %}" class="brand-card">
-                    <div class="brand-avatar brand-avatar-{{ forloop.counter }}">
-                        {% if brand.logo %}
-                        <img src="{{ brand.logo.url }}" alt="{{ brand.name }}">
-                        {% else %}
-                        {{ brand.name|slice:":2"|upper }}
-                        {% endif %}
+                    <div class="brand-logo-wrap">
+                        <img src="{% static 'images/brands/'|add:brand_slug %}.svg"
+                             alt="{{ brand.name }}"
+                             class="brand-logo"
+                             loading="lazy">
                     </div>
                     <h6 class="brand-name">{{ brand.name }}</h6>
                     {% if brand.available_cars %}
@@ -281,6 +281,7 @@
                     {% endif %}
                 </a>
             </div>
+            {% endwith %}
             {% endfor %}
         </div>
     </div>
@@ -292,39 +293,17 @@
      ============================================================ -->
 <section class="ai-section" id="ai-section">
     <div class="container">
-        <div class="row align-items-center g-5">
-            <div class="col-lg-5 col-xl-5">
-                <div class="ai-card animate-on-scroll">
-                    <div class="ai-icon-wrap">
+        <div class="row justify-content-center">
+            <div class="col-lg-10 col-xl-8">
+                <div class="ai-card animate-on-scroll text-center">
+                    <div class="ai-icon-wrap mx-auto">
                         <i class="bi bi-robot"></i>
                     </div>
                     <h3>AI-Powered Car Recommendations</h3>
-                    <p>Find Your Perfect Drive. Our intelligent engine analyzes your preferences — budget, style, mileage, and more — to recommend the ideal match from thousands of options.</p>
+                    <p class="mx-auto">Find Your Perfect Drive. Our intelligent engine analyzes your preferences — budget, style, mileage, and more — to recommend the ideal match from thousands of options.</p>
                     <a href="{% url 'recommend_cars' %}" class="btn-hp-primary">
                         <i class="bi bi-magic"></i> Get AI Recommendation
                     </a>
-                </div>
-            </div>
-            <div class="col-lg-7 col-xl-7">
-                <div class="car-viewer-wrap animate-on-scroll">
-                    <div class="car-viewer-container" id="carViewer" data-model-url="{% static 'models/car.glb' %}">
-                        <div class="viewer-loading" id="viewerLoading">
-                            <div class="viewer-spinner-ring"></div>
-                            <div class="viewer-loading-text">Loading 360° Experience...</div>
-                        </div>
-                    </div>
-                    <div class="viewer-badge badge-360" id="badge360">
-                        <i class="bi bi-arrow-repeat"></i> 360° View
-                    </div>
-                    <div class="viewer-badge badge-ai-badge" id="badgeAI">
-                        <i class="bi bi-cpu"></i> AI Recommended
-                    </div>
-                    <div class="viewer-badge badge-explore" id="badgeExplore">
-                        <i class="bi bi-search"></i> Explore Vehicle
-                    </div>
-                    <div class="viewer-hint">
-                        <i class="bi bi-hand-index-thumb"></i> Drag to rotate &middot; Scroll to zoom
-                    </div>
                 </div>
             </div>
         </div>
@@ -676,153 +655,6 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
-// ===== Shared procedural car factory =====
-function buildProceduralCar() {
-    var g = new THREE.Group();
-
-    var bodyMat = new THREE.MeshPhysicalMaterial({
-        color: 0x1a237e, metalness: 0.25, roughness: 0.15,
-        clearcoat: 1.0, clearcoatRoughness: 0.08,
-    });
-    var glassMat = new THREE.MeshPhysicalMaterial({
-        color: 0x0a0a23, metalness: 0.95, roughness: 0.05,
-        transparent: true, opacity: 0.3, envMapIntensity: 1.5,
-    });
-    var wheelMat = new THREE.MeshPhysicalMaterial({
-        color: 0x111111, metalness: 0.2, roughness: 0.9,
-    });
-    var rimMat = new THREE.MeshPhysicalMaterial({
-        color: 0xbbbbbb, metalness: 1.0, roughness: 0.1,
-    });
-    var lightMat = new THREE.MeshPhysicalMaterial({
-        color: 0xffffff, emissive: 0xaaccff, emissiveIntensity: 0.6,
-        metalness: 0, roughness: 0.05, transparent: true, opacity: 0.9,
-    });
-    var tailMat = new THREE.MeshPhysicalMaterial({
-        color: 0xff2200, emissive: 0xff0000, emissiveIntensity: 0.4,
-        metalness: 0, roughness: 0.3,
-    });
-
-    // Body
-    var body = new THREE.Mesh(new THREE.BoxGeometry(1.85, 0.42, 4.2), bodyMat);
-    body.position.y = 0.32; body.castShadow = true; g.add(body);
-
-    // Fenders
-    var fb = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.08, 0.8), bodyMat);
-    fb.position.set(0, 0.45, 1.6); g.add(fb);
-    var rb = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.08, 0.7), bodyMat);
-    rb.position.set(0, 0.45, -1.55); g.add(rb);
-
-    // Bumpers
-    var bMat = new THREE.MeshPhysicalMaterial({ color: 0x222233, metalness: 0.1, roughness: 0.8 });
-    var bmp = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.12, 0.35), bMat);
-    bmp.position.set(0, 0.12, 2.2); g.add(bmp);
-    var df = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.1, 0.3), bMat);
-    df.position.set(0, 0.12, -2.2); g.add(df);
-
-    // Grille
-    var grMat = new THREE.MeshPhysicalMaterial({ color: 0x111111, metalness: 0.8, roughness: 0.3 });
-    var gr = new THREE.Mesh(new THREE.PlaneGeometry(0.8, 0.25), grMat);
-    gr.position.set(0, 0.2, 2.12); g.add(gr);
-
-    // Cabin/glass
-    var cabin = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.32, 1.8), glassMat);
-    cabin.position.set(0, 0.62, 0.15); g.add(cabin);
-
-    // Windshield
-    var wsMat = new THREE.MeshPhysicalMaterial({
-        color: 0x0a0a2e, metalness: 0.9, roughness: 0.05,
-        transparent: true, opacity: 0.25,
-    });
-    var ws = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 0.35), wsMat);
-    ws.position.set(0, 0.55, 1.1); ws.rotation.x = 0.35; g.add(ws);
-    var rw = new THREE.Mesh(new THREE.PlaneGeometry(1.1, 0.3), wsMat);
-    rw.position.set(0, 0.55, -0.95); rw.rotation.x = -0.3; g.add(rw);
-
-    // Side windows
-    var sdMat = new THREE.MeshPhysicalMaterial({
-        color: 0x0a0a2e, metalness: 0.9, roughness: 0.05,
-        transparent: true, opacity: 0.2, side: THREE.DoubleSide,
-    });
-    var swL = new THREE.Mesh(new THREE.PlaneGeometry(1.3, 0.25), sdMat);
-    swL.position.set(0.71, 0.6, 0.2); swL.rotation.y = Math.PI / 2; g.add(swL);
-    var swR = new THREE.Mesh(new THREE.PlaneGeometry(1.3, 0.25), sdMat);
-    swR.position.set(-0.71, 0.6, 0.2); swR.rotation.y = -Math.PI / 2; g.add(swR);
-
-    // Wheels
-    var wp = [[-0.92, 0.12, 1.2],[0.92, 0.12, 1.2],[-0.92, 0.12,-1.25],[0.92, 0.12,-1.25]];
-    wp.forEach(function (p) {
-        var t = new THREE.Mesh(new THREE.CylinderGeometry(0.27, 0.27, 0.14, 24), wheelMat);
-        t.rotation.z = Math.PI / 2; t.position.set(p[0], p[1], p[2]); t.castShadow = true; g.add(t);
-        var r = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.17, 0.15, 16), rimMat);
-        r.rotation.z = Math.PI / 2; r.position.set(p[0], p[1], p[2]); g.add(r);
-        var s1 = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.15, 0.16), rimMat);
-        s1.position.set(p[0], p[1], p[2]); g.add(s1);
-        var s2 = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.03, 0.16), rimMat);
-        s2.position.set(p[0], p[1], p[2]); g.add(s2);
-    });
-
-    // Lights
-    [-0.5, 0.5].forEach(function (x) {
-        var hl = new THREE.Mesh(new THREE.SphereGeometry(0.065, 8, 8), lightMat);
-        hl.position.set(x, 0.32, 2.14); g.add(hl);
-    });
-    var drlMat = new THREE.MeshBasicMaterial({ color: 0x4488ff, transparent: true, opacity: 0.4 });
-    [-0.7, 0.7].forEach(function (x) {
-        var drl = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.03, 0.15), drlMat);
-        drl.position.set(x, 0.2, 2.12); g.add(drl);
-    });
-    [-0.45, 0.45].forEach(function (x) {
-        var tl = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.06, 0.04), tailMat);
-        tl.position.set(x, 0.35, -2.12); g.add(tl);
-    });
-
-    // Mirrors
-    var mM = new THREE.MeshPhysicalMaterial({ color: 0x111122, metalness: 0.3, roughness: 0.4 });
-    [-0.92, 0.92].forEach(function (x) {
-        var m = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.12, 0.15), mM);
-        m.position.set(x, 0.48, 1.35); g.add(m);
-    });
-
-    // Underglow
-    var glMat = new THREE.MeshBasicMaterial({ color: 0x3b82f6, transparent: true, opacity: 0.04 });
-    var gl = new THREE.Mesh(new THREE.PlaneGeometry(2.2, 4.5), glMat);
-    gl.rotation.x = -Math.PI / 2; gl.position.y = 0.005; g.add(gl);
-
-    g.rotation.y = -Math.PI / 4;
-    return g;
-}
-
-// ===== Real-image car (Sprite always faces camera) =====
-function buildImageCar(texture) {
-    var g = new THREE.Group();
-    var aspect = texture.image.width / texture.image.height;
-    var h = 1.8;
-    var w = h * aspect;
-
-    var mat = new THREE.SpriteMaterial({
-        map: texture,
-        transparent: false,
-        depthWrite: true,
-        color: 0xffffff,
-    });
-    var sprite = new THREE.Sprite(mat);
-    sprite.scale.set(w, h, 1);
-    sprite.position.y = 0.6;
-    g.add(sprite);
-
-    // Glow ring at feet
-    var glowMat = new THREE.MeshBasicMaterial({
-        color: 0x3b82f6, transparent: true, opacity: 0.08, side: THREE.DoubleSide,
-    });
-    var glow = new THREE.Mesh(new THREE.RingGeometry(1.0, 2.0, 48), glowMat);
-    glow.rotation.x = -Math.PI / 2;
-    glow.position.y = 0.01;
-    g.add(glow);
-
-    return g;
-}
-
 // ===== Reusable viewer factory =====
 function initCarViewer(cfg) {
     var container = document.getElementById(cfg.id);
@@ -973,33 +805,12 @@ function initCarViewer(cfg) {
                     setTimeout(function () { loadingEl.style.display = 'none'; }, 600);
                 }
                 showBadges();
-            } else {
-                carGroup = buildProceduralCar();
-                scene.add(carGroup);
-                onModelReady();
             }
         });
     }
 
-    if (cfg.imageUrl) {
-        var imgLoader = new THREE.TextureLoader();
-        imgLoader.load(cfg.imageUrl, function (texture) {
-            carGroup = buildImageCar(texture);
-            scene.add(carGroup);
-            onModelReady();
-        }, undefined, function () {
-            if (modelUrl) { loadGLTF(); } else {
-                carGroup = buildProceduralCar();
-                scene.add(carGroup);
-                onModelReady();
-            }
-        });
-    } else if (modelUrl) {
+    if (modelUrl) {
         loadGLTF();
-    } else {
-        carGroup = buildProceduralCar();
-        scene.add(carGroup);
-        onModelReady();
     }
 
     // Animation
@@ -1050,22 +861,6 @@ document.addEventListener('DOMContentLoaded', function () {
         maxDist: 10,
         enablePan: false,
         envMap: true,
-    });
-
-    // Section 5 viewer
-    initCarViewer({
-        id: 'carViewer',
-        loadingId: 'viewerLoading',
-        badgeIds: ['badge360', 'badgeAI', 'badgeExplore'],
-        hintId: null,
-        heightRatio: 0.65,
-        minHeight: 360,
-        cameraPos: [4.5, 2.2, 6.5],
-        targetY: 0.5,
-        rotateSpeed: 2.5,
-        shadowOpacity: 0.12,
-        ringOpacity: 0.04,
-        imageUrl: "{% static 'images/bmw_blue_hero.jpg' %}",
     });
 
 });

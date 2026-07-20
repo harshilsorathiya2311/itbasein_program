@@ -674,25 +674,33 @@
     border-color: rgba(37,99,235,0.15);
 }
 
-.brand-card .brand-avatar {
-    width: 72px; height: 72px;
-    border-radius: 50%;
+.brand-card .brand-logo-wrap {
+    height: 80px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 0.75rem;
-    font-size: 1.25rem;
-    font-weight: 800;
+    margin: 0 auto 0.85rem;
+    padding: 10px;
     transition: all 0.3s ease;
 }
 
-.brand-card:hover .brand-avatar { transform: scale(1.1) rotate(-8deg); }
+.brand-card:hover .brand-logo-wrap {
+    transform: scale(1.08);
+}
 
-.brand-card .brand-avatar img {
-    width: 100%; height: 100%;
+.brand-card .brand-logo {
+    max-height: 60px;
+    max-width: 100%;
+    width: auto;
+    height: auto;
     object-fit: contain;
-    border-radius: 50%;
-    padding: 8px;
+    display: block;
+    filter: brightness(1) contrast(1);
+    transition: filter 0.3s ease;
+}
+
+.brand-card:hover .brand-logo {
+    filter: brightness(1.15) contrast(1.05);
 }
 
 .brand-card .brand-name {
@@ -706,20 +714,6 @@
     font-size: 0.72rem;
     color: var(--hp-text-muted);
 }
-
-/* Brand avatar colors (fallback when no logo) */
-.brand-avatar-1 { background: linear-gradient(135deg, #e11d48, #be123c); color: #fff; }
-.brand-avatar-2 { background: linear-gradient(135deg, #dc2626, #b91c1c); color: #fff; }
-.brand-avatar-3 { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff; }
-.brand-avatar-4 { background: linear-gradient(135deg, #059669, #047857); color: #fff; }
-.brand-avatar-5 { background: linear-gradient(135deg, #2563eb, #7c3aed); color: #fff; }
-.brand-avatar-6 { background: linear-gradient(135deg, #7c3aed, #6d28d9); color: #fff; }
-.brand-avatar-7 { background: linear-gradient(135deg, #22c55e, #16a34a); color: #fff; }
-.brand-avatar-8 { background: linear-gradient(135deg, #dc2626, #e11d48); color: #fff; }
-.brand-avatar-9 { background: linear-gradient(135deg, #2563eb, #0284c7); color: #fff; }
-.brand-avatar-10 { background: linear-gradient(135deg, #ea580c, #c2410c); color: #fff; }
-.brand-avatar-11 { background: linear-gradient(135deg, #0891b2, #0e7490); color: #fff; }
-.brand-avatar-12 { background: linear-gradient(135deg, #a3a3a3, #737373); color: #fff; }
 
 /* ============================================================
    5. AI RECOMMENDATION + 360° CAR VIEWER
@@ -749,209 +743,53 @@
 .ai-card {
     position: relative;
     z-index: 2;
-    background: rgba(30,41,59,0.5);
+    background: linear-gradient(135deg, rgba(30,41,59,0.6), rgba(15,23,42,0.4));
     backdrop-filter: blur(30px);
     -webkit-backdrop-filter: blur(30px);
     border: 1px solid rgba(255,255,255,0.06);
     border-radius: var(--hp-radius-lg);
-    padding: 3rem 2.5rem;
-    text-align: left;
-    box-shadow: 0 0 80px rgba(37,99,235,0.05);
+    padding: 4rem 3.5rem;
+    text-align: center;
+    box-shadow:
+        0 0 120px rgba(37,99,235,0.04),
+        0 20px 60px rgba(0,0,0,0.2);
 }
 
 .ai-card .ai-icon-wrap {
-    width: 64px; height: 64px;
-    border-radius: 18px;
-    background: linear-gradient(135deg, rgba(37,99,235,0.2), rgba(124,58,237,0.2));
+    width: 72px; height: 72px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, rgba(37,99,235,0.25), rgba(124,58,237,0.2));
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 0 1.25rem;
-    font-size: 1.8rem;
+    font-size: 2rem;
     color: var(--hp-primary-light);
     animation: aiIconPulse 3s ease-in-out infinite;
+    margin-bottom: 1.5rem;
 }
 
 @keyframes aiIconPulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(37,99,235,0.2); }
-    50% { box-shadow: 0 0 0 20px rgba(37,99,235,0); }
+    0%, 100% { box-shadow: 0 0 0 0 rgba(37,99,235,0.15); }
+    50% { box-shadow: 0 0 0 24px rgba(37,99,235,0); }
 }
 
 .ai-card h3 {
-    font-size: 1.65rem;
+    font-size: 2rem;
     font-weight: 800;
-    margin-bottom: 0.75rem;
+    margin-bottom: 1rem;
+    letter-spacing: -0.01em;
 }
 
 .ai-card p {
     color: var(--hp-text-muted);
-    font-size: 0.95rem;
-    line-height: 1.75;
-    max-width: 440px;
-    margin: 0 0 2rem;
+    font-size: 1.05rem;
+    line-height: 1.8;
+    max-width: 640px;
+    margin-bottom: 2rem;
 }
 
 /* ============================================================
-   5b. 360° CAR VIEWER
-   ============================================================ */
-.car-viewer-wrap {
-    position: relative;
-    width: 100%;
-}
-
-.car-viewer-container {
-    position: relative;
-    width: 100%;
-    height: 440px;
-    border-radius: var(--hp-radius-lg);
-    overflow: hidden;
-    background: radial-gradient(ellipse at center, rgba(37,99,235,0.04) 0%, transparent 70%);
-    border: 1px solid rgba(255,255,255,0.04);
-    box-shadow: 0 0 100px rgba(37,99,235,0.04), inset 0 0 80px rgba(37,99,235,0.02);
-}
-
-.car-viewer-container canvas {
-    display: block;
-    width: 100% !important;
-    height: 100% !important;
-    cursor: grab;
-}
-
-.car-viewer-container canvas:active {
-    cursor: grabbing;
-}
-
-/* Loading spinner */
-.viewer-loading {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: rgba(6,10,22,0.85);
-    backdrop-filter: blur(10px);
-    z-index: 10;
-    transition: opacity 0.6s ease;
-}
-
-.viewer-spinner-ring {
-    width: 52px;
-    height: 52px;
-    border-radius: 50%;
-    border: 3px solid rgba(37,99,235,0.08);
-    border-top-color: var(--hp-primary-light);
-    animation: viewerSpin 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
-    margin-bottom: 1rem;
-}
-
-@keyframes viewerSpin {
-    to { transform: rotate(360deg); }
-}
-
-.viewer-loading-text {
-    font-size: 0.8rem;
-    color: var(--hp-text-muted);
-    letter-spacing: 0.03em;
-    animation: viewerPulse 1.5s ease-in-out infinite;
-}
-
-@keyframes viewerPulse {
-    0%, 100% { opacity: 0.5; }
-    50% { opacity: 1; }
-}
-
-/* Floating badges */
-.viewer-badge {
-    position: absolute;
-    z-index: 5;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.35rem 0.85rem;
-    border-radius: 100px;
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    pointer-events: none;
-    opacity: 0;
-    transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.badge-360 {
-    top: 1rem;
-    left: 1rem;
-    background: rgba(0,0,0,0.6);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255,255,255,0.08);
-    color: var(--hp-text);
-    transform: translateY(-10px);
-}
-
-.badge-360 i {
-    color: var(--hp-accent);
-    font-size: 0.75rem;
-}
-
-.badge-ai-badge {
-    top: 1rem;
-    right: 1rem;
-    background: linear-gradient(135deg, rgba(37,99,235,0.25), rgba(124,58,237,0.2));
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(37,99,235,0.2);
-    color: #93c5fd;
-    transform: translateY(-10px);
-    transition-delay: 0.2s;
-}
-
-.badge-ai-badge i {
-    color: var(--hp-primary-light);
-}
-
-.badge-explore {
-    bottom: 1rem;
-    left: 1rem;
-    background: rgba(0,0,0,0.5);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255,255,255,0.06);
-    color: var(--hp-text-muted);
-    transform: translateY(10px);
-    transition-delay: 0.4s;
-}
-
-.badge-explore i {
-    color: var(--hp-primary-light);
-}
-
-/* Controls hint */
-.viewer-hint {
-    position: absolute;
-    bottom: 1rem;
-    right: 1rem;
-    z-index: 5;
-    font-size: 0.65rem;
-    color: rgba(148,163,184,0.3);
-    letter-spacing: 0.02em;
-    pointer-events: none;
-    transition: opacity 1s ease;
-    opacity: 0;
-    animation: hintFadeIn 2s ease 3s forwards;
-}
-
-@keyframes hintFadeIn {
-    to { opacity: 1; }
-}
-
-.viewer-hint i {
-    margin-right: 0.25rem;
-}
-
-/* ============================================================
-   5c. HERO 360° CAR VIEWER
+   5b. HERO 360° CAR VIEWER
    ============================================================ */
 /* ===== Hero 3D BMW Viewer ===== */
 .hero-viewer-wrap {
@@ -1444,11 +1282,11 @@
     .hero-stat:nth-child(2)::after { display: none; }
     .section-title { font-size: 1.9rem; }
     .ai-card { padding: 2.5rem 1.5rem; }
-    .car-viewer-container { height: 380px; }
     .car-card .card-img-wrap { height: 180px; }
     .stat-item .stat-number { font-size: 2rem; }
     .hero-viewer-wrap { min-height: 380px; }
     .hero-viewer-container { height: 420px; }
+    .ai-card .ai-icon-wrap { width: 72px; height: 72px; font-size: 1.75rem; }
 }
 
 @media (max-width: 767px) {
@@ -1460,8 +1298,7 @@
     .search-panel { padding: 1.25rem; }
     .ai-card { text-align: center; }
     .ai-card .ai-icon-wrap { margin: 0 auto 1.25rem; }
-    .ai-card p { margin: 0 auto 2rem; }
-    .car-viewer-container { height: 340px; margin-top: 1rem; }
+    .ai-card p { margin: 0 auto 2rem; max-width: 100%; }
     .car-card .card-img-wrap { height: 180px; }
     .cars-scroll .car-card { min-width: 250px; max-width: 250px; }
     .cta-content h2 { font-size: 1.8rem; }
@@ -1473,6 +1310,7 @@
     .hero-viewer-wrap { min-height: 320px; margin-top: 1.5rem; }
     .hero-viewer-container { height: 360px; }
     .hero-model-badge { font-size: 0.6rem; padding: 0.3rem 0.75rem; }
+    .ai-card h3 { font-size: 1.6rem; }
 }
 
 @media (max-width: 575px) {
@@ -1485,8 +1323,6 @@
     .hero-stat-label { font-size: 0.6rem; }
     .section-title { font-size: 1.5rem; }
     .section-header { margin-bottom: 2rem; }
-    .car-viewer-container { height: 280px; }
-    .viewer-hint { display: none; }
     .car-card .car-specs { grid-template-columns: repeat(3, 1fr); }
     .cars-scroll .car-card { min-width: 220px; max-width: 220px; }
     .hero-viewer-container { height: 280px; }
