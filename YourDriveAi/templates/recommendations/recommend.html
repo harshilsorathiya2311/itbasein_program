@@ -9,6 +9,13 @@
             <form method="post" class="row g-3" id="recommendForm">
                 {% csrf_token %}
                 <div class="col-md-3">
+                    <label class="form-label"><i class="bi bi-bookmark me-1"></i>Brand</label>
+                    <select name="brand" class="form-select">
+                        <option value="">All Brands</option>
+                        {% for b in brands %}<option value="{{ b.name }}" {% if user_prefs.brand == b.name %}selected{% endif %}>{{ b.name }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
                     <label class="form-label"><i class="bi bi-currency-rupee me-1"></i>Budget Range</label>
                     <div class="input-group">
                         <input type="number" name="min_price" class="form-control" placeholder="Min ₹" value="{{ user_prefs.min_price }}" step="500">

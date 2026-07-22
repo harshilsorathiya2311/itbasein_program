@@ -91,7 +91,8 @@
 <section class="search-section">
     <div class="container">
         <div class="search-panel animate-on-scroll">
-            <form method="get" action="{% url 'car_list' %}">
+            <form method="post" action="{% url 'recommend_cars' %}">
+                {% csrf_token %}
                 <div class="row g-3 align-items-end">
                     <div class="col-md-3">
                         <label class="form-label"><i class="bi bi-bookmark me-1"></i> Brand</label>
@@ -147,7 +148,7 @@
                     </div>
                     <div class="col-md-3">
                         <label class="form-label"><i class="bi bi-people me-1"></i> Seating</label>
-                        <select name="seating" class="form-select">
+                        <select name="min_seating" class="form-select">
                             <option value="">Any</option>
                             <option value="2">2 Seats</option>
                             <option value="4">4 Seats</option>

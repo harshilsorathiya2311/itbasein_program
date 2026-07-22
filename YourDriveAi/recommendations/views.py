@@ -105,37 +105,66 @@ def recommend_cars(request):
 
     if request.method == 'POST' or (request.method == 'GET' and user_prefs):
         if not errors:
-            logger.info('=== Price Filter Debug ===')
+            logger.info('=== Recommendation Debug ===')
             logger.info('User prefs: %s', user_prefs)
             logger.info('Total cars in DB: %d', Car.objects.filter(is_available=True).count())
 
-            # Hard ORM-level price filter: convert user INR → DB INR
+            # Hard ORM-level filtering: guarantee only matching cars enter AI engine
+            base_q = Q(is_available=True)
+
+            # Price filter
             min_p = user_prefs.get('min_price')
             max_p = user_prefs.get('max_price')
-            if min_p or max_p:
-                q = Q(is_available=True)
-                if min_p:
-                    try:
-                        q &= Q(price__gte=float(min_p))
-                    except (ValueError, TypeError):
-                        pass
-                if max_p:
-                    try:
-                        q &= Q(price__lte=float(max_p))
-                    except (ValueError, TypeError):
-                        pass
-                budget_cars = Car.objects.filter(q).select_related('brand')
-                logger.info('ORM price filter: min=%s max=%s → %d cars', min_p, max_p, budget_cars.count())
-                if budget_cars.count() == 0:
-                    logger.warning('No cars in budget range. Showing empty results.')
-                    # Return empty so user sees "no results" message
-                    context = {
-                        'results': [],
-                        'user_prefs': user_prefs,
-                        'brands': Brand.objects.all().order_by('name'),
-                        'body_choices': BODY_CHOICES,
-                    }
-                    return render(request, 'recommendations/recommend.html', context)
+            if min_p:
+                try:
+                    base_q &= Q(price__gte=float(min_p))
+                except (ValueError, TypeError):
+                    pass
+            if max_p:
+                try:
+                    base_q &= Q(price__lte=float(max_p))
+                except (ValueError, TypeError):
+                    pass
+
+            # Brand filter
+            brand = user_prefs.get('brand')
+            if brand:
+                base_q &= Q(brand__name__iexact=brand)
+
+            # Fuel type filter
+            fuel = user_prefs.get('fuel_type')
+            if fuel:
+                base_q &= Q(fuel_type__iexact=fuel)
+
+            # Transmission filter
+            trans = user_prefs.get('transmission')
+            if trans:
+                base_q &= Q(transmission__iexact=trans)
+
+            # Body type filter
+            body = user_prefs.get('body_type')
+            if body:
+                base_q &= Q(body_type__iexact=body)
+
+            # Seating filter
+            min_seat = user_prefs.get('min_seating')
+            if min_seat:
+                try:
+                    base_q &= Q(seating_capacity__gte=int(min_seat))
+                except (ValueError, TypeError):
+                    pass
+
+            filtered_cars = Car.objects.filter(base_q).select_related('brand')
+            logger.info('ORM filtered: %d cars', filtered_cars.count())
+            if filtered_cars.count() == 0:
+                logger.warning('No cars match filters. Showing empty results.')
+                context = {
+                    'results': [],
+                    'user_prefs': user_prefs,
+                    'brands': Brand.objects.all().order_by('name'),
+                    'body_choices': BODY_CHOICES,
+                }
+                return render(request, 'recommendations/recommend.html', context)
 
             results = recommender.recommend(user_prefs, n=5)
             logger.info('Recommend returned %d cars', len(results))
