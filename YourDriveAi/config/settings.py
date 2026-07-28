@@ -1,27 +1,46 @@
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+import dj_database_url
 
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+# ==============================
 # SECURITY
+# ==============================
+
 SECRET_KEY = os.getenv(
     "SECRET_KEY",
     "django-insecure-change-this-key"
 )
 
-DEBUG = os.getenv("DEBUG", "False").lower() == "true"
+DEBUG = os.getenv(
+    "DEBUG",
+    "False"
+).lower() == "true"
+
 
 ALLOWED_HOSTS = [
-    "*"
+    "localhost",
+    "127.0.0.1",
+    ".onrender.com",
 ]
 
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.onrender.com",
+]
+
+
+# ==============================
 # APPLICATIONS
+# ==============================
+
 INSTALLED_APPS = [
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -37,18 +56,24 @@ INSTALLED_APPS = [
 ]
 
 
+# ==============================
 # MIDDLEWARE
+# ==============================
+
 MIDDLEWARE = [
+
     'django.middleware.security.SecurityMiddleware',
 
-    # WhiteNoise for production static files
     'whitenoise.middleware.WhiteNoiseMiddleware',
 
     'django.contrib.sessions.middleware.SessionMiddleware',
+
     'django.middleware.common.CommonMiddleware',
+
     'django.middleware.csrf.CsrfViewMiddleware',
 
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+
     'django.contrib.messages.middleware.MessageMiddleware',
 
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -58,10 +83,15 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'config.urls'
 
 
+# ==============================
 # TEMPLATES
+# ==============================
+
 TEMPLATES = [
+
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'BACKEND':
+        'django.template.backends.django.DjangoTemplates',
 
         'DIRS': [
             BASE_DIR / 'templates'
@@ -70,12 +100,15 @@ TEMPLATES = [
         'APP_DIRS': True,
 
         'OPTIONS': {
+
             'context_processors': [
 
                 'django.template.context_processors.debug',
+
                 'django.template.context_processors.request',
 
                 'django.contrib.auth.context_processors.auth',
+
                 'django.contrib.messages.context_processors.messages',
 
             ],
@@ -87,34 +120,39 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 
+# ==============================
 # DATABASE
+# Render PostgreSQL
+# ==============================
+
+
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
 
-        "NAME": "yourdriveai",
+    "default": dj_database_url.config(
 
-        "USER": "postgres",
+        default=os.getenv(
+            "DATABASE_URL"
+        ),
 
-        "PASSWORD": "your_postgresql_password",
+        conn_max_age=600,
 
-        "HOST": "localhost",
+        ssl_require=True
 
-        "PORT": "5432",
-
-        "OPTIONS": {
-            "connect_timeout": 10,
-        },
-    }
+    )
 }
 
 
-
+# ==============================
 # PASSWORD VALIDATION
+# ==============================
+
 AUTH_PASSWORD_VALIDATORS = []
 
 
+# ==============================
 # LANGUAGE
+# ==============================
+
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'Asia/Kolkata'
@@ -125,24 +163,36 @@ USE_TZ = True
 
 
 
+# ==============================
 # STATIC FILES
+# ==============================
+
 
 STATIC_URL = '/static/'
 
+
 STATICFILES_DIRS = [
+
     BASE_DIR / 'static'
+
 ]
+
 
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 
 STATICFILES_STORAGE = (
+
     'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 )
 
 
 
+# ==============================
 # MEDIA FILES
+# ==============================
+
 
 MEDIA_URL = '/media/'
 
@@ -150,11 +200,16 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = (
+    'django.db.models.BigAutoField'
+)
 
 
 
+# ==============================
 # AUTH
+# ==============================
+
 
 LOGIN_REDIRECT_URL = 'home'
 
@@ -164,7 +219,10 @@ LOGIN_URL = 'login'
 
 
 
-# EMAIL CONFIGURATION
+# ==============================
+# EMAIL
+# ==============================
+
 
 if os.getenv('EMAIL_HOST'):
 
@@ -180,19 +238,23 @@ if os.getenv('EMAIL_HOST'):
 
     EMAIL_USE_TLS = True
 
+
     EMAIL_HOST_USER = os.getenv(
         'EMAIL_HOST_USER'
     )
 
+
     EMAIL_HOST_PASSWORD = os.getenv(
         'EMAIL_HOST_PASSWORD'
     )
+
 
 else:
 
     EMAIL_BACKEND = (
         'django.core.mail.backends.console.EmailBackend'
     )
+
 
 
 DEFAULT_FROM_EMAIL = os.getenv(
@@ -202,7 +264,25 @@ DEFAULT_FROM_EMAIL = os.getenv(
 
 
 
+# ==============================
+# PRODUCTION SECURITY
+# ==============================
+
+
+if not DEBUG:
+
+    SECURE_SSL_REDIRECT = True
+
+    SESSION_COOKIE_SECURE = True
+
+    CSRF_COOKIE_SECURE = True
+
+
+
+# ==============================
 # LOGGING
+# ==============================
+
 
 LOGGING = {
 
@@ -214,11 +294,13 @@ LOGGING = {
 
         'console': {
 
-            'class': 'logging.StreamHandler',
+            'class':
+            'logging.StreamHandler',
 
         },
 
     },
+
 
     'loggers': {
 
@@ -228,7 +310,8 @@ LOGGING = {
                 'console'
             ],
 
-            'level': 'INFO',
+            'level':
+            'INFO',
 
         },
 
