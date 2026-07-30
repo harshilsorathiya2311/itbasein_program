@@ -125,21 +125,26 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Render PostgreSQL
 # ==============================
 
-
-DATABASES = {
-
-    "default": dj_database_url.config(
-
-        default=os.getenv(
-            "DATABASE_URL"
-        ),
-
-        conn_max_age=600,
-
-        ssl_require=True
-
-    )
-}
+DATABASE_URL = os.getenv("DATABASE_URL")
+if DATABASE_URL:
+    DATABASES = {
+        "default": dj_database_url.config(
+            default=DATABASE_URL,
+            conn_max_age=600,
+            ssl_require=True
+        )
+    }
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": "yourdriveai",
+            "USER": "postgres",
+            "PASSWORD": "postgres",
+            "HOST": "localhost",
+            "PORT": "5432",
+        }
+    }
 
 
 # ==============================
