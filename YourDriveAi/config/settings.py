@@ -3,9 +3,9 @@ from pathlib import Path
 from dotenv import load_dotenv
 import dj_database_url
 
-load_dotenv()
-
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+load_dotenv(BASE_DIR / '.env')
 
 
 # ==============================
@@ -141,7 +141,7 @@ else:
             "NAME": "yourdriveai",
             "USER": "postgres",
             "PASSWORD": "postgres",
-            "HOST": "localhost",
+            "HOST": "127.0.0.1",
             "PORT": "5432",
         }
     }
@@ -202,6 +202,13 @@ STATICFILES_STORAGE = (
 MEDIA_URL = '/media/'
 
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# In production (DEBUG=False), serve media files through static
+# so WhiteNoise handles them without needing Cloudinary/S3.
+# Requires: collectstatic copies media/ -> staticfiles/
+if not DEBUG:
+    MEDIA_URL = STATIC_URL
+    STATICFILES_DIRS = list(STATICFILES_DIRS) + [MEDIA_ROOT]
 
 
 

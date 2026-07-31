@@ -26,14 +26,19 @@
                 <span class="badge bg-primary me-1">{{ car.fuel_type }}</span>
                 <span class="badge bg-info me-1">{{ car.transmission }}</span>
                 <span class="badge bg-success me-1">{{ car.mileage }} kmpl</span>
-                <span class="badge bg-warning text-dark">{{ car.seating_capacity }} seats</span>
+                <span class="badge bg-warning text-dark me-1">{{ car.seating_capacity }} seats</span>
+                {% if car.body_type %}<span class="badge bg-secondary me-1">{{ car.body_type }}</span>{% endif %}
+                {% if car.safety_rating %}<span class="badge bg-danger"><i class="bi bi-shield-check"></i> Safety {{ car.safety_rating }}/5</span>{% endif %}
             </div>
             <table class="table table-borderless">
                 <tr><th>Brand</th><td>{{ car.brand.name }}</td></tr>
+                <tr><th>Model</th><td>{{ car.name }}</td></tr>
                 <tr><th>Fuel Type</th><td>{{ car.fuel_type }}</td></tr>
                 <tr><th>Transmission</th><td>{{ car.transmission }}</td></tr>
                 <tr><th>Mileage</th><td>{{ car.mileage }} kmpl</td></tr>
                 <tr><th>Seating</th><td>{{ car.seating_capacity }}</td></tr>
+                <tr><th>Body Type</th><td>{{ car.body_type|default:"—" }}</td></tr>
+                <tr><th>Safety Rating</th><td>{{ car.safety_rating|default:"—" }}/5</td></tr>
                 {% if car.engine_cc %}<tr><th>Engine</th><td>{{ car.engine_cc }} cc</td></tr>{% endif %}
                 {% if car.power %}<tr><th>Power</th><td>{{ car.power }} bhp</td></tr>{% endif %}
             </table>
