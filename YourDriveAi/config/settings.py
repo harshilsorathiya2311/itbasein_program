@@ -1,11 +1,14 @@
 import os
 from pathlib import Path
+
 from dotenv import load_dotenv
 import dj_database_url
 
-BASE_DIR = Path(__file__).resolve().parent.parent
 
-load_dotenv(BASE_DIR / '.env')
+load_dotenv()
+
+
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # ==============================
@@ -41,18 +44,20 @@ CSRF_TRUSTED_ORIGINS = [
 
 INSTALLED_APPS = [
 
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
+    # Django Apps
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
 
-    'users',
-    'cars',
-    'bookings',
-    'recommendations',
-    'analytics',
+    # Your Apps
+    "users",
+    "cars",
+    "bookings",
+    "recommendations",
+    "analytics",
 ]
 
 
@@ -62,25 +67,26 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
 
-    'django.middleware.security.SecurityMiddleware',
+    "django.middleware.security.SecurityMiddleware",
 
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+    # Static files for Render
+    "whitenoise.middleware.WhiteNoiseMiddleware",
 
-    'django.contrib.sessions.middleware.SessionMiddleware',
+    "django.contrib.sessions.middleware.SessionMiddleware",
 
-    'django.middleware.common.CommonMiddleware',
+    "django.middleware.common.CommonMiddleware",
 
-    'django.middleware.csrf.CsrfViewMiddleware',
+    "django.middleware.csrf.CsrfViewMiddleware",
 
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
 
-    'django.contrib.messages.middleware.MessageMiddleware',
+    "django.contrib.messages.middleware.MessageMiddleware",
 
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
 
-ROOT_URLCONF = 'config.urls'
+ROOT_URLCONF = "config.urls"
 
 
 # ==============================
@@ -90,26 +96,29 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
 
     {
-        'BACKEND':
-        'django.template.backends.django.DjangoTemplates',
+        "BACKEND":
+        "django.template.backends.django.DjangoTemplates",
 
-        'DIRS': [
-            BASE_DIR / 'templates'
+        "DIRS":
+        [
+            BASE_DIR / "templates"
         ],
 
-        'APP_DIRS': True,
+        "APP_DIRS": True,
 
-        'OPTIONS': {
+        "OPTIONS":
+        {
 
-            'context_processors': [
+            "context_processors":
+            [
 
-                'django.template.context_processors.debug',
+                "django.template.context_processors.debug",
 
-                'django.template.context_processors.request',
+                "django.template.context_processors.request",
 
-                'django.contrib.auth.context_processors.auth',
+                "django.contrib.auth.context_processors.auth",
 
-                'django.contrib.messages.context_processors.messages',
+                "django.contrib.messages.context_processors.messages",
 
             ],
         },
@@ -117,34 +126,65 @@ TEMPLATES = [
 ]
 
 
-WSGI_APPLICATION = 'config.wsgi.application'
+WSGI_APPLICATION = "config.wsgi.application"
 
 
 # ==============================
 # DATABASE
-# Render PostgreSQL
+# PostgreSQL Render
 # ==============================
 
+
 DATABASE_URL = os.getenv("DATABASE_URL")
+
+
 if DATABASE_URL:
+
     DATABASES = {
-        "default": dj_database_url.config(
+
+        "default":
+
+        dj_database_url.config(
+
             default=DATABASE_URL,
+
             conn_max_age=600,
+
             ssl_require=True
+
         )
     }
+
+
 else:
+
     DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": "yourdriveai",
-            "USER": "postgres",
-            "PASSWORD": "postgres",
-            "HOST": "127.0.0.1",
-            "PORT": "5432",
+
+        "default":
+
+        {
+
+            "ENGINE":
+            "django.db.backends.postgresql",
+
+            "NAME":
+            "yourdriveai",
+
+            "USER":
+            "postgres",
+
+            "PASSWORD":
+            "postgres",
+
+            "HOST":
+            "localhost",
+
+            "PORT":
+            "5432",
+
         }
     }
+
 
 
 # ==============================
@@ -158,9 +198,9 @@ AUTH_PASSWORD_VALIDATORS = []
 # LANGUAGE
 # ==============================
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = 'Asia/Kolkata'
+TIME_ZONE = "Asia/Kolkata"
 
 USE_I18N = True
 
@@ -173,22 +213,23 @@ USE_TZ = True
 # ==============================
 
 
-STATIC_URL = '/static/'
+STATIC_URL = "/static/"
 
 
-STATICFILES_DIRS = [
-
-    BASE_DIR / 'static'
-
-]
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+# Only use if folder exists
+if (BASE_DIR / "static").exists():
+
+    STATICFILES_DIRS = [
+        BASE_DIR / "static"
+    ]
 
 
 STATICFILES_STORAGE = (
 
-    'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 )
 
@@ -198,22 +239,18 @@ STATICFILES_STORAGE = (
 # MEDIA FILES
 # ==============================
 
+MEDIA_URL = "/media/"
 
-MEDIA_URL = '/media/'
-
-MEDIA_ROOT = BASE_DIR / 'media'
-
-# In production (DEBUG=False), serve media files through static
-# so WhiteNoise handles them without needing Cloudinary/S3.
-# Requires: collectstatic copies media/ -> staticfiles/
-if not DEBUG:
-    MEDIA_URL = STATIC_URL
-    STATICFILES_DIRS = list(STATICFILES_DIRS) + [MEDIA_ROOT]
+MEDIA_ROOT = BASE_DIR / "media"
 
 
+
+# ==============================
+# DEFAULT PRIMARY KEY
+# ==============================
 
 DEFAULT_AUTO_FIELD = (
-    'django.db.models.BigAutoField'
+    "django.db.models.BigAutoField"
 )
 
 
@@ -222,12 +259,11 @@ DEFAULT_AUTO_FIELD = (
 # AUTH
 # ==============================
 
+LOGIN_REDIRECT_URL = "home"
 
-LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = "home"
 
-LOGOUT_REDIRECT_URL = 'home'
-
-LOGIN_URL = 'login'
+LOGIN_URL = "login"
 
 
 
@@ -236,42 +272,42 @@ LOGIN_URL = 'login'
 # ==============================
 
 
-if os.getenv('EMAIL_HOST'):
+if os.getenv("EMAIL_HOST"):
+
 
     EMAIL_BACKEND = (
-        'django.core.mail.backends.smtp.EmailBackend'
+        "django.core.mail.backends.smtp.EmailBackend"
     )
 
-    EMAIL_HOST = os.getenv('EMAIL_HOST')
+    EMAIL_HOST = os.getenv("EMAIL_HOST")
 
     EMAIL_PORT = int(
-        os.getenv('EMAIL_PORT','587')
+        os.getenv("EMAIL_PORT", 587)
     )
 
     EMAIL_USE_TLS = True
 
-
     EMAIL_HOST_USER = os.getenv(
-        'EMAIL_HOST_USER'
+        "EMAIL_HOST_USER"
     )
 
-
     EMAIL_HOST_PASSWORD = os.getenv(
-        'EMAIL_HOST_PASSWORD'
+        "EMAIL_HOST_PASSWORD"
     )
 
 
 else:
 
+
     EMAIL_BACKEND = (
-        'django.core.mail.backends.console.EmailBackend'
+        "django.core.mail.backends.console.EmailBackend"
     )
 
 
 
 DEFAULT_FROM_EMAIL = os.getenv(
-    'DEFAULT_FROM_EMAIL',
-    'noreply@yourdriveai.com'
+    "DEFAULT_FROM_EMAIL",
+    "noreply@yourdriveai.com"
 )
 
 
@@ -283,11 +319,18 @@ DEFAULT_FROM_EMAIL = os.getenv(
 
 if not DEBUG:
 
+
     SECURE_SSL_REDIRECT = True
 
     SESSION_COOKIE_SECURE = True
 
     CSRF_COOKIE_SECURE = True
+
+
+    SECURE_PROXY_SSL_HEADER = (
+        "HTTP_X_FORWARDED_PROTO",
+        "https"
+    )
 
 
 
@@ -298,34 +341,44 @@ if not DEBUG:
 
 LOGGING = {
 
-    'version': 1,
 
-    'disable_existing_loggers': False,
+    "version": 1,
 
-    'handlers': {
 
-        'console': {
+    "disable_existing_loggers": False,
 
-            'class':
-            'logging.StreamHandler',
+
+    "handlers":
+    {
+
+        "console":
+        {
+
+            "class":
+            "logging.StreamHandler",
 
         },
 
     },
 
 
-    'loggers': {
+    "loggers":
+    {
 
-        'bookings': {
 
-            'handlers': [
-                'console'
+        "bookings":
+        {
+
+            "handlers":
+            [
+                "console"
             ],
 
-            'level':
-            'INFO',
+            "level":
+            "INFO",
 
         },
+
 
     },
 
